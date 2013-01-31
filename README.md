@@ -13,4 +13,4 @@ git remote add origin https://github.com/ChessEP/chess.git
 
 Et les classiques :
 git add "nom fichier" pour ajouter au git
-git commit -m "un commentaire utile ou pas" pour... benh commiter
+git commit -m "un commentaire explicite et obligatoire !" pour... benh commiter
