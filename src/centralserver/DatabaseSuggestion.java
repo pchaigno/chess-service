@@ -17,6 +17,9 @@ public class DatabaseSuggestion extends MoveSuggestion {
 	 */
 	public DatabaseSuggestion(String move, int number_play, float proba_win, float proba_draw) {
 		super(move);
+		this.number_play = number_play;
+		this.proba_draw = proba_draw;
+		this.proba_win = proba_win;
 	}
 
 	/**

@@ -1,10 +1,14 @@
 package centralserver;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Represent a database.
  */
-public class Database extends Resource {
+public class Database extends Resource<DatabaseSuggestion> {
 	private int trust;
+	private List<DatabaseSuggestion> moves;
 	
 	/**
 	 * Constructor
@@ -30,5 +34,16 @@ public class Database extends Resource {
 	 */
 	public void setTrust(int trust) {
 		this.trust = trust;
+	}
+
+	@Override
+	public List<DatabaseSuggestion> getMoveSuggestions() {
+		return this.moves;
+	}
+
+	@Override
+	public void query(String fen) {
+		this.moves = new ArrayList<DatabaseSuggestion>();
+		// TODO Query the database and update this.moves with the reponses.
 	}
 }
