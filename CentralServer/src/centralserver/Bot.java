@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Represent a bot.
  */
-public class Bot extends Resource<BotSuggestion> {
+public class Bot extends Resource {
 	private List<BotSuggestion> moves;
 	
 	/**

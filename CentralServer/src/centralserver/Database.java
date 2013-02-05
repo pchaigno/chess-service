@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Represent a database.
  */
-public class Database extends Resource<DatabaseSuggestion> {
+public class Database extends Resource{
 	private int trust;
 	private List<DatabaseSuggestion> moves;
 	

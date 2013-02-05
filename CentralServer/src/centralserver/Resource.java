@@ -7,7 +7,7 @@ import java.util.List;
  * Note: Was forced to use a generic class because apparently getMoveSuggestions in Database and Bot can't
  * override if the return type is List<MoveSuggestion>. Test on your side.
  */
-public abstract class Resource<T> {
+public abstract class Resource {
 	private String uri;
 	private String name;
 	
@@ -38,7 +38,7 @@ public abstract class Resource<T> {
 	/**
 	 * @return The suggestions of move.
 	 */
-	public abstract List<T> getMoveSuggestions();
+	public abstract List<? extends MoveSuggestion> getMoveSuggestions();
 	
 	/**
 	 * Query the resource on the network and update the suggestions of move.

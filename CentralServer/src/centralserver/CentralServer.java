@@ -7,7 +7,7 @@ import java.util.List;
  * Manage the list of resources.
  */
 public class CentralServer {
-	private List<Resource<MoveSuggestion>> resources;
+	private List<Resource> resources;
 	private boolean resources_changed;
 	private static final String RESOURCES_FILE = "resources.txt";
 	
@@ -15,7 +15,7 @@ public class CentralServer {
 	 * Constructor
 	 */
 	public CentralServer() {
-		this.resources = new ArrayList<Resource<MoveSuggestion>>();
+		this.resources = new ArrayList<Resource>();
 		this.restoreResources();
 		this.resources_changed = false;
 	}
@@ -54,7 +54,7 @@ public class CentralServer {
 	 */
 	private void updateResources(String fen) {
 		// TODO Use Multithreading.
-		for(Resource<MoveSuggestion> resource: this.resources) {
+		for(Resource resource: this.resources) {
 			resource.query(fen);
 		}
 	}
