@@ -77,6 +77,31 @@ public class CentralServer {
 	}
 	
 	/**
+	 * save a resource in the corresponding table
+	 * @throws ClassNotFoundException 
+	 * @throws SQLException 
+	 */
+	public void saveResource(Resource r) throws ClassNotFoundException, SQLException{
+		String database;
+		String query = new String();
+		
+		if(r instanceof Bot){
+			database = BOTS_RESOURCE_TABLE;
+			query = "INSERT INTO " + database + " VALUES ('" + r.getURI() + "', '" + r.getName() + "')";
+		}
+		else if(r instanceof Database){
+			database = DATABASES_RESOURCE_TABLE;
+			query = "INSERT INTO " + database + " VALUES ('" + r.getURI() + "', '" + r.getName() + "', " + ((Database)r).getTrust() + ")";
+		}
+		
+		Class.forName("org.sqlite.JDBC");
+		Connection dbConnect = DriverManager.getConnection("jdbc:sqlite:resources.db");		
+		PreparedStatement insertStmt = dbConnect.prepareStatement(query);
+		
+		insertStmt.executeUpdate();		
+	}
+	
+	/**
 	 * Get the suggestion of move from the resources and compute the best answer.
 	 * @param fen The FEN.
 	 * @return The best suggestion of move.
@@ -102,8 +127,10 @@ public class CentralServer {
 	/**
 	 * For testing (maybe an other class after)
 	 * @param args
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ClassNotFoundException, SQLException {
 		CentralServer server1 = new CentralServer();
 	  }
 }
