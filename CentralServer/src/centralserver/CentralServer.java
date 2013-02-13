@@ -3,9 +3,6 @@ package centralserver;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Manage the list of resources.
- */
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -15,6 +12,9 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.DatabaseMetaData;
 
+/**
+ * Manage the list of resources.
+ */
 public class CentralServer {
 	private List<Resource> resources;
 	private boolean resources_changed;
