@@ -3,5 +3,13 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="src/centralserver/sqlite-jdbc-3.7.2.jar"/>
+	<classpathentry kind="lib" path="src/asm-3.1.jar"/>
+	<classpathentry kind="lib" path="src/grizzly-servlet-webserver-1.9.18-i.jar"/>
+	<classpathentry kind="lib" path="src/jersey-core-1.6.jar"/>
+	<classpathentry kind="lib" path="src/jersey-server-1.6.jar"/>
+	<classpathentry kind="lib" path="src/jsr311-api-1.1.jar"/>
+	<classpathentry kind="lib" path="src/centralserver/grizzly-servlet-webserver-1.9.18-i.jar"/>
+	<classpathentry kind="lib" path="src/centralserver/jersey-client-1.6.jar"/>
+	<classpathentry kind="lib" path="src/centralserver/jersey-grizzly-1.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

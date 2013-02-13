@@ -20,6 +20,7 @@ public class CentralServer {
 	private boolean resources_changed;
 	private static final String DATABASES_RESOURCE_TABLE = "databases";
 	private static final String BOTS_RESOURCE_TABLE = "bots";
+	private static final String DB_NAME = "resources.db";
 	
 	/**
 	 * Constructor
@@ -29,7 +30,7 @@ public class CentralServer {
 		try {
 			this.restoreResources();
 		} catch (ClassNotFoundException | SQLException e) {
-			// TODO Throw an excpetion that tells "it doesn't work"
+			// TODO Throw an exception that tells "it doesn't work"
 			e.printStackTrace();
 		}
 		this.resources_changed = false;
@@ -43,7 +44,7 @@ public class CentralServer {
 	private void restoreResources() throws ClassNotFoundException, SQLException {
 		// TODO Read the list of resources from a file.
 		Class.forName("org.sqlite.JDBC");
-		Connection dbConnect = DriverManager.getConnection("jdbc:sqlite:resources.db");
+		Connection dbConnect = DriverManager.getConnection("jdbc:sqlite:"+DB_NAME);
 		
 		String baseRequest = "SELECT * FROM "; 
 		
@@ -95,7 +96,7 @@ public class CentralServer {
 		}
 		
 		Class.forName("org.sqlite.JDBC");
-		Connection dbConnect = DriverManager.getConnection("jdbc:sqlite:resources.db");		
+		Connection dbConnect = DriverManager.getConnection("jdbc:sqlite:"+DB_NAME);		
 		PreparedStatement insertStmt = dbConnect.prepareStatement(query);
 		
 		insertStmt.executeUpdate();		
