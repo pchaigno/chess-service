@@ -12,7 +12,9 @@ import com.sun.jersey.api.container.grizzly.GrizzlyWebContainerFactory;
  * @author clemgaut
  *
  */
-
+/*
+Maybe changed the version to the latest : jersey 1.17 (now it is 1.6)
+*/
 public class CentralServerResourceDeployer {
 
 	public static void main(String[] args) throws IOException {
