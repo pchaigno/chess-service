@@ -13,9 +13,10 @@ public class Bot extends Resource {
 	 * Constructor
 	 * @param uri The URI.
 	 * @param name The name.
+	 * @param trust The trust in this bot.
 	 */
-	public Bot(String uri, String name) {
-		super(uri, name);
+	public Bot(String uri, String name, int trust) {
+		super(uri, name, trust);
 	}
 
 	@Override

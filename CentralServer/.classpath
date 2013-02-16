@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="D:/Documents/INSA/3ème année perso/Etudes pratiques/Chess-Service/Chess-Service/CentralServer/lib/jersey-core-1.6.jar"/>
 	<classpathentry kind="lib" path="D:/Documents/INSA/3ème année perso/Etudes pratiques/Chess-Service/Chess-Service/CentralServer/lib/jersey-grizzly-1.6.jar"/>
 	<classpathentry kind="lib" path="D:/Documents/INSA/3ème année perso/Etudes pratiques/Chess-Service/Chess-Service/CentralServer/lib/jersey-server-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
