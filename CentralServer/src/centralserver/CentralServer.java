@@ -6,11 +6,8 @@ import java.util.List;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.DatabaseMetaData;
 
 /**
  * Manage the list of resources.
@@ -29,7 +26,10 @@ public class CentralServer {
 		this.resources = new ArrayList<Resource>();
 		try {
 			this.restoreResources();
-		} catch (ClassNotFoundException | SQLException e) {
+		} catch(ClassNotFoundException e) {
+			// TODO Throw an exception that tells "it doesn't work"
+			e.printStackTrace();
+		} catch(SQLException e) {
 			// TODO Throw an exception that tells "it doesn't work"
 			e.printStackTrace();
 		}
