@@ -5,6 +5,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
+
 /**
  * This class will handle the call from the client to the central server and will send the answer
  * @author clemgaut

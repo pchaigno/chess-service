@@ -62,7 +62,7 @@ public class CentralServer {
 		ResultSet botResultSet = botsState.executeQuery();
 		
 		while(botResultSet.next()){
-			this.resources.add(new Bot(botResultSet.getString("uri"), botResultSet.getString("name")));
+			this.resources.add(new Bot(botResultSet.getString("uri"), botResultSet.getString("name"), botResultSet.getInt("trust")));
 		}
 		
 		System.out.println("Nombre de resources : " + resources.size());
@@ -88,11 +88,11 @@ public class CentralServer {
 		
 		if(r instanceof Bot){
 			database = BOTS_RESOURCE_TABLE;
-			query = "INSERT INTO " + database + " VALUES ('" + r.getURI() + "', '" + r.getName() + "')";
+			query = "INSERT OR REPLACE INTO " + database + " VALUES (NULL, '" + r.getURI() + "', '" + r.getName() + "' , " + r.getTrust() + ")";
 		}
 		else if(r instanceof Database){
 			database = DATABASES_RESOURCE_TABLE;
-			query = "INSERT INTO " + database + " VALUES ('" + r.getURI() + "', '" + r.getName() + "', " + ((Database)r).getTrust() + ")";
+			query = "INSERT OR REPLACE INTO " + database + " VALUES (NULL, '" + r.getURI() + "', '" + r.getName() + "', " + r.getTrust() + ")";
 		}
 		
 		Class.forName("org.sqlite.JDBC");
@@ -132,6 +132,6 @@ public class CentralServer {
 	 * @throws ClassNotFoundException 
 	 */
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		CentralServer server1 = new CentralServer();
+		CentralServer server1 = new CentralServer();		
 	  }
 }

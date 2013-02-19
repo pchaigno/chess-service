@@ -13,7 +13,7 @@ import com.sun.jersey.api.container.grizzly.GrizzlyWebContainerFactory;
  *
  */
 /*
-Maybe changed the version to the latest : jersey 1.17 (now it is 1.6)
+Maybe change the version to the latest : jersey 1.17 (now it is 1.6)
 */
 public class CentralServerResourceDeployer {
 
