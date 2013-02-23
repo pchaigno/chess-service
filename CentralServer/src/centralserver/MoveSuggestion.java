@@ -1,5 +1,7 @@
 package centralserver;
 
+import java.sql.SQLException;
+
 /**
  * The model for all suggestion of move (from databases or bots).
  */

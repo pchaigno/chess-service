@@ -72,8 +72,15 @@ public class CentralServer {
 	 * Save the list of resources in a file if there was changes.
 	 */
 	private void saveResources() {
-		if(this.resources_changed) {
-			// TODO Write the resources in a file.
+		for(Resource resource : resources){
+			if(resource.isChanged()){
+				try {
+					saveResource(resource);
+				} catch (ClassNotFoundException | SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 	

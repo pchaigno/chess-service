@@ -1,7 +1,16 @@
 package centralserver;
 
+import java.lang.reflect.Type;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.ws.rs.core.MediaType;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 
 /**
  * Represent a database.
@@ -27,6 +36,17 @@ public class Database extends Resource{
 	@Override
 	public void query(String fen) {
 		this.moves = new ArrayList<DatabaseSuggestion>();
-		// TODO Query the database and update this.moves with the reponses.
+		
+		//we call the client
+		Client c = Client.create();
+		WebResource r = c.resource(uri+fen);
+		String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
+		
+		System.out.println(response);
+		
+		//We parse the json response with Gson
+		Gson gson = new Gson();
+		Type collectionType = new TypeToken<ArrayList<DatabaseSuggestion>>(){}.getType();
+		this.moves = gson.fromJson(response, collectionType);
 	}
 }
