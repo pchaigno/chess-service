@@ -42,11 +42,18 @@ public class Database extends Resource{
 		WebResource r = c.resource(uri+fen);
 		String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
 		
-		System.out.println(response);
-		
 		//We parse the json response with Gson
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<ArrayList<DatabaseSuggestion>>(){}.getType();
-		this.moves = gson.fromJson(response, collectionType);
+		this.moves = gson.fromJson(response, collectionType);	
 	}
+	
+	/**
+	 * For testing (maybe an other class after)
+	 * @param args
+	 */
+	public static void main(String[] args){
+		Database db1 = new Database("http://localhost/rest/openings/", "Db1", 1);
+		db1.query("fendebut");
+	  }
 }

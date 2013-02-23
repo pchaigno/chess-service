@@ -22,4 +22,9 @@ public abstract class MoveSuggestion {
 	public String getMove() {
 		return this.move;
 	}
+
+	@Override
+	public String toString() {
+		return "MoveSuggestion [move=" + move + "]";
+	}
 }
