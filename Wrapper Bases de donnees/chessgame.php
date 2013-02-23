@@ -13,7 +13,7 @@ function redirectionErreur404()
   
 // ouverture de la base de données contenant les tables d'ouverture et de fermeture
 	try {
-        	$bdd = new PDO('mysql:host=localhost;dbname=chessgames', 'root', 'root');
+        	$bdd = new PDO('mysql:host=localhost;dbname=chessgames', 'root', '');
 		} catch(PDOException $e) {
     	exit('Error: '.$e->getMessage());
 	}
@@ -36,10 +36,9 @@ if(count($chars)==3 && $chars[0]=='rest') {
 	}
         
         header("Content-Type: application/json");
-        while($move = $moves->fetch()) {
-        	echo json_encode($move);
-
-        }
+		//la boucle while est enlevée pour assurer la compatibilité avec Gson
+		$arrayMoves = $moves->fetchAll();
+        echo json_encode($arrayMoves);
         
     }elseif($chars[1]=='endings'){
 	
@@ -52,10 +51,9 @@ if(count($chars)==3 && $chars[0]=='rest') {
 	}
         
         header("Content-Type: application/json");
-        while($move = $moves->fetch()) {
-        	echo json_encode($move);
-        }
-        
+		//la boucle while est enlevée pour assurer la compatibilité avec Gson
+       $arrayMoves = $moves->fetchAll();
+       echo json_encode($arrayMoves);        
     }else{
     	
 	redirectionErreur404();
@@ -73,4 +71,6 @@ if(count($chars)==3 && $chars[0]=='rest') {
 
 }
 
-
+//RewriteEngine On
+//RewriteCond %{REQUEST_URI} ^/rest/.*$ [NC]
+//RewriteRule ^(.*)$ /chessgame.php [L]
