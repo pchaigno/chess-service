@@ -2,15 +2,15 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="lib/sqlite-jdbc-3.7.2.jar"/>
-	<classpathentry kind="lib" path="lib/gson-2.2.2-javadoc.jar"/>
-	<classpathentry kind="lib" path="lib/gson-2.2.2.jar"/>
-	<classpathentry kind="lib" path="lib/gson-2.2.2-sources.jar"/>
-	<classpathentry kind="lib" path="lib/jersey-client-1.6.jar"/>
-	<classpathentry kind="lib" path="lib/jersey-server-1.6.jar"/>
-	<classpathentry kind="lib" path="lib/asm-3.1.jar"/>
-	<classpathentry kind="lib" path="lib/grizzly-servlet-webserver-1.9.18-i.jar"/>
-	<classpathentry kind="lib" path="lib/jersey-core-1.6.jar"/>
-	<classpathentry kind="lib" path="lib/jersey-grizzly-1.6.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/INSA/3ème année perso/Etudes pratiques/Chess-Service/Chess-Service/CentralServer/libs/asm-3.1.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/INSA/3ème année perso/Etudes pratiques/Chess-Service/Chess-Service/CentralServer/libs/grizzly-servlet-webserver-1.9.18-i.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/INSA/3ème année perso/Etudes pratiques/Chess-Service/Chess-Service/CentralServer/libs/gson-2.2.2.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/INSA/3ème année perso/Etudes pratiques/Chess-Service/Chess-Service/CentralServer/libs/gson-2.2.2-javadoc.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/INSA/3ème année perso/Etudes pratiques/Chess-Service/Chess-Service/CentralServer/libs/gson-2.2.2-sources.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/INSA/3ème année perso/Etudes pratiques/Chess-Service/Chess-Service/CentralServer/libs/jersey-client-1.6.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/INSA/3ème année perso/Etudes pratiques/Chess-Service/Chess-Service/CentralServer/libs/jersey-core-1.6.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/INSA/3ème année perso/Etudes pratiques/Chess-Service/Chess-Service/CentralServer/libs/jersey-grizzly-1.6.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/INSA/3ème année perso/Etudes pratiques/Chess-Service/Chess-Service/CentralServer/libs/jersey-server-1.6.jar"/>
+	<classpathentry kind="lib" path="D:/Documents/INSA/3ème année perso/Etudes pratiques/Chess-Service/Chess-Service/CentralServer/libs/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
