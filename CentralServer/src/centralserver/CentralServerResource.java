@@ -13,18 +13,19 @@ import javax.ws.rs.Produces;
  */
 
 //The stage is opening, middle or ending (may not be this path)
-@Path("/rest/{stage}/{fenNotation}")
+@Path("/resource/rest/{stage}/{fenNotation}")
 
 public class CentralServerResource {
 	
-	protected CentralServer server;
+	protected CentralServer server = new CentralServer();
 	
 	@GET
 	@Produces("text/plain")
 	public String getBestMove(@PathParam("stage") String stageInGame,
 							  @PathParam("fenNotation") String fen){
 		//TODO call the central server to get the best move and valid parameters (stage and fen)
-		return "e4";
+		return server.getBestMove(fen).getMove();
+		//return "e4";
 	}
 
 }

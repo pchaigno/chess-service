@@ -1,7 +1,12 @@
 package centralserver;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,12 +17,24 @@ import java.sql.ResultSet;
 /**
  * Manage the list of resources.
  */
+/**
+ * @author clemgaut
+ *
+ */
+/**
+ * @author clemgaut
+ *
+ */
+/**
+ * @author clemgaut
+ *
+ */
 public class CentralServer {
 	private List<Resource> resources;
 	private boolean resources_changed;
 	private static final String DATABASES_RESOURCE_TABLE = "databases";
 	private static final String BOTS_RESOURCE_TABLE = "bots";
-	private static final String DB_NAME = "resources.db";
+	private static final String DB_NAME = "testResources.db";
 	
 	/**
 	 * Constructor
@@ -117,9 +134,68 @@ public class CentralServer {
 	public MoveSuggestion getBestMove(String fen) {
 		this.updateResources(fen);
 		// TODO Compute the best answer from all the answers from all resources.
-		return null;
+		//The hashMap contains al the moves and the score associated 
+		HashMap<String, Double> moves = new HashMap<String, Double>();
+		
+		for(Resource resource : this.resources){
+			for(MoveSuggestion move : resource.getMoveSuggestions()){
+				//TODO avoid this cast in a second time
+				double moveScore = computeScoreDatabase((DatabaseSuggestion)move, resource);
+				includeScore(moves, move, moveScore);
+			}
+		}
+		return bestMove(moves);
 	}
 	
+	
+	/**
+	 * @param moves
+	 * @return the best move (with the highest score) among all moves
+	 */
+	private MoveSuggestion bestMove(HashMap<String, Double> moves) {
+		//TODO do best and cleaner ;) (i'm sick)
+		double max = -1;
+		String move = "error";
+		
+		for(Map.Entry<String, Double> entry : moves.entrySet()){
+			if(entry.getValue() > max){
+				max = entry.getValue();
+				move = entry.getKey();
+			}
+		}
+		
+		
+		return new MoveSuggestion(move);
+	}
+	
+
+	/**
+	 * Include the move in the HashMap :
+	 * 	if the move already exist, we add the score
+	 * 	otherwise we create a new one in the HashMap
+	 * @param moves
+	 * @param move
+	 * @param moveScore
+	 */
+	private void includeScore(HashMap<String, Double> moves, MoveSuggestion move, double moveScore) {
+		if(moves.containsKey(move.getMove())){
+			moves.put(move.getMove(), moves.get(move.getMove())+moveScore);
+		}
+		else{
+			moves.put(move.getMove(), moveScore);
+		}
+	}
+
+	/**
+	 * @param move
+	 * @param resource
+	 * @return The score computed according to the formulas we defined
+	 */
+	private double computeScoreDatabase(DatabaseSuggestion move, Resource resource) {
+		//TODO change the formula
+		return move.getprobatowin()*move.getnb()*resource.getTrust();
+	}
+
 	/**
 	 * Ask for all resources to update their suggestions of move.
 	 * Do it using multithreading.

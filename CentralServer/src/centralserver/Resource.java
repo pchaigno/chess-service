@@ -65,6 +65,6 @@ public abstract class Resource {
 	 */
 	public abstract void query(String fen);
 	
-	public static void main(String[] args) throws ClassNotFoundException, SQLException {		
+	public static void main(String[] args){		
 	  }
 }

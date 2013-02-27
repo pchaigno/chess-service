@@ -31,7 +31,7 @@ public class CentralServerResourceDeployer {
 	          GrizzlyWebContainerFactory.create(baseUri, initParams);
        System.out.println(String.format(
          "Jersey app started with WADL available at %sapplication.wadl\n" + 
-         "Try out %srest/openings/MyFen\nThe answer is always e4 (for now)\nHit enter to stop it...", baseUri, baseUri));
+         "Try out %sresource/rest/openings/fendebut\nThe answer is always e4 (for now)\nHit enter to stop it...", baseUri, baseUri));
        System.in.read();
        threadSelector.stopEndpoint();
        System.exit(0);
