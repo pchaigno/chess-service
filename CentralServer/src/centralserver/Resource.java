@@ -1,6 +1,5 @@
 package centralserver;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -64,7 +63,4 @@ public abstract class Resource {
 	 * @param fen The FEN reprensenting the current position of the chessboard.
 	 */
 	public abstract void query(String fen);
-	
-	public static void main(String[] args){		
-	  }
 }
