@@ -142,7 +142,6 @@ public class CentralServer {
 				move = entry.getKey();
 			}
 		}
-		
 		return move;
 	}
 	

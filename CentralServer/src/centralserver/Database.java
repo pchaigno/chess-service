@@ -38,6 +38,7 @@ public class Database extends Resource {
 		
 		//we call the client
 		Client c = Client.create();
+		//TODO handle the last slash
 		WebResource r = c.resource(uri+fen);
 		String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
 		
