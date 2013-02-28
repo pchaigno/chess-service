@@ -1,12 +1,10 @@
 package centralserver;
 
-import java.sql.SQLException;
-
 /**
  * The model for all suggestion of move (from databases or bots).
- * This class was abstract but i(clement) changed it
+ * This class was abstract but I(clement) changed it
  */
-public class MoveSuggestion {
+public abstract class MoveSuggestion {
 	private String move;
 	
 	/**

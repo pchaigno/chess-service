@@ -1,7 +1,6 @@
 package centralserver;
 
 import java.lang.reflect.Type;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +14,7 @@ import com.sun.jersey.api.client.WebResource;
 /**
  * Represent a database.
  */
-public class Database extends Resource{
+public class Database extends Resource {
 	private List<DatabaseSuggestion> moves;
 	
 	/**
@@ -52,8 +51,8 @@ public class Database extends Resource{
 	 * For testing (maybe an other class after)
 	 * @param args
 	 */
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		Database db1 = new Database("http://localhost/rest/openings/", "Db1", 1);
 		db1.query("fendebut");
-	  }
+    }
 }
