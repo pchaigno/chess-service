@@ -23,6 +23,6 @@ public class CentralServerResource {
 							  @PathParam("fenNotation") String fen) {
 		//TODO call the central server to get the best move and valid parameters (stage and fen)
 		return server.getBestMove(fen);
-		//return "e4";
+//		return "e4";
 	}
 }
