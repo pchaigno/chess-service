@@ -2,8 +2,10 @@ package centralserver;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -175,12 +177,27 @@ public class CentralServer {
 	/**
 	 * Ask for all resources to update their suggestions of move.
 	 * Do it using multithreading.
+	 * Wait for the end of all updates.
 	 * @param fen The FEN.
 	 */
-	private void updateResources(String fen) {
-		// TODO Use Multithreading.
-		for(Resource resource: this.resources) {
-			resource.query(fen);
+	private void updateResources(final String fen) {
+		Set<Thread> threads = new HashSet<Thread>();
+		for(final Resource resource: this.resources) {
+			Thread thread = new Thread(new Runnable() {
+				@Override
+				public void run() {
+					resource.query(fen);
+				}
+			});
+			threads.add(thread);
+		}
+		for(Thread thread: threads) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				// Shouldn't happen.
+				System.err.println("The thread was interrupted: "+e.getMessage());
+			}
 		}
 	}
 }
