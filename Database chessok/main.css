@@ -1,0 +1,298 @@
+/* General */
+
+a {
+ color: #74663d;
+}
+
+a:hover {
+	color: #463602;
+} 
+
+img {
+	border: 0px;
+	margin: 0px;
+}
+
+table#opening_env {
+	font-size: 10pt;
+	font-family: Tahoma;
+
+	margin-top: 10px;
+	margin-bottom: 10px;
+	text-align: left;
+}
+
+table#opening_env td {
+	vertical-align: top;
+}
+
+/* END General */
+
+
+/* Board */
+
+	table#game_board {
+		position: relative;
+		width: 432px;
+		height: 430px;
+		background: #eae4b8;
+		left: -1px;
+		top: -1px;
+		font-size: 10px;
+		font-weight: bold;
+		color: white;
+	}
+	
+	table#game_board td {
+		text-align: center;
+		padding: 0px;
+		margin: 0px;
+		vertical-align: middle;
+	}
+	
+	table#game_board td img {
+		padding: 0px;
+		margin: 0px;
+		border: 0px;
+	}
+
+	table#game_board td.corner {
+		width: 15px;
+		height: 15px;
+		background: url('../images/board/boardedge.png');
+	}
+	
+	table#game_board td.lettertop {
+		width: 50px;
+		height: 15px;
+		vertical-align: middle;
+		border-bottom: 1px solid #5d371f;
+		background: url('../images/board/boardedge.png');
+	}
+
+	table#game_board td.letterbottom {
+		width: 50px;
+		height: 15px;
+		vertical-align: middle;
+		border-top: 1px solid #5d371f;
+		background: url('../images/board/boardedge.png');
+	}
+	
+	table#game_board td.numberleft {
+		width: 15px;
+		height: 50px;
+		vertical-align: middle;
+		border-right: 1px solid #5d371f;
+		background: url('../images/board/boardedge.png');
+	}
+
+	table#game_board td.numberright {
+		width: 15px;
+		height: 50px;
+		vertical-align: middle;
+		border-left: 1px solid #5d371f;
+		background: url('../images/board/boardedge.png');
+	}
+	
+	table#game_board td.white {
+		background: url('../images/board/white.png') no-repeat;
+		width: 50px;
+		height: 50px;
+	}
+	
+	table#game_board td.black {
+		background: url('../images/board/black.png') no-repeat;
+	}
+
+/* END Board */
+
+/* Moves Panel */
+
+#moves_box {
+	position: relative;
+	left: -1px;
+	top: -1px;
+	padding: 2px;
+	background: #eae4b8;
+	width: 416px;
+	height: 422px;
+	overflow: auto;
+	font-size: 15px;
+	border: 2px solid #5d371f;
+}
+
+
+div.curr_fen {
+	float: left;
+	margin-left: 4px;
+	font-size: 10px;
+	font-weight: bold;
+	color: #124f4b;
+}
+
+div.curr_fen input#currfen {
+	background: #eae4b8;
+	border: 1px solid #5d371f;
+	width: 307px;
+	font-size: 9px;
+	height: 12px;
+}
+
+textarea {
+	height: 14px;
+	background: #eae4b8;
+	border: 1px solid #5d371f;
+	font-size: 9px;
+	font-family: tahoma;
+	margin-bottom: -2px;
+	width: 212px;
+}
+
+
+input.treebutton {
+	font-size: 9px;
+	width: 55px;
+	border-top: 1px solid #eae4b8;
+	border-left: 1px solid #eae4b8;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+	background: #e2d6b2;
+}
+
+input.treebutton:hover {
+	cursor: pointer;
+}
+
+input.treebutton:active {
+	background: #d0c299;
+	border-bottom: 1px solid #eae4b8;
+	border-right: 1px solid #eae4b8;
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+}
+
+div.curr_pgn {
+	margin-top: 4px;
+	float: left;
+	margin-left: 4px;
+	font-size: 10px;
+	font-weight: bold;
+	color: #124f4b;
+}
+
+/* END Moves Panel */
+
+/* Board SVG */
+div#board_svg {
+	position: absolute;
+	z-index: 10;
+}
+/* END Board SVG */
+
+/* Drop Shadow technics */
+
+	div.shadow1 {
+		background: #cfcfcf;
+		position: relative;
+		top: 3px;
+		left: 3px;
+	}
+	
+	div.shadow1table {
+		margin-top: 5px;
+		background: #cfcfcf;
+		position: relative;
+		top: 3px;
+		left: 3px;
+	}
+	
+	div.shadow2 {
+		background: #707070;
+		position: relative;
+		top: -1px;
+		left: -1px;
+	}
+
+/* END Drop Shadow technics */
+
+/* Moves Table */
+
+#moves_table table {
+	margin-left: 4px;
+	font-size: 13px;
+	width: 396px;
+	color: black;
+	margin-top: 4px;
+	border: 1px solid #7f7652;
+	border-bottom: 0px;
+}
+
+#moves_table table td {
+	background: #e3d7b2;
+	border-bottom: 1px solid #7f7652;
+	padding: 1px;
+	text-align: center;
+
+}
+
+#moves_table table tr.header td {
+	background: #6e5638;
+	color: white;
+}
+
+#moves_table table tr.header:hover td {
+	background: #6e5638;
+	cursor: default;
+}
+
+#moves_table table tr {
+	margin-bottom: 3px;
+}
+
+#moves_table table tr:hover td {
+	background: #eae4b8;
+	cursor: pointer;
+}
+
+/* Notation */
+
+#notation_box {
+	font-weight: normal;
+}
+
+.num {
+	color: #124f4b;
+	font-weight: bold;
+}
+
+a {
+	color: #6e5638;
+	text-decoration: none;
+}
+
+.invisible {
+	color: #eae4b8;
+	display: none;
+}
+
+
+.hidden {
+	display: none;
+	visibility: hidden;
+}
+
+span.selected a {
+	background: #6e5638;
+	color: #eae4b8;
+}
+
+span.gamecomment {
+	font-size: 12px;
+	font-weight: bold;
+	color: #124f4b;
+	padding-left: 4px;
+	padding-right: 4px;
+}
+
+
+/* END Notation */
