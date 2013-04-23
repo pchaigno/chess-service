@@ -8,6 +8,8 @@ import java.util.List;
  * override if the return type is List<MoveSuggestion>. Test on your side.
  */
 public abstract class Resource {
+	protected final static int CONNECT_TIMEOUT = 2000;
+	protected final static int READ_TIMEOUT = 3000;
 	protected String uri;
 	protected String name;
 	protected int trust;

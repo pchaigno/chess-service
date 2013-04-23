@@ -115,8 +115,8 @@ public class CentralServer {
 	public String getBestMove(String fen) {
 		this.updateResources(fen);
 		// TODO Compute the best answer from all the answers from all resources.
-		//The hashMap contains al the moves and the score associated 
-		HashMap<String, Double> moves = new HashMap<String, Double>();
+		// The hashMap contains all the moves and the score associated 
+		Map<String, Double> moves = new HashMap<String, Double>();
 		
 		for(Resource resource : this.resources) {
 			for(MoveSuggestion move : resource.getMoveSuggestions()) {
@@ -133,13 +133,13 @@ public class CentralServer {
 	 * @param moves
 	 * @return the best move (with the highest score) among all moves
 	 */
-	private String bestMove(HashMap<String, Double> moves) {
-		//TODO do best and cleaner ;) (i'm sick)
+	private String bestMove(Map<String, Double> moves) {
+		// TODO do best and cleaner ;) (i'm sick)
 		double max = -1;
 		String move = "error";
 		
-		for(Map.Entry<String, Double> entry : moves.entrySet()){
-			if(entry.getValue() > max){
+		for(Map.Entry<String, Double> entry : moves.entrySet()) {
+			if(entry.getValue() > max) {
 				max = entry.getValue();
 				move = entry.getKey();
 			}
@@ -156,7 +156,7 @@ public class CentralServer {
 	 * @param move
 	 * @param moveScore
 	 */
-	private void includeScore(HashMap<String, Double> moves, MoveSuggestion move, double moveScore) {
+	private void includeScore(Map<String, Double> moves, MoveSuggestion move, double moveScore) {
 		if(moves.containsKey(move.getMove())) {
 			moves.put(move.getMove(), moves.get(move.getMove())+moveScore);
 		} else {
@@ -170,7 +170,7 @@ public class CentralServer {
 	 * @return The score computed according to the formulas we defined
 	 */
 	private double computeScoreDatabase(DatabaseSuggestion move, Resource resource) {
-		//TODO change the formula
+		// TODO change the formula
 		return move.getprobatowin()*move.getnb()*resource.getTrust();
 	}
 

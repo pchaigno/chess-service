@@ -36,13 +36,15 @@ public class Database extends Resource {
 	public void query(String fen) {
 		this.moves = new ArrayList<DatabaseSuggestion>();
 		
-		//we call the client
+		// we call the client
 		Client c = Client.create();
-		//TODO handle the last slash
+		// TODO handle the last slash
 		WebResource r = c.resource(uri+fen);
+		c.setConnectTimeout(CONNECT_TIMEOUT);
+		c.setReadTimeout(READ_TIMEOUT);
 		String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
 		
-		//We parse the json response with Gson
+		// We parse the json response with Gson
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<ArrayList<DatabaseSuggestion>>(){}.getType();
 		this.moves = gson.fromJson(response, collectionType);	
