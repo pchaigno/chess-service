@@ -28,10 +28,17 @@ public abstract class Resource {
 		this.trust = trust;
 	}
 	
+	/**
+	 * @return The trust.
+	 */
 	public int getTrust() {
 		return trust;
 	}
 
+	/**
+	 * Update the trust.
+	 * @param trust The new trust value.
+	 */
 	public void setTrust(int trust) {
 		this.trust = trust;
 		this.changed = true;
@@ -62,7 +69,7 @@ public abstract class Resource {
 	
 	/**
 	 * Query the resource on the network and update the suggestions of move.
-	 * @param fen The FEN reprensenting the current position of the chessboard.
+	 * @param fen The FEN representing the current position of the chessboard.
 	 */
 	public abstract void query(String fen);
 }

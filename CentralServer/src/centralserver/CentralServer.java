@@ -38,8 +38,8 @@ public class CentralServer {
 	
 	/**
 	 * Restore the list of resources from a file (or a database file ?).
-	 * @throws ClassNotFoundException 
-	 * @throws SQLException 
+	 * @throws ClassNotFoundException TODO
+	 * @throws SQLException TODO
 	 */
 	private void restoreResources() throws ClassNotFoundException, SQLException {
 		// TODO Read the list of resources from a file.
@@ -86,8 +86,8 @@ public class CentralServer {
 	
 	/**
 	 * save a resource in the corresponding table
-	 * @throws ClassNotFoundException 
-	 * @throws SQLException 
+	 * @throws ClassNotFoundException TODO
+	 * @throws SQLException TODO
 	 */
 	public void saveResource(Resource r) throws ClassNotFoundException, SQLException{
 		String database;
@@ -110,13 +110,13 @@ public class CentralServer {
 	/**
 	 * Get the suggestion of move from the resources and compute the best answer.
 	 * @param fen The FEN.
-	 * @return The best suggestion of move.
+	 * @return The best suggestion of move or null if no suggestion.
 	 */
-	public String getBestMove(String fen) {
+	public MoveSuggestion getBestMove(String fen) {
 		this.updateResources(fen);
 		// TODO Compute the best answer from all the answers from all resources.
 		// The hashMap contains all the moves and the score associated 
-		Map<String, Double> moves = new HashMap<String, Double>();
+		Map<MoveSuggestion, Double> moves = new HashMap<MoveSuggestion, Double>();
 		
 		for(Resource resource : this.resources) {
 			for(MoveSuggestion move : resource.getMoveSuggestions()) {
@@ -130,15 +130,15 @@ public class CentralServer {
 	}
 	
 	/**
-	 * @param moves
-	 * @return the best move (with the highest score) among all moves
+	 * TODO
+	 * @param moves TODO
+	 * @return The best move (with the highest score) among all moves or null if no suggestion.
 	 */
-	private String bestMove(Map<String, Double> moves) {
-		// TODO do best and cleaner ;) (i'm sick)
+	private MoveSuggestion bestMove(Map<MoveSuggestion, Double> moves) {
 		double max = -1;
-		String move = "error";
+		MoveSuggestion move = null;
 		
-		for(Map.Entry<String, Double> entry : moves.entrySet()) {
+		for(Map.Entry<MoveSuggestion, Double> entry : moves.entrySet()) {
 			if(entry.getValue() > max) {
 				max = entry.getValue();
 				move = entry.getKey();
@@ -149,24 +149,25 @@ public class CentralServer {
 	
 
 	/**
-	 * Include the move in the HashMap :
+	 * Include the move in the HashMap:
 	 * if the move already exist, we add the score
 	 * otherwise we create a new one in the HashMap
-	 * @param moves
-	 * @param move
-	 * @param moveScore
+	 * @param moves TODO
+	 * @param move TODO
+	 * @param moveScore TODO
 	 */
-	private void includeScore(Map<String, Double> moves, MoveSuggestion move, double moveScore) {
+	private void includeScore(Map<MoveSuggestion, Double> moves, MoveSuggestion move, double moveScore) {
 		if(moves.containsKey(move.getMove())) {
-			moves.put(move.getMove(), moves.get(move.getMove())+moveScore);
+			moves.put(move, moves.get(move)+moveScore);
 		} else {
-			moves.put(move.getMove(), moveScore);
+			moves.put(move, moveScore);
 		}
 	}
 
 	/**
-	 * @param move
-	 * @param resource
+	 * TODO
+	 * @param move TODO
+	 * @param resource TODO
 	 * @return The score computed according to the formulas we defined
 	 */
 	private double computeScoreDatabase(DatabaseSuggestion move, Resource resource) {

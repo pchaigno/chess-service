@@ -5,24 +5,24 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-
 /**
- * This class will handle the call from the client to the central server and will send the answer
- * @author clemgaut
+ * This class will handle the call from the client to the central server and will send the answer.
  *
  */
 //The stage is opening, middle or ending (may not be this path)
 @Path("/resource/rest/{stage}/{fenNotation}")
 public class CentralServerResource {
-	
+	protected String NO_RESULT = "NULL";
 	protected CentralServer server = new CentralServer();
 	
 	@GET
 	@Produces("text/plain")
-	public String getBestMove(@PathParam("stage") String stageInGame,
-							  @PathParam("fenNotation") String fen) {
-		//TODO call the central server to get the best move and valid parameters (stage and fen)
-		return server.getBestMove(fen);
-//		return "e4";
+	public String getBestMove(@PathParam("stage")String stageInGame, @PathParam("fenNotation")String fen) {
+		String move = this.server.getBestMove(fen).getMove();
+		if(move==null) {
+			return NO_RESULT;
+		} else {
+			return move;
+		}
 	}
 }
