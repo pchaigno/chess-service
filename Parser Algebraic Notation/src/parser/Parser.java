@@ -266,10 +266,10 @@ public class Parser {
 		board.moveHandler(piece, pieceXY[0], pieceXY[1], toX, toY, capture, promotion, promoteTo);
 
 		// Add FEN to game.FENs
-		game.FENs.push(board.currentFEN());
+		game.FENs.add(board.currentFEN(false));
 
-		dispMove["num"] = board.fullMoves;
-		dispMove["fenlink"] = game.FENs.length - 1;
+		dispMove.put("num", board.fullMoves);
+		dispMove.put("fenlink", game.FENs.size()-1);
 		game.displayNotation.push(dispMove);
 	}
 	
