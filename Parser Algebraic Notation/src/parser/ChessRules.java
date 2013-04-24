@@ -284,7 +284,7 @@ public class ChessRules {
 
 	// Sees if board is in check state for the current player
 	public boolean check(Board board) {
-		var attackArray = [];
+		BoardSquare attackArray;
 		String kingColor;
 		BoardPiece king;
 		char kingX;
@@ -305,7 +305,7 @@ public class ChessRules {
 				fromX = board.pieces.get(i).square.x;
 				fromY = board.pieces.get(i).square.y;
 				// We simply check if any of the pieces can "capture" enemy king, if so, its check
-				attackArray = eval("this." + board.pieces.get(i).name + "(board, \"" + fromX + "\", \"" + fromY + "\", \"" + kingX + "\", \"" + kingY + "\", true)");
+				attackArray = this.eval(board.pieces.get(i).name, board, fromX, fromY, kingX, kingY, true);
 				if(attackArray != null) {
 					return true;
 					break;
@@ -313,5 +313,38 @@ public class ChessRules {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Note: Added to convert eval method from JavaScript.
+	 * @param piece
+	 * @param board
+	 * @param fromX
+	 * @param fromY
+	 * @param toX
+	 * @param toY
+	 * @param capture
+	 * @return
+	 */
+	private BoardSquare eval(String piece, Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+		if(piece.equals("pawn")) {
+			return this.pawn(board, fromX, fromY, toX, toY, capture);
+		}
+		if(piece.equals("knight")) {
+			return this.knight(board, fromX, fromY, toX, toY, capture);
+		}
+		if(piece.equals("bishop")) {
+			return this.bishop(board, fromX, fromY, toX, toY, capture);
+		}
+		if(piece.equals("rook")) {
+			return this.rook(board, fromX, fromY, toX, toY, capture);
+		}
+		if(piece.equals("queen")) {
+			return this.queen(board, fromX, fromY, toX, toY, capture);
+		}
+		if(piece.equals("king")) {
+			return this.king(board, fromX, fromY, toX, toY, capture);
+		}
+		throw new IllegalArgumentException("evalRules: method not found!");
 	}
 }

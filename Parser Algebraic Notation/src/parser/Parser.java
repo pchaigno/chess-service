@@ -59,16 +59,16 @@ public class Parser {
 		String pgnfromY = "";
 
 		// Determine if we need fromX/fromY coordinates in PGN move
-		if(eval("this.rules." + piece + "(board, '', '', toX, toY, capture);")[0]) {
+		if(this.evalRules(piece, board, (char)0, -1, toX, toY, capture).x!=0) {
 			pgnfromX = "";
 			pgnfromY = "";
-		} else if(eval("this.rules." + piece + "(board, fromX, '', toX, toY, capture);")[0]) {
+		} else if(this.evalRules(piece, board, fromX, -1, toX, toY, capture).x!=0) {
 			pgnfromX = ""+fromX;
 			pgnfromY = "";
-		} else if(eval("this.rules." + piece + "(board, '', fromY, toX, toY, capture);")[0]) {
+		} else if(this.evalRules(piece, board, (char)0, fromY, toX, toY, capture).x!=0) {
 			pgnfromX = "";
 			pgnfromY = ""+fromY;
-		} else if(eval("this.rules." + piece + "(board, fromX, fromY, toX, toY, capture);")[0]) {
+		} else if(this.evalRules(piece, board, fromX, fromY, toX, toY, capture).x!=0) {
 			pgnfromX = ""+fromX;
 			pgnfromY = ""+fromY;
 		}
@@ -254,16 +254,16 @@ public class Parser {
 		}
 
 		// Determine the location of the piece to move using chess rules and incomplete information about it
-		var pieceXY = eval("this.rules." + piece + "(board, fromX, fromY, toX, toY, capture);");
+		BoardSquare pieceXY = evalRules(piece, board, fromX, fromY, toX, toY, capture);
 
 		Map<String, String> dispMove = new HashMap<String, String>();
 		dispMove.put("type", "regular");
 		dispMove.put("token", token);
 		dispMove.put("color", board.currentMove);
-		dispMove.put("fromto", {fromX: pieceXY[0], fromY: pieceXY[1], toX: toX, toY: toY});
+		dispMove.put("fromto", {fromX: pieceXY.x, fromY: pieceXY.y, toX: toX, toY: toY});
 
 		// Make piece move
-		board.moveHandler(piece, pieceXY[0], pieceXY[1], toX, toY, capture, promotion, promoteTo);
+		board.moveHandler(piece, pieceXY.x, pieceXY.y, toX, toY, capture, promotion, promoteTo);
 
 		// Add FEN to game.FENs
 		game.FENs.add(board.currentFEN(false));
@@ -302,5 +302,38 @@ public class Parser {
 		dispMove["num"] = board.fullMoves;
 		dispMove["fenlink"] = game.FENs.length-1;
 		game.displayNotation.push(dispMove);
+	}
+	
+	/**
+	 * Note: Added to convert eval method from JavaScript.
+	 * @param piece
+	 * @param board
+	 * @param fromX
+	 * @param fromY
+	 * @param toX
+	 * @param toY
+	 * @param capture
+	 * @return
+	 */
+	private BoardSquare evalRules(String piece, Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+		if(piece.equals("pawn")) {
+			return this.rules.pawn(board, fromX, fromY, toX, toY, capture);
+		}
+		if(piece.equals("knight")) {
+			return this.rules.knight(board, fromX, fromY, toX, toY, capture);
+		}
+		if(piece.equals("bishop")) {
+			return this.rules.bishop(board, fromX, fromY, toX, toY, capture);
+		}
+		if(piece.equals("rook")) {
+			return this.rules.rook(board, fromX, fromY, toX, toY, capture);
+		}
+		if(piece.equals("queen")) {
+			return this.rules.queen(board, fromX, fromY, toX, toY, capture);
+		}
+		if(piece.equals("king")) {
+			return this.rules.king(board, fromX, fromY, toX, toY, capture);
+		}
+		throw new IllegalArgumentException("evalRules: method not found!");
 	}
 }
