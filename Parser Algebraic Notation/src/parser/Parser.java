@@ -159,10 +159,10 @@ public class Parser {
 		for(int i=0 ; i<notationTokens.length ; i++) {
 			token = notationTokens[i];
 			// Regular move
-			if(/[RBQKPN]?[a-h]?[1-8]?[x]?[a-h][1-8][=]?[QNRB]?[+#]?/.test(token)) {
+			if(token.matches("[RBQKPN]?[a-h]?[1-8]?[x]?[a-h][1-8][=]?[QNRB]?[+#]?")) {
 				this.parseMove(board, game, token);
 			// Castling
-			} else if(/(O-O-O|O-O)\+?/.test(token)) {
+			} else if(token.matches("(O-O-O|O-O)\\+?")) {
 				this.castle(board, game, token);
 			}
 		}
@@ -267,7 +267,7 @@ public class Parser {
 		dispMove.get("color") = board.currentMove;
 
 		// Add move to game.moves[]
-		if(/^O-O\+?$/.test(token)) {
+		if(token.matches("^O-O\\+?$")) {
 			dispMove["fromto"] = {fromX: "e", fromY: line, toX: "g", toY: line};
 		} else {
 			dispMove["fromto"] = {fromX: "e", fromY: line, toX: "c", toY: line};

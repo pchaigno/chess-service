@@ -208,18 +208,19 @@ public class Board {
 		for(int lines=1 ; lines<=8 ; lines++) {
 			String line = boardArray[lines-1];
 			int colsY = 1;
-			for(int cols=1 ; cols<=line.length ; cols++) {
+			for(int cols=1 ; cols<=line.length() ; cols++) {
 				char letter = line.charAt(cols-1);
 				String color;
-				if (/[rbqkpn]/.test(letter)) {
+				if ((""+letter).matches("[rbqkpn]")) {
 					color = "black";
-				} else if (/[RBQKPN]/.test(letter)) {
+				} else if ((""+letter).matches("[RBQKPN]")) {
 					color = "white";
 				} else {
-					colsY = parseInt(colsY) + parseInt(letter);
+					colsY = colsY + Integer.parseInt(""+letter);
 					continue;
 				}
-				switch(letter.toLowerCase()) {
+				String name;
+				switch(Character.toLowerCase(letter)) {
 					case 'r':
 						name = "rook";
 						break;
@@ -241,8 +242,8 @@ public class Board {
 					default:
 						break;
 				}
-				var x = this.letters[colsY];
-				var y = this.numbers[lines];
+				char x = this.letters[colsY];
+				int y = this.numbers[lines];
 				this.addPiece(name, color, x, y);
 				colsY++;
 			}
@@ -269,12 +270,12 @@ public class Board {
 			line = 8;
 		}
 			
-		if(/^O-O\+?$/.test(castling)) {
-			this.makeMove("e", line, "g", line);
-			this.makeMove("h", line, "f", line);
+		if(castling.matches("^O-O\\+?$")) {
+			this.makeMove('e', line, 'g', line, false);
+			this.makeMove('h', line, 'f', line, false);
 		} else {
-			this.makeMove("e", line, "c", line);
-			this.makeMove("a", line, "d", line);
+			this.makeMove('e', line, 'c', line, false);
+			this.makeMove('a', line, 'd', line, false);
 		}
 	
 		String castlestrip = "[kq]";
