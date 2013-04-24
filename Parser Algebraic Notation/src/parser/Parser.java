@@ -1,7 +1,11 @@
 package parser;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Parser {
 	private Map<Character, Integer> letter;
@@ -55,16 +59,16 @@ public class Parser {
 		String pgnfromY = "";
 
 		// Determine if we need fromX/fromY coordinates in PGN move
-		if (eval("this.rules." + piece + "(board, '', '', toX, toY, capture);")[0]) {
+		if(eval("this.rules." + piece + "(board, '', '', toX, toY, capture);")[0]) {
 			pgnfromX = "";
 			pgnfromY = "";
-		} else if (eval("this.rules." + piece + "(board, fromX, '', toX, toY, capture);")[0]) {
+		} else if(eval("this.rules." + piece + "(board, fromX, '', toX, toY, capture);")[0]) {
 			pgnfromX = ""+fromX;
 			pgnfromY = "";
-		} else if (eval("this.rules." + piece + "(board, '', fromY, toX, toY, capture);")[0]) {
+		} else if(eval("this.rules." + piece + "(board, '', fromY, toX, toY, capture);")[0]) {
 			pgnfromX = "";
 			pgnfromY = ""+fromY;
-		} else if (eval("this.rules." + piece + "(board, fromX, fromY, toX, toY, capture);")[0]) {
+		} else if(eval("this.rules." + piece + "(board, fromX, fromY, toX, toY, capture);")[0]) {
 			pgnfromX = ""+fromX;
 			pgnfromY = ""+fromY;
 		}
@@ -108,7 +112,7 @@ public class Parser {
 		PGN = PGN.replaceAll("\"([^ \" \\ \\r \\n]*(?:\\.[^\" \\ \\r \\n]*)*)\"", "");
 
 		// Replace semicolon this.commentaries and store them in array
-		PGN = PGN.replace("(;[\\W\\w]*?)\n", "");
+		PGN = PGN.replaceFirst("(;[\\W\\w]*?)\n", "");
 		
 		// Split the Games
 		var game = tree.game;
@@ -122,7 +126,7 @@ public class Parser {
 		notation = notation.replaceAll("\\([^\\(\\)]*?\\)", "");
 
 		// Strip the result (ending)
-		notation = notation.replace("[\\s]+(?:0-1|1-0|1\\/2-1\\/2|\\*)[\\s]+", "");
+		notation = notation.replaceFirst("[\\s]+(?:0-1|1-0|1\\/2-1\\/2|\\*)[\\s]+", "");
 
 		// Assign notation to game object for later parsing
 		game.notation = notation;
@@ -169,9 +173,25 @@ public class Parser {
 	}
 	
 	public void parseMove(Board board, ChessGame game, String token) {
-		char[] moveArray = token.match(/([RBQKPN])?([a-h])?([1-8])?([x])?([a-h])([1-8])([=]?)([QNRB]?)([+#]?)/);
+		Matcher matcher = Pattern.compile("([RBQKPN])?([a-h])?([1-8])?([x])?([a-h])([1-8])([=]?)([QNRB]?)([+#]?)").matcher(token);
+		
+		// TODO End to replace the match after...
+		char[] moveArray = new char[9];
+		if(matcher.find()) {
+			for(int i=0 ; i<9 ; i++) {
+				String match = matcher.group(0);
+				if(match.length()==1) {
+					moveArray[i] =  match.charAt(0);
+				} else if(match.length()==0) {
+					moveArray[i] = 0;
+				} else {
+					throw new IllegalArgumentException("parseMove: Too many matches.");
+				}
+			}
+		}
+		
 		String piece;
-		if(moveArray[1]) {
+		if(moveArray[1]!=0) {
 			switch (Character.toLowerCase(moveArray[1])) {
 				case 'r':
 					piece = "rook";
@@ -195,38 +215,38 @@ public class Parser {
 			piece = "pawn";
 		}
 
-		var fromX = moveArray[2];
-		var fromY = moveArray[3];
+		char fromX = moveArray[2];
+		int fromY = Integer.parseInt(""+moveArray[3]);
 
-		var capture;
-		if(moveArray[4]) {
+		boolean capture;
+		if(moveArray[4]!=0) {
 			capture = true;
 		} else {
 			capture = false;
 		}
 
-		var toX = moveArray[5];
-		var toY = moveArray[6];
+		char toX = moveArray[5];
+		int toY = Integer.parseInt(""+moveArray[6]);
 
-		var promotion;
-		var promoteTo;
-		if(moveArray[8]) {
+		boolean promotion;
+		String promoteTo;
+		if(moveArray[8]!=0) {
 			promotion = true;
-			switch (moveArray[8].toLowerCase()) {
-			case "r":
-				promoteTo = "rook";
-				break;
-			case "b":
-				promoteTo = "bishop";
-				break;
-			case "q":
-				promoteTo = "queen";
-				break;
-			case "n":
-				promoteTo = "knight";
-				break;
-			default:
-				break;
+			switch(Character.toLowerCase(moveArray[8])) {
+				case 'r':
+					promoteTo = "rook";
+					break;
+				case 'b':
+					promoteTo = "bishop";
+					break;
+				case 'q':
+					promoteTo = "queen";
+					break;
+				case 'n':
+					promoteTo = "knight";
+					break;
+				default:
+					break;
 			}
 		} else {
 			promotion = false;
@@ -236,7 +256,7 @@ public class Parser {
 		// Determine the location of the piece to move using chess rules and incomplete information about it
 		var pieceXY = eval("this.rules." + piece + "(board, fromX, fromY, toX, toY, capture);");
 
-		Map<Character, Character> dispMove = new HashMap<Character, Character>();
+		Map<String, String> dispMove = new HashMap<String, String>();
 		dispMove.put("type", "regular");
 		dispMove.put("token", token);
 		dispMove.put("color", board.currentMove);

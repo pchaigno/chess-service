@@ -240,7 +240,7 @@ public class Board {
 						name = "knight";
 						break;
 					default:
-						break;
+						throw new IllegalArgumentException("loadFEN: No piece corresponding.");
 				}
 				char x = this.letters[colsY];
 				int y = this.numbers[lines];
@@ -255,8 +255,8 @@ public class Board {
 		}
 		this.castling = FENArray[2];
 		this.enPassant = FENArray[3];
-		this.halfMoves = FENArray[4];
-		this.fullMoves = FENArray[5];
+		this.halfMoves = Integer.parseInt(FENArray[4]);
+		this.fullMoves = Integer.parseInt(FENArray[5]);
 	}
 	
 	/**
@@ -336,22 +336,22 @@ public class Board {
 			// Handle castling if rook moves
 			if(piece.equals("rook") && this.castling.equals("-")) {
 				if(fromX=='a' && fromY==8) {
-					this.castling = this.castling.replace("q", "");
+					this.castling = this.castling.replaceFirst("q", "");
 				} else if(fromX=='h' && fromY==8) {
-					this.castling = this.castling.replace("k", "");
+					this.castling = this.castling.replaceFirst("k", "");
 				} else if(fromX=='a' && fromY==1) {
-					this.castling = this.castling.replace("Q", "");
+					this.castling = this.castling.replaceFirst("Q", "");
 				} else if(fromX=='h' && fromY==1) {
-					this.castling = this.castling.replace("K", "");
+					this.castling = this.castling.replaceFirst("K", "");
 				}
 			}
 			if(piece.equals("king") && this.castling != "-") {
 				if (this.currentMove.equals("white")) {
-					this.castling = this.castling.replace("K", "");
-					this.castling = this.castling.replace("Q", "");
+					this.castling = this.castling.replaceFirst("K", "");
+					this.castling = this.castling.replaceFirst("Q", "");
 				} else {
-					this.castling = this.castling.replace("k", "");
-					this.castling = this.castling.replace("q", "");
+					this.castling = this.castling.replaceFirst("k", "");
+					this.castling = this.castling.replaceFirst("q", "");
 				}
 			}
 			// If castling is empty after above
