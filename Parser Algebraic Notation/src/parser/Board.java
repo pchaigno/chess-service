@@ -31,28 +31,6 @@ public class Board {
 	// These that hold a piece contain reference to piece object (so board squares and piece are circle referenced)
 	Map<Character, BoardSquare[]> squares;
 	
-	class BoardPiece {
-		String name;
-		String color;
-		BoardSquare square;
-		
-		public BoardPiece(String name, String color) {
-			this.name = name;
-			this.color = color;
-		}
-	}
-	
-	class BoardSquare {
-		char x;
-		int y;
-		BoardPiece piece;
-		
-		public BoardSquare(char x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-	}
-	
 	/**
 	 * Constructor
 	 */
