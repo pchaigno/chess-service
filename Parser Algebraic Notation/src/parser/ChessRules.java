@@ -1,6 +1,8 @@
 package parser;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class ChessRules {
@@ -19,11 +21,11 @@ public class ChessRules {
 		letter.put('h', 8);
 	}
 	
-	public  pawn(Board board, char fromX, int fromY, char toX, int toY, capture) {
-		var legalPawns = [];
-		var result = [];
-		var toXnum = letter.get(toX);
-		var pawn;
+	public BoardSquare pawn(Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+		List<BoardPiece> legalPawns = new LinkedList<BoardPiece>();
+		BoardSquare result = null;
+		int toXnum = letter.get(toX);
+		BoardPiece pawn;
 		int pawnX;
 		int pawnY;
 
@@ -35,65 +37,62 @@ public class ChessRules {
 			mod = -1;
 		}
 		// Get possible pawns given the color and x coordinate
-		var pawns = board.getPiece("pawn", board.currentMove, fromX);
-		var legalPawns;
-		for(int i=0 ; i<pawns.length ; i++) {
-			pawn = board.pieces[pawns[i]];
+		List<Integer> pawns = board.getPiece("pawn", board.currentMove, fromX, -1);
+		for(int i=0 ; i<pawns.size() ; i++) {
+			pawn = board.pieces.get(pawns.get(i));
 			pawnX = letter.get(pawn.square.x);
 			pawnY = pawn.square.y;
 			// Check if pawn could move to the the given square
 			if((!capture && (toY == pawnY + mod*2 || toY == pawnY + mod) && toXnum == pawnX) || (capture && toY == pawnY + mod && (toXnum == pawnX + 1 || toXnum == pawnX - 1))) {
-				legalPawns.push(pawn);
+				legalPawns.add(pawn);
 			}
 		}
 
-		if(legalPawns.length > 1) {
+		if(legalPawns.size() > 1) {
 			// The only case is if there's a pawn in starting position and pawn right above it
-			result[0] = toX;
 			// Legal move would be move for 1
-			result[1] = toY - mod;
-		} else if(legalPawns.length == 1) {
-			result[0] = legalPawns[0].square.x;
-			result[1] = legalPawns[0].square.y;
+			result = new BoardSquare(toX, toY-mod);
+		} else if(legalPawns.size() == 1) {
+			result = new BoardSquare(legalPawns.get(0).square.x, legalPawns.get(0).square.y);
 		}
 		return result;
 	}
 
-	public  knight(Board board, char fromX, int fromY, char toX, int toY, capture) {
-		var legalKnights = [];
-		var knight;
+	public BoardSquare knight(Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+		List<BoardPiece> legalKnights = new LinkedList<BoardPiece>();
+		BoardPiece knight;
 		int knightX;
 		int knightY;
 		int toXnum = letter.get(toX);
-		var knights = board.getPiece("knight", board.currentMove, fromX, fromY);
+		List<Integer> knights = board.getPiece("knight", board.currentMove, fromX, fromY);
 
-		for(int i=0 ; i<knights.length ; i++) {
-			knight = board.pieces[knights[i]];
+		for(int i=0 ; i<knights.size() ; i++) {
+			knight = board.pieces.get(knights.get(i));
 			knightX = letter.get(knight.square.x);
 			knightY = knight.square.y;
 			if((Math.abs(toY - knightY) == 1 && Math.abs(toXnum - knightX) == 2) || (Math.abs(toY - knightY) == 2 && Math.abs(toXnum - knightX) == 1)) {
-				legalKnights.push(knight);
+				legalKnights.add(knight);
 			}
 		}
 		// Knight and all other pieces are tricker, because you have to exclude pieces from legalPieces which you can't move because that would impsoe your king to check
 		return this.executeCheck(board, legalKnights, toX, toY, capture);
 	}
 
-	public  bishop(Board board, char fromX, int fromY, char toX, int toY, capture) {
-		var legalBishops = [];
-		var bishopX;
-		var bishopY;
-		var xDiff;
-		var yDiff;
-		var modX;
-		var modY;
-		var blocked;
-		var bishop;
+	public BoardSquare bishop(Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+		List<BoardPiece> legalBishops = new LinkedList<BoardPiece>();
+		int bishopX;
+		int bishopY;
+		int xDiff;
+		int yDiff;
+		int modX;
+		int modY;
+		boolean blocked;
+		BoardPiece bishop;
 
-		var toXnum = letter[toX];
-		var bishops = board.getPiece("bishop", board.currentMove, fromX, fromY);
-		for(int i=0 ; i<bishops.length ; i++) {
-			bishop = board.pieces[bishops[i]];
+		int toXnum = letter.get(toX);
+		List<Integer> bishops = board.getPiece("bishop", board.currentMove, fromX, fromY);
+		for(int i=0 ; i<bishops.size() ; i++) {
+			bishop = board.pieces.get(bishops.get(i));
 			bishopX = letter.get(bishop.square.x);
 			bishopY = bishop.square.y;
 			xDiff = toXnum - bishopX;
@@ -111,35 +110,34 @@ public class ChessRules {
 					modY = 1;
 				else
 					modY = -1;
-				for(var j = 1; j < Math.abs(xDiff); j++) {
-					if(board.squares[letters[toXnum - modX*j]][toY - modX*modY*j].piece != null) {
+				for(int j=1 ; j<Math.abs(xDiff) ; j++) {
+					if(board.squares.get(letters[toXnum - modX*j])[toY - modX*modY*j].piece != null) {
 						blocked = true;
 					}
 				}
 				if(!blocked) {
-					legalBishops.push(bishop);
+					legalBishops.add(bishop);
 				}
 			}
 		}
 		return this.executeCheck(board, legalBishops, toX, toY, capture);
 	}
 
-	public  rook(Board board, char fromX, int fromY, char toX, int toY, capture) {
-		var legalRooks = [];
-		var result = [];
+	public BoardSquare rook(Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+		List<BoardPiece> legalRooks = new LinkedList<BoardPiece>();
 		int rookX;
 		int rookY;
 		int diff;
 		boolean modY;
 		int modA;
 		boolean blocked;
-		var rook;
+		BoardPiece rook;
 
-		var toXnum = letter[toX];
-		var rooks = board.getPiece("rook", board.currentMove, fromX, fromY);
-		for(int i=0 ; i<rooks.length ; i++) {
-			rook = board.pieces[rooks[i]];
-			rookX = letter[rook.square.x];
+		int toXnum = letter.get(toX);
+		List<Integer> rooks = board.getPiece("rook", board.currentMove, fromX, fromY);
+		for(int i=0 ; i<rooks.size() ; i++) {
+			rook = board.pieces.get(rooks.get(i));
+			rookX = letter.get(rook.square.x);
 			rookY = rook.square.y;
 			// If we could make that move
 			if(toY == rookY || toXnum == rookX) {
@@ -158,24 +156,24 @@ public class ChessRules {
 					modA = -1;
 				}
 				for(int j=1 ; j<Math.abs(diff) ; j++) {
-					if (modY && board.squares[letters[rookX]][toY - modA*j].piece != null) {
+					if (modY && board.squares.get(letters[rookX])[toY - modA*j].piece != null) {
 						blocked = true;
-					} else if (!modY && board.squares[letters[toXnum - modA*j]][toY].piece != null) {
+					} else if (!modY && board.squares.get(letters[toXnum - modA*j])[toY].piece != null) {
 						blocked = true;
 					}
 				}
 				if(!blocked) {
-					legalRooks.push(rook);
+					legalRooks.add(rook);
 				}
 			}
 		}
 		return this.executeCheck(board, legalRooks, toX, toY, capture);
 	}
 
-	public  queen(Board board, char fromX, int fromY, char toX, int toY, capture) {
-		var legalQueens = [];
+	public BoardSquare queen(Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+		List<BoardPiece> legalQueens = new LinkedList<BoardPiece>();
 		int queenX;
-		var queenY;
+		int queenY;
 		int xDiff;
 		int yDiff;
 		int modX;
@@ -184,12 +182,12 @@ public class ChessRules {
 		boolean modR;
 		int modA;
 		boolean blocked;
-		var queen;
+		BoardPiece queen;
 
 		int toXnum = letter.get(toX);
-		var queens = board.getPiece("queen", board.currentMove, fromX, fromY);
-		for(int i=0 ; i<queens.length ; i++) {
-			queen = board.pieces[queens[i]];
+		List<Integer> queens = board.getPiece("queen", board.currentMove, fromX, fromY);
+		for(int i=0 ; i<queens.size() ; i++) {
+			queen = board.pieces.get(queens.get(i));
 			queenX = letter.get(queen.square.x);
 			queenY = queen.square.y;
 			xDiff = toXnum - queenX;
@@ -203,18 +201,19 @@ public class ChessRules {
 					modX = 1;
 				} else {
 					modX = -1;
+				}
 				if (xDiff == yDiff) {
 					modY = 1;
 				} else {
 					modY = -1;
 				}
 				for(int j=1 ; j<Math.abs(xDiff) ; j++) {
-					if(board.squares[letters[toXnum - modX*j]][toY - modX*modY*j].piece != null) {
+					if(board.squares.get(letters[toXnum - modX*j])[toY - modX*modY*j].piece != null) {
 						blocked = true;
 					}
 				}
 				if(!blocked) {
-					legalQueens.push(queen);
+					legalQueens.add(queen);
 				}
 			// rook style
 			} else if (toY == queenY || toXnum == queenX) {
@@ -230,17 +229,17 @@ public class ChessRules {
 				if(diff > 0) {
 					modA = 1;
 				} else {
-					odA = -1;
+					modA = -1;
 				}
 				for(int j=1 ; j<Math.abs(diff) ; j++) {
-					if(modR && board.squares[letters[queenX]][toY - modA*j].piece != null) {
+					if(modR && board.squares.get(letters[queenX])[toY - modA*j].piece != null) {
 						blocked = true;
-					} else if(!modR && board.squares[letters[toXnum - modA*j]][toY].piece != null) {
+					} else if(!modR && board.squares.get(letters[toXnum - modA*j])[toY].piece != null) {
 						blocked = true;
 					}
 				}
 				if(!blocked) {
-					legalQueens.push(queen);
+					legalQueens.add(queen);
 				}
 			} 
 			
@@ -248,40 +247,37 @@ public class ChessRules {
 		return this.executeCheck(board, legalQueens, toX, toY, capture);
 	}
 
-	// Gets the king position
-	public  king(board, fromX, fromY, toX, toY, capture) {
-		var king;
-		var result = [];
-		king = board.pieces[board.getPiece("king", board.currentMove)];
-		result[0] = king.square.x;
-		result[1] = king.square.y;
+	/**
+	 * Gets the king position
+	 */
+	public BoardSquare king(Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+		BoardPiece king;
+		BoardSquare result = null;
+		king = board.pieces.get(board.getPiece("king", board.currentMove, (char)0, -1));
+		result = new BoardSquare(king.square.x, king.square.y);
 		return result;
 	}
 
-	public  executeCheck(board, legalPieces, toX, toY, capture) {
-		var result = [];
-		if(legalPieces.length > 1) {
-			for(int i=0 ; i<legalPieces.length ; i++) {
-				var pieceX = legalPieces[i].square.x;
-				var pieceY = legalPieces[i].square.y;
-				var saveFEN = board.currentFEN();
+	public BoardSquare executeCheck(Board board, List<BoardPiece> legalPieces, char toX, int toY, boolean capture) {
+		BoardSquare result = null;
+		if(legalPieces.size() > 1) {
+			for(int i=0 ; i<legalPieces.size() ; i++) {
+				char pieceX = legalPieces.get(i).square.x;
+				int pieceY = legalPieces.get(i).square.y;
+				String saveFEN = board.currentFEN(false);
 				// If nothing, temporarily make that move to see if king would be under check if we do;
 				board.makeMove(pieceX, pieceY, toX, toY, capture);
 				board.switchMove();
 				if(!this.check(board)) {
-					result[0] = pieceX;
-					result[1] = pieceY;
+					result = new BoardSquare(pieceX, pieceY);
 					board.loadFEN(saveFEN);
 					break;
 				}
 				// Restore the board
 				board.loadFEN(saveFEN);
 			}
-		} else if(legalPieces.length == 1) {
-			result[0] = legalPieces[0].square.x;
-			result[1] = legalPieces[0].square.y;
-		} else {
-			result = null;
+		} else if(legalPieces.size() == 1) {
+			result = new BoardSquare(legalPieces.get(0).square.x, legalPieces.get(0).square.y);
 		}
 		return result;
 	}
@@ -290,9 +286,9 @@ public class ChessRules {
 	public boolean check(Board board) {
 		var attackArray = [];
 		String kingColor;
-		var king;
-		var kingX;
-		var kingY;
+		BoardPiece king;
+		char kingX;
+		int kingY;
 		char fromX;
 		int fromY;
 		
@@ -301,15 +297,15 @@ public class ChessRules {
 		} else {
 			kingColor = "white";
 		}
-		king = board.pieces[board.getPiece("king", kingColor)];
+		king = board.pieces.get(board.getPiece("king", kingColor, (char)0, -1));
 		kingX = king.square.x;
 		kingY = king.square.y;
-		for(int i=0 ; i<board.pieces.length ; i++) {
-			if(board.pieces[i].color == board.currentMove) {
-				fromX = board.pieces[i].square.x;
-				fromY = board.pieces[i].square.y;
+		for(int i=0 ; i<board.pieces.size() ; i++) {
+			if(board.pieces.get(i).color == board.currentMove) {
+				fromX = board.pieces.get(i).square.x;
+				fromY = board.pieces.get(i).square.y;
 				// We simply check if any of the pieces can "capture" enemy king, if so, its check
-				attackArray = eval("this." + board.pieces[i].name + "(board, \"" + fromX + "\", \"" + fromY + "\", \"" + kingX + "\", \"" + kingY + "\", true)");
+				attackArray = eval("this." + board.pieces.get(i).name + "(board, \"" + fromX + "\", \"" + fromY + "\", \"" + kingX + "\", \"" + kingY + "\", true)");
 				if(attackArray != null) {
 					return true;
 					break;
