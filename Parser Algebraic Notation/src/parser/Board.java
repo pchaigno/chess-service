@@ -277,12 +277,9 @@ public class Board {
 			this.makeMove("a", line, "d", line);
 		}
 	
-		var castlestrip;
-	
+		String castlestrip = "[kq]";
 		if(this.currentMove.equals("white")) {
-			castlestrip = /[KQ]/g;
-		} else {
-			castlestrip = /[kq]/g;
+			castlestrip = "[KQ]";
 		}
 	
 		this.enPassant = "-";
@@ -290,7 +287,7 @@ public class Board {
 		if(this.currentMove.equals("black")) {
 			this.fullMoves++;
 		}
-		this.castling = this.castling.replace(castlestrip, "");
+		this.castling = this.castling.replaceAll(castlestrip, "");
 		if(this.castling.equals("")) {
 			this.castling = "-";
 		}
@@ -338,22 +335,22 @@ public class Board {
 			// Handle castling if rook moves
 			if(piece.equals("rook") && this.castling.equals("-")) {
 				if(fromX=='a' && fromY==8) {
-					this.castling = this.castling.replace(/q/, "");
+					this.castling = this.castling.replace("q", "");
 				} else if(fromX=='h' && fromY==8) {
-					this.castling = this.castling.replace(/k/, "");
+					this.castling = this.castling.replace("k", "");
 				} else if(fromX=='a' && fromY==1) {
-					this.castling = this.castling.replace(/Q/, "");
+					this.castling = this.castling.replace("Q", "");
 				} else if(fromX=='h' && fromY==1) {
-					this.castling = this.castling.replace(/K/, "");
+					this.castling = this.castling.replace("K", "");
 				}
 			}
 			if(piece.equals("king") && this.castling != "-") {
 				if (this.currentMove.equals("white")) {
-					this.castling = this.castling.replace(/K/, "");
-					this.castling = this.castling.replace(/Q/, "");
+					this.castling = this.castling.replace("K", "");
+					this.castling = this.castling.replace("Q", "");
 				} else {
-					this.castling = this.castling.replace(/k/, "");
-					this.castling = this.castling.replace(/q/, "");
+					this.castling = this.castling.replace("k", "");
+					this.castling = this.castling.replace("q", "");
 				}
 			}
 			// If castling is empty after above

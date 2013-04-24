@@ -98,31 +98,31 @@ public class Parser {
 	// Parses the PGN file, splits it for every game and creates game objects
 	public void parsePGN(String PGN) {
 		// IE uses \r\n, Gecko browsers use \n
-		PGN = PGN.replace(/\r\n/g, "\n");
+		PGN = PGN.replaceAll("\\r\\n", "\n");
 		// Replace bracket {} commentaries because the can mess up how we determine the game edges, store them in array
-		PGN = PGN.replace(/\{([\W\w]*?)\}/g, "");
+		PGN = PGN.replaceAll("\\{([\\W\\w]*?)\\}", "");
 
 		// Replace strings (because they can contain the semicolon comments,
 		// which could once again cripple our ability to parse the games correctly) and store them in array
 		Object[] tagStrings = new Object[0]; // TODO Useless?
-		PGN = PGN.replace(/"([^"\\\r\n]*(?:\\.[^"\\\r\n]*)*)"/g, "");
+		PGN = PGN.replaceAll("\"([^ \" \\ \\r \\n]*(?:\\.[^\" \\ \\r \\n]*)*)\"", "");
 
 		// Replace semicolon this.commentaries and store them in array
-		PGN = PGN.replace(/(;[\W\w]*?)\n/, "");
+		PGN = PGN.replace("(;[\\W\\w]*?)\n", "");
 		
 		// Split the Games
 		var game = tree.game;
 
-		var notation = PGN.replace(/(\[[\W\w]*?\])/g, "");
+		var notation = PGN.replaceAll("(\\[[\\W\\w]*?\\])", "");
 		
 		// Strip numbers notation 
-		notation = notation.replace(/\b[\d]+[\s]*[\.]+/g, "");
+		notation = notation.replaceAll("\\b[\\d]+[\\s]*[\\.]+", "");
 
 		// Strip variations
-		notation = notation.replace(/\([^\(\)]*?\)/g, "");
+		notation = notation.replaceAll("\\([^\\(\\)]*?\\)", "");
 
 		// Strip the result (ending)
-		notation = notation.replace(/[\s]+(?:0-1|1-0|1\/2-1\/2|\*)[\s]+/, "");
+		notation = notation.replace("[\\s]+(?:0-1|1-0|1\\/2-1\\/2|\\*)[\\s]+", "");
 
 		// Assign notation to game object for later parsing
 		game.notation = notation;
@@ -153,16 +153,16 @@ public class Parser {
 	// Recursive move parsing
 	// Also prepare notation for display
 	public void parseNotationTokens(Board board, ChessGame game, String notation) {
-		var notationTokens = notation.split(/[\s]+/);
-		var token;
+		String[] notationTokens = notation.split("[\\s]+");
+		String token;
 		// Loop through notation tokens
-		for(var i = 0; i < notationTokens.length; i++) {
+		for(int i=0 ; i<notationTokens.length ; i++) {
 			token = notationTokens[i];
 			// Regular move
-			if (/[RBQKPN]?[a-h]?[1-8]?[x]?[a-h][1-8][=]?[QNRB]?[+#]?/.test(token)) {
+			if(/[RBQKPN]?[a-h]?[1-8]?[x]?[a-h][1-8][=]?[QNRB]?[+#]?/.test(token)) {
 				this.parseMove(board, game, token);
 			// Castling
-			} else if (/(O-O-O|O-O)\+?/.test(token)) {
+			} else if(/(O-O-O|O-O)\+?/.test(token)) {
 				this.castle(board, game, token);
 			}
 		}
@@ -254,7 +254,7 @@ public class Parser {
 	}
 	
 	public void castle(Board board, ChessGame game, String token) {
-		var line;
+		int line;
 		if(board.currentMove == "white") {
 			line = 1;
 		} else {
