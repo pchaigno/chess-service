@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class Parser {
 	private Map<Character, Integer> letter;
+	private ChessRules rules;
 	
 	public Parser() {
 		this.letter = new HashMap<Character, Integer>();
@@ -16,9 +17,9 @@ public class Parser {
 		this.letter.put('f', 6);
 		this.letter.put('g', 7);
 		this.letter.put('h', 8);
-	}
 
-	this.rules = new chessRules();
+		this.rules = new ChessRules();
+	}
 
 	// Convert UCI style move into PGN style move
 	public String UCItoPGN(Map<String, String> moveArray, Board board) {
@@ -36,13 +37,13 @@ public class Parser {
 		boolean capture = false;
 		boolean promotion = false;
 
-		if (board.squares.get(toX)[toY].piece != undefined) {
+		if (board.squares.get(toX)[toY].piece != null) {
 			capture = true;
 		}
 		
 
 		// Castling
-		if (piece.equals("king") && Math.abs(letter[fromX] - letter[toX]) == 2) {
+		if (piece.equals("king") && Math.abs(letter.get(fromX) - letter.get(toX)) == 2) {
 			if (toX == 'g') {
 				return "O-O";
 			} else {
@@ -50,44 +51,44 @@ public class Parser {
 			}
 		}
 
-		char pgnfromX = '';
-		char pgnfromY = '';
+		String pgnfromX = "";
+		String pgnfromY = "";
 
 		// Determine if we need fromX/fromY coordinates in PGN move
 		if (eval("this.rules." + piece + "(board, '', '', toX, toY, capture);")[0]) {
-			pgnfromX = '';
-			pgnfromY = '';
+			pgnfromX = "";
+			pgnfromY = "";
 		} else if (eval("this.rules." + piece + "(board, fromX, '', toX, toY, capture);")[0]) {
-			pgnfromX = fromX;
-			pgnfromY = '';
+			pgnfromX = ""+fromX;
+			pgnfromY = "";
 		} else if (eval("this.rules." + piece + "(board, '', fromY, toX, toY, capture);")[0]) {
-			pgnfromX = '';
-			pgnfromY = fromY;
+			pgnfromX = "";
+			pgnfromY = ""+fromY;
 		} else if (eval("this.rules." + piece + "(board, fromX, fromY, toX, toY, capture);")[0]) {
-			pgnfromX = fromX;
-			pgnfromY = fromY;
+			pgnfromX = ""+fromX;
+			pgnfromY = ""+fromY;
 		}
 
-		var pgnpiece;
+		char pgnpiece = 0;
 		if (piece == "knight") {
-			pgnpiece = "N";
+			pgnpiece = 'N';
 		} else if (piece == "pawn") {
-			pgnpiece = "";
+			pgnpiece = 0;
 		} else {
-			pgnpiece = piece.charAt(0).toUpperCase();
+			pgnpiece = Character.toUpperCase(piece.charAt(0));
 		}
 
 		// En passant capture
-		if (toX + toY == board.enPassant && piece == "pawn") {
+		if ((""+toX+toY).equals(board.enPassant) && piece.equals("pawn")) {
 			capture = true;
 		}
 
-		var pgncapture = "";
+		char pgncapture = 0;
 		if (capture) {
-			pgncapture = "x";
+			pgncapture = 'x';
 		}
 		if (capture && piece.equals("pawn")) {
-			pgnfromX = fromX;
+			pgnfromX = ""+fromX;
 		}
 
 		return pgnpiece + pgnfromX + pgnfromY + pgncapture + toX + toY;
@@ -103,7 +104,7 @@ public class Parser {
 
 		// Replace strings (because they can contain the semicolon comments,
 		// which could once again cripple our ability to parse the games correctly) and store them in array
-		var tagStrings = [];
+		Object[] tagStrings = new Object[0]; // TODO Useless?
 		PGN = PGN.replace(/"([^"\\\r\n]*(?:\\.[^"\\\r\n]*)*)"/g, "");
 
 		// Replace semicolon this.commentaries and store them in array
@@ -130,7 +131,7 @@ public class Parser {
 	}
 
 	// Parses the notation of given game. Uses board object
-	public void parseNotation(Board board, game) {
+	public void parseNotation(Board board, ChessGame game) {
 		// Determine starting position
 		game.FENs = [];
 		game.FENs.push("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
@@ -151,7 +152,7 @@ public class Parser {
 
 	// Recursive move parsing
 	// Also prepare notation for display
-	public void parseNotationTokens(Board board, game, notation) {
+	public void parseNotationTokens(Board board, ChessGame game, String notation) {
 		var notationTokens = notation.split(/[\s]+/);
 		var token;
 		// Loop through notation tokens
@@ -167,28 +168,28 @@ public class Parser {
 		}
 	}
 	
-	public void parseMove(Board board, game, token) {
+	public void parseMove(Board board, ChessGame game, String token) {
 		char[] moveArray = token.match(/([RBQKPN])?([a-h])?([1-8])?([x])?([a-h])([1-8])([=]?)([QNRB]?)([+#]?)/);
 		String piece;
 		if(moveArray[1]) {
-			switch (moveArray[1].toLowerCase()) {
-			case 'r':
-				piece = "rook";
-				break;
-			case 'b':
-				piece = "bishop";
-				break;
-			case 'q':
-				piece = "queen";
-				break;
-			case 'n':
-				piece = "knight";
-				break;
-			case 'k':
-				piece = "king";
-				break;
-			default:
-				break;
+			switch (Character.toLowerCase(moveArray[1])) {
+				case 'r':
+					piece = "rook";
+					break;
+				case 'b':
+					piece = "bishop";
+					break;
+				case 'q':
+					piece = "queen";
+					break;
+				case 'n':
+					piece = "knight";
+					break;
+				case 'k':
+					piece = "king";
+					break;
+				default:
+					break;
 			}
 		} else {
 			piece = "pawn";
@@ -229,17 +230,17 @@ public class Parser {
 			}
 		} else {
 			promotion = false;
-			promoteTo = '';
+			promoteTo = "";
 		}
 
 		// Determine the location of the piece to move using chess rules and incomplete information about it
 		var pieceXY = eval("this.rules." + piece + "(board, fromX, fromY, toX, toY, capture);");
 
 		Map<Character, Character> dispMove = new HashMap<Character, Character>();
-		dispMove.get("type") = "regular";
-		dispMove.get("token") = token;
-		dispMove.get("color") = board.currentMove;
-		dispMove.get("fromto") = {fromX: pieceXY[0], fromY: pieceXY[1], toX: toX, toY: toY};
+		dispMove.put("type", "regular");
+		dispMove.put("token", token);
+		dispMove.put("color", board.currentMove);
+		dispMove.put("fromto", {fromX: pieceXY[0], fromY: pieceXY[1], toX: toX, toY: toY});
 
 		// Make piece move
 		board.moveHandler(piece, pieceXY[0], pieceXY[1], toX, toY, capture, promotion, promoteTo);
@@ -252,7 +253,7 @@ public class Parser {
 		game.displayNotation.push(dispMove);
 	}
 	
-	public void castle(Board board, game, token) {
+	public void castle(Board board, ChessGame game, String token) {
 		var line;
 		if(board.currentMove == "white") {
 			line = 1;

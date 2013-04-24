@@ -7,25 +7,25 @@ import java.util.Map;
 
 public class Board {
 	// Board square notation:
-	private final int[] numbers = {0, 8, 7, 6, 5, 4, 3, 2, 1};
-	private final char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-	private Map<Character, Integer> letter;
+	final int[] numbers = {0, 8, 7, 6, 5, 4, 3, 2, 1};
+	final char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+	Map<Character, Integer> letter;
 	
 	// Variables used to load/save FEN:
 	// The piece to move now.
 	String currentMove;
 	// State of castling
-	private String castling;
+	String castling;
 	// If there's enpassant pawn
-	private String enPassant;
+	String enPassant;
 	// Number of halfmoves
-	private String halfMoves;
+	int halfMoves;
 	// Full number of moves
-	private String fullMoves;
+	int fullMoves;
 
 	// Holds references to pieces 
 	// Piece object contains name, color and reference to board square its in
-	private List<BoardPiece> pieces;
+	List<BoardPiece> pieces;
 
 	// Board squares
 	// These that hold a piece contain reference to piece object (so board squares and piece are circle referenced)
@@ -104,9 +104,9 @@ public class Board {
 		for(int i=0 ; i<this.pieces.size() ; i++) {
 			if(this.pieces.get(i).name == name && this.pieces.get(i).color == color 
 					&& this.pieces.get(i).square != null 
-					&& ((x && this.pieces.get(i).square.x==x) || !x) 
-					&& ((y && this.pieces.get(i).square.y==y) || !y)) {
-				result.push(i);
+					&& ((x!=0 && this.pieces.get(i).square.x==x) || x==0) 
+					&& ((y!=-1 && this.pieces.get(i).square.y==y) || y==-1)) {
+				result.add(i);
 			}
 		}
 		return result;
@@ -151,7 +151,7 @@ public class Board {
 					}
 					String pieceName = this.squares.get(keyVar)[num].piece.name;
 					String pieceColor = this.squares.get(keyVar)[num].piece.color;
-					char name;
+					char name = 0;
 					if(pieceName.equals("rook")) {
 						name = 'r';
 					} else if(pieceName.equals("bishop")) {
@@ -166,9 +166,9 @@ public class Board {
 						name = 'n';
 					}
 					if(pieceColor.equals("white")) {
-						name = name.toUpperCase();
+						name = Character.toUpperCase(name);
 						FEN += name;
-					} else { 
+					} else if(name!=0) { 
 						FEN += name;
 					}
 				} else {
@@ -206,10 +206,10 @@ public class Board {
 		String[] FENArray = FEN.split(" ");
 		String[] boardArray = FENArray[0].split("/");
 		for(int lines=1 ; lines<=8 ; lines++) {
-			var line = boardArray[lines-1].split("");
+			String line = boardArray[lines-1];
 			int colsY = 1;
 			for(int cols=1 ; cols<=line.length ; cols++) {
-				char letter = line[cols-1];
+				char letter = line.charAt(cols-1);
 				String color;
 				if (/[rbqkpn]/.test(letter)) {
 					color = "black";
@@ -299,32 +299,32 @@ public class Board {
 	
 	/**
 	 * MoveHandler
+	 * @param vurNum TODO Useless?
 	 */
-	public void moveHandler(String piece, char fromX, int fromY, char toX, int toY, boolean capture, boolean promotion, String promoteTo, varNum) {
+	public void moveHandler(String piece, char fromX, int fromY, char toX, int toY, boolean capture, boolean promotion, String promoteTo, Object varNum) {
 		// Make piece move
 		this.makeMove(fromX, fromY, toX, toY, capture);
 		if(piece.equals("pawn")) {
 			// White pawns move "up", black move "down"
-			var mod;
+			int mod;
 			if(this.currentMove.equals("white")) { 
 				mod = 1;
 			} else {
 				mod = -1;
 			}
 			// if enPassant capture, manually remove piece, as makeMove is simple and doesn't handle this
-			if(capture && toX+toY==this.enPassant) {
-				this.squares[toX][toY - mod].piece.square = null;
-				this.squares[toX][toY - mod].piece = null;
+			if(capture && this.enPassant.equals(toX+""+toY)) {
+				this.squares.get(toX)[toY-mod].piece.square = null;
+				this.squares.get(toX)[toY-mod].piece = null;
 			}
 			// Set enPassant if needed
-			if(Math.abs(toY - fromY)==2 && ((toX!='a' && this.squares.get(this.letters[this.letter[toX]-1])[toY].piece!=undefined 
-												&& this.squares.get(this.letters[this.letter[toX]-1])[toY].piece.color!=this.currentMove 
-												&& this.squares.get(this.letters[this.letter[toX]-1])[toY].piece.name.equals("pawn")) || 
-											(toX!='h' && this.squares.get(this.letters[this.letter[toX]+1])[toY].piece!=undefined 
-												&& this.squares.get(this.letters[this.letter[toX]+1])[toY].piece.color!=this.currentMove 
-												&& this.squares.get(this.letters[this.letter[toX]+1])[toY].piece.name.equals("pawn")
-													))) {
-				this.enPassant = toX + (parseInt(toY) - mod);
+			if(Math.abs(toY - fromY)==2 && ((toX!='a' && this.squares.get(this.letters[this.letter.get(toX)-1])[toY].piece!=null 
+												&& this.squares.get(this.letters[this.letter.get(toX)-1])[toY].piece.color!=this.currentMove 
+												&& this.squares.get(this.letters[this.letter.get(toX)-1])[toY].piece.name.equals("pawn")) || 
+											(toX!='h' && this.squares.get(this.letters[this.letter.get(toX)+1])[toY].piece!=null 
+												&& this.squares.get(this.letters[this.letter.get(toX)+1])[toY].piece.color!=this.currentMove 
+												&& this.squares.get(this.letters[this.letter.get(toX)+1])[toY].piece.name.equals("pawn")))) {
+				this.enPassant = ""+toX+(toY-mod);
 			} else {
 				this.enPassant = "-";
 			}
