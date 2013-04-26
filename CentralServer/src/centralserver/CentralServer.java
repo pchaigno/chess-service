@@ -30,9 +30,9 @@ public class CentralServer {
 		try {
 			this.restoreResources();
 		} catch(ClassNotFoundException e) {
-			// TODO
+			//TODO
 		} catch(SQLException e) {
-			// TODO
+			//TODO
 		}
 	}
 	
@@ -43,6 +43,7 @@ public class CentralServer {
 	 */
 	private void restoreResources() throws ClassNotFoundException, SQLException {
 		// TODO Read the list of resources from a file.
+		Class.forName("org.sqlite.JDBC");
 		Connection dbConnect = DriverManager.getConnection("jdbc:sqlite:"+DB_NAME);
 		
 		String baseRequest = "SELECT * FROM "; 
