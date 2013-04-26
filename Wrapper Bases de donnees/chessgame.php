@@ -1,6 +1,6 @@
 <?php
 
-$version = "1.0"; //constante
+$version = "1.0s"; //constante
 
 // fonction retournant une erreur 404
 function redirectionErreur404() {
@@ -10,7 +10,7 @@ function redirectionErreur404() {
 
 // ouverture de la base de données contenant les tables d'ouverture et de fermeture
 try {
-	$bdd = new PDO('mysql:host=localhost;dbname=chessgames', 'root', '');
+	$bdd = new PDO('mysql:host=localhost;dbname=chessgames', 'root', 'root');
 } catch(PDOException $e) {
 	exit('Error: '.$e->getMessage());
 }
@@ -19,12 +19,12 @@ try {
 $input = file_get_contents('php://input');
 $chars = preg_split('/\//', $_SERVER['REQUEST_URI'], -1, PREG_SPLIT_NO_EMPTY);
 
-if(count($chars)==4 && $chars[1]=='rest') {
-	if($chars[2]=='openings') {
+if(count($chars)==3) {
+	if($chars[1]=='openings') {
 		// selection selon le fen	
 		try {
 			$moves = $bdd->prepare("SELECT move, probatowin, probatonull, nb FROM openings WHERE fen LIKE ?");
-			$moves->execute(array($chars[3]));
+			$moves->execute(array($chars[2]));
 		} catch(PDOException $e) {
 			exit('Error: '.$e->getMessage());
 		}	
@@ -33,11 +33,11 @@ if(count($chars)==4 && $chars[1]=='rest') {
 		$arrayMoves = $moves->fetchAll();
 		echo json_encode($arrayMoves);
 		
-    } elseif($chars[2]=='endings') {
+    } elseif($chars[1]=='endings') {
 		//selection selon le fen
 		try {
 			$moves = $bdd->prepare("SELECT move, probatowin, probatonull, nb FROM endings WHERE fen LIKE ?");
-			$moves->execute(array($chars[3]));
+			$moves->execute(array($chars[2]));
 		} catch(PDOException $e) {
 			exit('Error: '.$e->getMessage());
 		}
@@ -50,7 +50,7 @@ if(count($chars)==4 && $chars[1]=='rest') {
     	redirectionErreur404();
 	}
         
-} elseif(count($chars)==3 && $chars[1]=='rest' && $chars[2]=='version') {
+} elseif(count($chars)==2 && $chars[1]=='version') {
 	//envoie du numéro de version
 	echo $version;
 } else {
