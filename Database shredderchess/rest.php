@@ -16,7 +16,10 @@
 		if(count($infos)==14) {
 			$move = explode('...', $infos[0])[1];
 			$percentage = $infos[7]/1000;
-			$moves[] = array('move'=>$move, 'value'=>$infos[4], 'nb_play'=>$infos[6], 'percentage'=>$percentage, 'elo'=>$infos[8], 'performance'=>$infos[9], 'wins'=>$infos[11], 'draws'=>$infos[12], 'losses'=>$infos[13]);
+			$wins = $infos[11]/$infos[6];
+			$draws = $infos[12]/$infos[6];
+			$looses = $infos[13]/$infos[6];
+			$moves[] = array('move'=>$move, 'value'=>$infos[4], 'nb_play'=>$infos[6], 'percentage'=>$percentage, 'elo'=>$infos[8], 'performance'=>$infos[9], 'wins'=>$wins, 'draws'=>$draws, 'looses'=>$looses);
 		}
 	}
 	var_dump($moves);
