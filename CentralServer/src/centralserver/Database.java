@@ -55,7 +55,7 @@ public class Database extends Resource {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Database db1 = new Database("http://localhost/rest/openings/", "Db1", 1);
-		db1.query("fendebut");
+		Database db1 = new Database("http://localhost/1.0/rest/openings/", "Db1", 1);
+		db1.query("rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR%20w%20KQkq%20-%200%20");
     }
 }

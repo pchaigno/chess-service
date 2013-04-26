@@ -2,6 +2,11 @@ package centralserver;
 
 import java.util.List;
 
+import javax.ws.rs.core.MediaType;
+
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+
 /**
  * The model for all resources (databases and bots).
  * Note: Was forced to use a generic class because apparently getMoveSuggestions in Database and Bot can't
@@ -14,6 +19,8 @@ public abstract class Resource {
 	protected String name;
 	protected int trust;
 	protected boolean changed;
+	protected boolean san;
+	protected String version;
 	
 	/**
 	 * Constructor
@@ -60,6 +67,40 @@ public abstract class Resource {
 	 */
 	public String getName() {
 		return this.name;
+	}
+	
+	public boolean isSAN() {
+		return this.san;
+	}
+	
+	/**
+	 * @return The version
+	 */
+	public String getVersion() {
+		return this.version;
+	}
+	
+	/**
+	 * @param v The version of the resource.
+	 */
+	public void setVersion(String v) {
+		this.version = v;
+	}
+	
+	/**
+	 * Complete the version and san.
+	 */
+	public void checkVersion() {
+		Client client = Client.create();
+		String tmp_uri = this.uri.substring(0,this.uri.lastIndexOf("/"));
+		tmp_uri = tmp_uri.substring(0,tmp_uri.lastIndexOf("/")) + "/version";
+		WebResource webresource = client.resource(tmp_uri);
+		client.setConnectTimeout(CONNECT_TIMEOUT);
+		client.setReadTimeout(READ_TIMEOUT);
+		String response = webresource.get(String.class);
+		this.san = ('s' == response.charAt(response.length()-1));
+		this.version = response.substring(0, response.length()-1);
+		System.out.println("Resource :" + version);
 	}
 	
 	/**

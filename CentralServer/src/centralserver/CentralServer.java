@@ -13,6 +13,9 @@ import java.sql.SQLException;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
+
 /**
  * Manage the list of resources.
  */
@@ -21,6 +24,7 @@ public class CentralServer {
 	private static final String DATABASES_RESOURCE_TABLE = "databases";
 	private static final String BOTS_RESOURCE_TABLE = "bots";
 	private static final String DB_NAME = "testResources.db";
+	private static final String version = "1.0";
 	
 	/**
 	 * Constructor
@@ -30,10 +34,11 @@ public class CentralServer {
 		try {
 			this.restoreResources();
 		} catch(ClassNotFoundException e) {
-			// TODO
+			//TODO
 		} catch(SQLException e) {
-			// TODO
+			//TODO
 		}
+		this.checkVersion();
 	}
 	
 	/**
@@ -43,6 +48,7 @@ public class CentralServer {
 	 */
 	private void restoreResources() throws ClassNotFoundException, SQLException {
 		// TODO Read the list of resources from a file.
+		Class.forName("org.sqlite.JDBC");
 		Connection dbConnect = DriverManager.getConnection("jdbc:sqlite:"+DB_NAME);
 		
 		String baseRequest = "SELECT * FROM "; 
@@ -65,6 +71,39 @@ public class CentralServer {
 		}
 		
 		System.out.println("Nombre de resources : " + resources.size());
+	}
+	
+	/**
+	 * Check resources version.
+	 */
+	private void checkVersion() {
+		System.out.println("Verification des versions.");
+		String v = this.version.substring(0, this.version.indexOf('.'));
+		System.out.println("Serveur : /" + v + "/");
+		List<Resource> incompatibleResources = new ArrayList<Resource>();
+		
+		for(Resource resource : this.resources) {
+			resource.checkVersion();
+			String tmp = resource.getVersion().substring(0, resource.getVersion().indexOf("."));
+			System.out.println("Resource bis : /" + tmp+"/"); 
+			
+			if(!v.equals(tmp)){
+				incompatibleResources.add(resource);
+				System.out.println("incompatible");
+			}
+			
+		}
+		
+		System.out.println("Fin de la verification. \nSuppression des ressources incompatibles.");
+		// TODO Save incompatible resources.
+		
+		for(Resource resource : incompatibleResources) {
+			this.resources.remove(resource);
+			System.out.println("Supression");
+		}
+		
+		System.out.println("Fin des suppressions.");
+		
 	}
 	
 	/**
@@ -190,6 +229,7 @@ public class CentralServer {
 					resource.query(fen);
 				}
 			});
+			thread.start();
 			threads.add(thread);
 		}
 		for(Thread thread: threads) {
