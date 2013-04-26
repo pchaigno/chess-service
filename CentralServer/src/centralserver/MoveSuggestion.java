@@ -5,7 +5,7 @@ package centralserver;
  * This class was abstract but I(clement) changed it
  */
 public abstract class MoveSuggestion {
-	private String move;
+	protected String move;
 	
 	/**
 	 * Constructor

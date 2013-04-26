@@ -12,7 +12,7 @@ import javax.ws.rs.Produces;
 //The stage is opening, middle or ending (may not be this path)
 @Path("/resource/rest/{stage}/{fenNotation}")
 public class CentralServerResource {
-	protected String NO_RESULT = "NULL";
+	protected static final String NO_RESULT = "NULL";
 	protected CentralServer server = new CentralServer();
 	
 	@GET
