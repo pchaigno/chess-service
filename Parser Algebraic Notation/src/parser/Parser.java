@@ -28,7 +28,7 @@ public class Parser {
 	// Convert UCI style move into PGN style move
 	public String UCItoPGN(Map<String, String> moveArray, Board board) {
 		// GE is "empty" move, indicates the line end (as game populating this line ended there)
-		if (moveArray.get("Move").equals("GE")) {
+		if(moveArray.get("Move").equals("GE")) {
 			return "GE";
 		}
 
@@ -41,14 +41,14 @@ public class Parser {
 		boolean capture = false;
 		boolean promotion = false;
 
-		if (board.squares.get(toX)[toY].piece != null) {
+		if(board.squares.get(toX)[toY].piece != null) {
 			capture = true;
 		}
 		
 
 		// Castling
-		if (piece.equals("king") && Math.abs(letter.get(fromX) - letter.get(toX)) == 2) {
-			if (toX == 'g') {
+		if(piece.equals("king") && Math.abs(letter.get(fromX)-letter.get(toX))==2) {
+			if(toX == 'g') {
 				return "O-O";
 			} else {
 				return "O-O-O";
