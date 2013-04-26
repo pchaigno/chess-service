@@ -8,12 +8,12 @@ function redirectionErreur404() {
     exit;
 }
 
-// Transforme le xml renvoyé par chessok en JSon et l'affiche
+// Transforme le xml renvoye par chessok en JSon et l'affiche
 function xmlToJson($xmlstr, $whiteToPlay) {
 
 $moves = new SimpleXMLElement($xmlstr);
 
-//On calcule toutes les stats nécessaires pour le serveur central.
+//On calcule toutes les stats necessaires pour le serveur central.
 foreach($moves->MoveList->Item as $item){
 	$nbWWhite = $item->WhiteWins;
 	$nbWBlack = $item->BlackWins;
@@ -34,7 +34,7 @@ echo json_encode($movesArray);
 
 // parseur de l'url    
 $input = file_get_contents('php://input');
-$chars = preg_split('/\//', $_SERVER['REQUEST_URI'], 4, PREG_SPLIT_NO_EMPTY);//remplacer 4 par -1 (pour gérer les slahs)
+$chars = preg_split('/\//', $_SERVER['REQUEST_URI'], 4, PREG_SPLIT_NO_EMPTY);//remplacer 4 par -1 (pour gerer les slahs)
 
 if(count($chars)==4 && $chars[1]=='rest') {
 	if($chars[2]=='openings') {
@@ -69,7 +69,7 @@ if(count($chars)==4 && $chars[1]=='rest') {
 	}
         
 } elseif(count($chars)==3 && $chars[1]=='rest' && $chars[2]=='version') {
-	//envoie du numéro de version
+	//envoie du numero de version
 	echo $version;
 } else {
 	redirectionErreur404();
