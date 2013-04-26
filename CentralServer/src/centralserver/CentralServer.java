@@ -191,6 +191,7 @@ public class CentralServer {
 					resource.query(fen);
 				}
 			});
+			thread.start();
 			threads.add(thread);
 		}
 		for(Thread thread: threads) {
