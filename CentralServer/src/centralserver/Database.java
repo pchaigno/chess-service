@@ -36,7 +36,7 @@ public class Database extends Resource {
 	public void query(String fen) {
 		this.moves = new ArrayList<DatabaseSuggestion>();
 		
-		// we call the client
+		// We call the client
 		Client c = Client.create();
 		// TODO handle the last slash
 		WebResource r = c.resource(uri+fen);

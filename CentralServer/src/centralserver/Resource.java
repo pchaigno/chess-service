@@ -2,15 +2,11 @@ package centralserver;
 
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
-
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 
 /**
  * The model for all resources (databases and bots).
- * Note: Was forced to use a generic class because apparently getMoveSuggestions in Database and Bot can't
- * override if the return type is List<MoveSuggestion>. Test on your side.
  */
 public abstract class Resource {
 	protected final static int CONNECT_TIMEOUT = 2000;
@@ -88,7 +84,7 @@ public abstract class Resource {
 	}
 	
 	/**
-	 * Complete the version and san.
+	 * Complete the version and the san parameters.
 	 */
 	public void checkVersion() {
 		Client client = Client.create();
@@ -100,7 +96,7 @@ public abstract class Resource {
 		String response = webresource.get(String.class);
 		this.san = ('s' == response.charAt(response.length()-1));
 		this.version = response.substring(0, response.length()-1);
-		System.out.println("Resource :" + version);
+		System.out.println("Resource:" + version);
 	}
 	
 	/**

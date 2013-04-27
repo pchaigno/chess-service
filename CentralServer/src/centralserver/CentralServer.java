@@ -13,9 +13,6 @@ import java.sql.SQLException;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.WebResource;
-
 /**
  * Manage the list of resources.
  */
@@ -78,7 +75,7 @@ public class CentralServer {
 	 */
 	private void checkVersion() {
 		System.out.println("Verification des versions.");
-		String v = this.version.substring(0, this.version.indexOf('.'));
+		String v = CentralServer.version.substring(0, CentralServer.version.indexOf('.'));
 		System.out.println("Serveur : /" + v + "/");
 		List<Resource> incompatibleResources = new ArrayList<Resource>();
 		
@@ -153,7 +150,6 @@ public class CentralServer {
 	 */
 	public MoveSuggestion getBestMove(String fen) {
 		this.updateResources(fen);
-		// TODO Compute the best answer from all the answers from all resources.
 		// The hashMap contains all the moves and the score associated 
 		Map<MoveSuggestion, Double> moves = new HashMap<MoveSuggestion, Double>();
 		

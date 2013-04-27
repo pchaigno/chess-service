@@ -8,13 +8,8 @@ import com.sun.grizzly.http.SelectorThread;
 import com.sun.jersey.api.container.grizzly.GrizzlyWebContainerFactory;
 
 /**
- * This class deploies the CentralServerResource on a Grizzly Server
- * 
- * @author clemgaut
- * 
- */
-/*
- * Maybe change the version to the latest : jersey 1.17 (now it is 1.6)
+ * This class deploies the CentralServerResource on a Grizzly Server.
+ * TODO Maybe change the version to the latest : jersey 1.17 (now it is 1.6)
  */
 public class CentralServerResourceDeployer {
 

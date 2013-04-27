@@ -2,7 +2,7 @@ package centralserver;
 
 /**
  * The model for all suggestion of move (from databases or bots).
- * This class was abstract but I(clement) changed it
+ * This class was abstract but I(clement) changed it.
  */
 public abstract class MoveSuggestion {
 	protected String move;
@@ -51,6 +51,4 @@ public abstract class MoveSuggestion {
 			return false;
 		return true;
 	}
-	
-	
 }
