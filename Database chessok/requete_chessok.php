@@ -21,14 +21,19 @@ function parserXMLToJSON($xmlstr, $whiteToPlay) {
 		$nb = $nbWWhite + $nbWBlack + $nbDraws;
 		// Cast pour eviter de se retouver avec un SimpleXMLObject au lieu d'un string.
 		$move = (string)($item->Move);
-		
-		if($whiteToPlay) {
-			$probaToWin = round($nbWWhite/$nb, 3);
-		} else {
-			$probaToWin = round($nbWBlack/$nb, 3);
+
+		if($nb>0){
+			if($whiteToPlay) {
+				$probaToWin = round($nbWWhite/$nb, 3);
+			} else {
+				$probaToWin = round($nbWBlack/$nb, 3);
+			}
+			$movesArray[] = array('move'=>$move, 'probatowin'=>$probaToWin, 'probatonull'=>round($nbDraws/$nb, 3), 'nb'=>$nb);
 		}
-		
-		$movesArray[] = array('move'=>$move, 'probatowin'=>$probaToWin, 'probatonull'=>round($nbDraws/$nb, 3), 'nb'=>$nb);
+		else{
+			// On met -1 pour les probas quand on ne peut pas les calculer (nombre de parties nulles)
+			$movesArray[] = array('move'=>$move, 'probatowin'=>-1, 'probatonull'=>-1, 'nb'=>$nb);
+		}
 	}
 	return json_encode($movesArray);
 }
@@ -42,17 +47,17 @@ if(count($chars)==3) {
 		// Interrogation du site chessok et recuperation des coups.
 		$fen = urldecode($chars[2]);
 		$fen = str_replace('$', '/', $fen);
-		
+
 		// On regarde qui va jouer (blancs ou noirs).
 		preg_match("/^[^ ]* ([bw]) .*$/", $fen, $matches);
 		if(count($matches)==2) {
 			$whiteToPlay = ($matches[1]=='w');
 		}
-		
+
 		// On coupe la chaine jusqu'au dernier tiret.
 		$fen = substr($fen, 0, strpos($fen, '-')+1);
 		$query = 'fen='.rawurlencode($fen);
-		
+
 		$curlRequest = curl_init('http://chessok.com/onlineserv/opening/connection.php?timestamp='.time());
 		curl_setopt($curlRequest, CURLOPT_HTTPHEADER, array("Content-Type: application/x-www-form-urlencoded; charset=utf-8", "Content-length: ".strlen($query), "Connection: close"));
 		curl_setopt($curlRequest, CURLOPT_RETURNTRANSFER, true);
@@ -61,10 +66,10 @@ if(count($chars)==3) {
 
 		$result = curl_exec($curlRequest);
 		curl_close($curlRequest);
-		
+
 		//header("Content-Type: application/json");
 		echo parserXMLToJSON($result, $whiteToPlay);
-		
+
     } else {
     	redirectionErreur404();
 	}
