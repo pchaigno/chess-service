@@ -1,6 +1,6 @@
 <?php
 
-$version = '1.0'; // Constante
+$version = '1.0l'; // Constante (LAN version)
 
 // Fonction retournant une erreur 404.
 function redirectionErreur404() {
@@ -35,7 +35,7 @@ function xmlToJson($xmlstr, $whiteToPlay) {
 
 // Parseur de l'url.
 $input = file_get_contents('php://input');
-$chars = preg_split('/\//', $_SERVER['REQUEST_URI'], 3, PREG_SPLIT_NO_EMPTY); // Remplacer 4 par -1 (pour gerer les slahs).
+$chars = preg_split('/\//', $_SERVER['REQUEST_URI'], 3, PREG_SPLIT_NO_EMPTY); // Remplacer 3 par -1 (pour gerer les slahs).
 
 if(count($chars)==3) {
 	if($chars[1]=='openings') {

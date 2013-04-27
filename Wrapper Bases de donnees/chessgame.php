@@ -1,6 +1,6 @@
 <?php
 
-$version = '1.0s'; // Cconstante
+$version = '1.0s'; // Cconstante (SAN version)
 
 // Fonction retournant une erreur 404.
 function redirectionErreur404() {
