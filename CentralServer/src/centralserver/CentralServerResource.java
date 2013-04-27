@@ -19,9 +19,6 @@ public class CentralServerResource {
 	@GET
 	@Produces("text/plain")
 	public String getBestMove(@PathParam("stage")String stageInGame, @PathParam("fenNotation")String fen) throws UnsupportedEncodingException {
-		// Transformer le fen envoye (sans les slashs) par un fen "normal".
-		fen = fen.replaceAll("!", "/");
-		fen = fen.replaceAll(" ", "%20");
 		String move = this.server.getBestMove(fen).getMove();
 		if(move==null) {
 			return NO_RESULT;
