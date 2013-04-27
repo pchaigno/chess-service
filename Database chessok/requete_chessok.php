@@ -1,81 +1,76 @@
 <?php
 
-$version = "1.0"; //constante
+$version = '1.0l'; // Constante (LAN version)
 
-// fonction retournant une erreur 404
+// Fonction retournant une erreur 404.
 function redirectionErreur404() {
     header('HTTP/1.0 404 Not Found');
     exit;
 }
 
-// Transforme le xml renvoyé par chessok en JSon et l'affiche
-function xmlToJson($xmlstr, $whiteToPlay) {
+// Transforme le xml renvoye par chessok en JSon et l'affiche.
+function parserXMLToJSON($xmlstr, $whiteToPlay) {
 
-$moves = new SimpleXMLElement($xmlstr);
+	$moves = new SimpleXMLElement($xmlstr);
 
-//On calcule toutes les stats nécessaires pour le serveur central.
-foreach($moves->MoveList->Item as $item){
-	$nbWWhite = $item->WhiteWins;
-	$nbWBlack = $item->BlackWins;
-	$nbDraws = $item->Draws;
-	$nb=$nbWWhite+$nbWBlack+$nbDraws;
-	//cast pour eviter de se retouver avec un SimpleXMLObject au lieu d'un string
-	$move = (string)($item->Move);
-	
-	if($nb>0){
-		if($whiteToPlay)
-			$probaToWin=round($nbWWhite/$nb,3);
-		else
-			$probaToWin=round($nbWBlack/$nb,3);
+	// On calcule toutes les stats necessaires pour le serveur central.
+	foreach($moves->MoveList->Item as $item) {
+		$nbWWhite = $item->WhiteWins;
+		$nbWBlack = $item->BlackWins;
+		$nbDraws = $item->Draws;
+		$nb = $nbWWhite + $nbWBlack + $nbDraws;
+		// Cast pour eviter de se retouver avec un SimpleXMLObject au lieu d'un string.
+		$move = (string)($item->Move);
 		
-		$movesArray[]=array("move"=>$move, "probatowin"=>$probaToWin, "probatonull"=>round($nbDraws/$nb,3), "nb"=>$nb);
+		if($whiteToPlay) {
+			$probaToWin = round($nbWWhite/$nb, 3);
+		} else {
+			$probaToWin = round($nbWBlack/$nb, 3);
+		}
+		
+		$movesArray[] = array('move'=>$move, 'probatowin'=>$probaToWin, 'probatonull'=>round($nbDraws/$nb, 3), 'nb'=>$nb);
 	}
-	else{
-		//On renvoie -1 pour les proba qui ne peuvent être calculées
-		$movesArray[]=array("move"=>$move, "probatowin"=>-1, "probatonull"=>-1, "nb"=>0);
-	}
-}
-echo json_encode($movesArray);
+	return json_encode($movesArray);
 }
 
-// parseur de l'url    
+// Parseur de l'url.
 $input = file_get_contents('php://input');
-$chars = preg_split('/\//', $_SERVER['REQUEST_URI'], 4, PREG_SPLIT_NO_EMPTY);//remplacer 4 par -1 (pour gérer les slahs)
+$chars = preg_split('/\//', $_SERVER['REQUEST_URI'], -1, PREG_SPLIT_NO_EMPTY);
 
-if(count($chars)==4 && $chars[1]=='rest') {
-	if($chars[2]=='openings') {
-		// interrogation du site chessok et recuperation des coups
-		$fen=rawurlencode(rawurldecode($chars[3]));
+if(count($chars)==3) {
+	if($chars[1]=='openings') {
+		// Interrogation du site chessok et recuperation des coups.
+		$fen = urldecode($chars[2]);
+		$fen = str_replace('$', '/', $fen);
 		
-		//On regarde qui va jouer (blancs ou noirs)
-		preg_match("/^[^ ]* ([bw]) .*$/", rawurldecode($fen), $matches);
-		if(count($matches)==2)
-			$whiteToPlay = ($matches[1]=="w");
+		// On regarde qui va jouer (blancs ou noirs).
+		preg_match("/^[^ ]* ([bw]) .*$/", $fen, $matches);
+		if(count($matches)==2) {
+			$whiteToPlay = ($matches[1]=='w');
+		}
 		
-		//On coupe la chaine jusqu'au dernier tiret
-		$fen=substr($fen, 0, strpos($fen, "-")+1);
-		$query="fen=".$fen;
+		// On coupe la chaine jusqu'au dernier tiret.
+		$fen = substr($fen, 0, strpos($fen, '-')+1);
+		$query = 'fen='.rawurlencode($fen);
 		
-		$curlRequest = curl_init();
+		$curlRequest = curl_init('http://chessok.com/onlineserv/opening/connection.php?timestamp='.time());
 		curl_setopt($curlRequest, CURLOPT_HTTPHEADER, array("Content-Type: application/x-www-form-urlencoded; charset=utf-8", "Content-length: ".strlen($query), "Connection: close"));
-		curl_setopt($curlRequest, CURLOPT_URL, "http://chessok.com/onlineserv/opening/connection.php?timestamp=".time());
-		curl_setopt($curlRequest, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($curlRequest, CURLOPT_POST, 1); 
+		curl_setopt($curlRequest, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curlRequest, CURLOPT_POST, true);
 		curl_setopt($curlRequest, CURLOPT_POSTFIELDS, $query);
 
 		$result = curl_exec($curlRequest);
 		curl_close($curlRequest);
 		
-		header("Content-Type: application/json");
-		xmlToJson($result, $whiteToPlay);
+		//header("Content-Type: application/json");
+		echo parserXMLToJSON($result, $whiteToPlay);
 		
-    }
-    else {
+    } else {
     	redirectionErreur404();
 	}
-        
-} elseif(count($chars)==3 && $chars[1]=='rest' && $chars[2]=='version') {
-	//envoie du numéro de version
+      
+} elseif(count($chars)==2 && $chars[1]=='version') {
+	// Envoie du numero de version
 	echo $version;
 } else {
 	redirectionErreur404();
@@ -84,3 +79,5 @@ if(count($chars)==4 && $chars[1]=='rest') {
 //RewriteEngine On
 //RewriteCond %{REQUEST_URI} ^/rest/.*$ [NC]
 //RewriteRule ^(.*)$ /requete_chessok.php [L]
+
+?>
