@@ -74,32 +74,25 @@ public class CentralServer {
 	 * Check resources version.
 	 */
 	private void checkVersion() {
-		System.out.println("Verification des versions.");
-		String v = CentralServer.version.substring(0, CentralServer.version.indexOf('.'));
-		System.out.println("Serveur : /" + v + "/");
+		String centralserveur_version = CentralServer.version.substring(0, CentralServer.version.indexOf('.'));
 		List<Resource> incompatibleResources = new ArrayList<Resource>();
 		
 		for(Resource resource : this.resources) {
 			resource.checkVersion();
-			String tmp = resource.getVersion().substring(0, resource.getVersion().indexOf("."));
-			System.out.println("Resource bis : /" + tmp+"/"); 
+			String resource_version = resource.getVersion().substring(0, resource.getVersion().indexOf("."));
 			
-			if(!v.equals(tmp)){
+			if(!centralserveur_version.equals(resource_version)){
 				incompatibleResources.add(resource);
 				System.out.println("incompatible");
 			}
 			
 		}
 		
-		System.out.println("Fin de la verification. \nSuppression des ressources incompatibles.");
 		// TODO Save incompatible resources.
 		
 		for(Resource resource : incompatibleResources) {
 			this.resources.remove(resource);
-			System.out.println("Supression");
 		}
-		
-		System.out.println("Fin des suppressions.");
 		
 	}
 	

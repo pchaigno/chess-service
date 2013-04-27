@@ -96,7 +96,6 @@ public abstract class Resource {
 		String response = webresource.get(String.class);
 		this.san = ('s' == response.charAt(response.length()-1));
 		this.version = response.substring(0, response.length()-1);
-		System.out.println("Resource:" + version);
 	}
 	
 	/**
