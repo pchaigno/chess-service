@@ -22,7 +22,7 @@ public class CentralServer {
 	private static final String BOTS_RESOURCE_TABLE = "bots";
 	private static final String DB_NAME = "testResources.db";
 	private static final String version = "1.0";
-	
+
 	/**
 	 * Constructor
 	 */
@@ -37,7 +37,7 @@ public class CentralServer {
 		}
 		this.checkVersion();
 	}
-	
+
 	/**
 	 * Restore the list of resources from a file (or a database file ?).
 	 * @throws ClassNotFoundException TODO
@@ -47,55 +47,58 @@ public class CentralServer {
 		// TODO Read the list of resources from a file.
 		Class.forName("org.sqlite.JDBC");
 		Connection dbConnect = DriverManager.getConnection("jdbc:sqlite:"+DB_NAME);
-		
+
 		String baseRequest = "SELECT * FROM "; 
-		
+
 		PreparedStatement databasesState = dbConnect.prepareStatement(baseRequest + DATABASES_RESOURCE_TABLE);
 		// We make the query to get databases names
 		ResultSet dbResultSet = databasesState.executeQuery();
-		
+
 		// We create the databases Resources
 		while(dbResultSet.next()) {
 			this.resources.add(new Database(dbResultSet.getString("uri"), dbResultSet.getString("name"), dbResultSet.getInt("trust")));
 		}
-		
+
 		// Now the same with bots
 		PreparedStatement botsState = dbConnect.prepareStatement(baseRequest + BOTS_RESOURCE_TABLE);
 		ResultSet botResultSet = botsState.executeQuery();
-		
+
 		while(botResultSet.next()) {
 			this.resources.add(new Bot(botResultSet.getString("uri"), botResultSet.getString("name"), botResultSet.getInt("trust")));
 		}
-		
+
 		System.out.println("Nombre de resources : " + resources.size());
 	}
-	
+
 	/**
 	 * Check resources version.
 	 */
 	private void checkVersion() {
 		String centralserveur_version = CentralServer.version.substring(0, CentralServer.version.indexOf('.'));
 		List<Resource> incompatibleResources = new ArrayList<Resource>();
-		
+
 		for(Resource resource : this.resources) {
 			resource.checkVersion();
 			String resource_version = resource.getVersion().substring(0, resource.getVersion().indexOf("."));
-			
-			if(!centralserveur_version.equals(resource_version)){
+
+			if(!resource.isConnected()){
 				incompatibleResources.add(resource);
-				System.out.println("incompatible");
+			}else{
+				if(!centralserveur_version.equals(resource_version)){
+					incompatibleResources.add(resource);
+				}
 			}
-			
+
 		}
-		
+
 		// TODO Save incompatible resources.
-		
+
 		for(Resource resource : incompatibleResources) {
 			this.resources.remove(resource);
 		}
-		
+
 	}
-	
+
 	/**
 	 * Save the list of resources in a file if there was changes.
 	 */
@@ -112,7 +115,7 @@ public class CentralServer {
 			}
 		}
 	}
-	
+
 	/**
 	 * save a resource in the corresponding table
 	 * @throws ClassNotFoundException TODO
@@ -121,7 +124,7 @@ public class CentralServer {
 	public void saveResource(Resource r) throws ClassNotFoundException, SQLException{
 		String database;
 		String query = new String();
-		
+
 		if(r instanceof Bot) {
 			database = BOTS_RESOURCE_TABLE;
 			query = "INSERT OR REPLACE INTO " + database + " VALUES (NULL, '" + r.getURI() + "', '" + r.getName() + "' , " + r.getTrust() + ")";
@@ -129,13 +132,13 @@ public class CentralServer {
 			database = DATABASES_RESOURCE_TABLE;
 			query = "INSERT OR REPLACE INTO " + database + " VALUES (NULL, '" + r.getURI() + "', '" + r.getName() + "', " + r.getTrust() + ")";
 		}
-		
+
 		Connection dbConnect = DriverManager.getConnection("jdbc:sqlite:"+DB_NAME);		
 		PreparedStatement insertStmt = dbConnect.prepareStatement(query);
-		
+
 		insertStmt.executeUpdate();		
 	}
-	
+
 	/**
 	 * Get the suggestion of move from the resources and compute the best answer.
 	 * @param fen The FEN.
@@ -145,7 +148,7 @@ public class CentralServer {
 		this.updateResources(fen);
 		// The hashMap contains all the moves and the score associated 
 		Map<MoveSuggestion, Double> moves = new HashMap<MoveSuggestion, Double>();
-		
+
 		for(Resource resource : this.resources) {
 			for(MoveSuggestion move : resource.getMoveSuggestions()) {
 				if(move.getClass().equals(DatabaseSuggestion.class)) {
@@ -156,7 +159,7 @@ public class CentralServer {
 		}
 		return bestMove(moves);
 	}
-	
+
 	/**
 	 * TODO
 	 * @param moves TODO
@@ -165,7 +168,7 @@ public class CentralServer {
 	private MoveSuggestion bestMove(Map<MoveSuggestion, Double> moves) {
 		double max = -1;
 		MoveSuggestion move = null;
-		
+
 		for(Map.Entry<MoveSuggestion, Double> entry : moves.entrySet()) {
 			if(entry.getValue() > max) {
 				max = entry.getValue();
@@ -174,7 +177,7 @@ public class CentralServer {
 		}
 		return move;
 	}
-	
+
 
 	/**
 	 * Include the move in the HashMap:
