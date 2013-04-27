@@ -3,6 +3,7 @@ package centralserver;
 import java.util.List;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
 /**
@@ -17,7 +18,8 @@ public abstract class Resource {
 	protected boolean changed;
 	protected boolean san;
 	protected String version;
-	
+	protected boolean connected;
+
 	/**
 	 * Constructor
 	 * @param uri The URI of the resource.
@@ -30,7 +32,7 @@ public abstract class Resource {
 		this.changed = false;
 		this.trust = trust;
 	}
-	
+
 	/**
 	 * @return The trust.
 	 */
@@ -57,32 +59,39 @@ public abstract class Resource {
 	public String getURI() {
 		return this.uri;
 	}
-	
+
 	/**
 	 * @return The name.
 	 */
 	public String getName() {
 		return this.name;
 	}
-	
+
 	public boolean isSAN() {
 		return this.san;
 	}
-	
+
 	/**
 	 * @return The version
 	 */
 	public String getVersion() {
 		return this.version;
 	}
-	
+
 	/**
 	 * @param v The version of the resource.
 	 */
 	public void setVersion(String v) {
 		this.version = v;
 	}
-	
+
+	/**
+	 * @return Connected
+	 */
+	public boolean isConnected() {
+		return connected;
+	}
+
 	/**
 	 * Complete the version and the san parameters.
 	 */
@@ -93,16 +102,23 @@ public abstract class Resource {
 		WebResource webresource = client.resource(tmp_uri);
 		client.setConnectTimeout(CONNECT_TIMEOUT);
 		client.setReadTimeout(READ_TIMEOUT);
-		String response = webresource.get(String.class);
-		this.san = ('s' == response.charAt(response.length()-1));
-		this.version = response.substring(0, response.length()-1);
+		ClientResponse clientresponse = webresource.get(ClientResponse.class);
+		int status = clientresponse.getStatus();
+		if(status == 408) {
+			connected = false;
+		}else{
+			connected = true;
+			String response = clientresponse.getEntity(String.class);
+			this.san = ('s' == response.charAt(response.length()-1));
+			this.version = response.substring(0, response.length()-1);
+		}
 	}
-	
+
 	/**
 	 * @return The suggestions of move.
 	 */
 	public abstract List<? extends MoveSuggestion> getMoveSuggestions();
-	
+
 	/**
 	 * Query the resource on the network and update the suggestions of move.
 	 * @param fen The FEN representing the current position of the chessboard.
