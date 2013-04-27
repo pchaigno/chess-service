@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: localhost
--- Généré le: Jeu 28 Février 2013 à 13:35
+-- Généré le: Sam 27 Avril 2013 à 15:05
 -- Version du serveur: 5.5.25
 -- Version de PHP: 5.4.4
 
@@ -21,11 +21,12 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `endings` (
-  `fen` text NOT NULL,
-  `move` text NOT NULL,
+  `fen` varchar(90) NOT NULL,
+  `move` varchar(10) NOT NULL,
   `probatowin` double NOT NULL,
   `probatonull` double NOT NULL,
-  `nb` int(11) NOT NULL
+  `nb` int(11) NOT NULL,
+  PRIMARY KEY (`fen`,`move`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -35,9 +36,14 @@ CREATE TABLE `endings` (
 --
 
 CREATE TABLE `openings` (
-  `fen` text NOT NULL,
-  `move` text NOT NULL,
+  `fen` varchar(90) NOT NULL,
+  `move` varchar(10) NOT NULL,
   `probatowin` double NOT NULL,
   `probatonull` double NOT NULL,
-  `nb` int(11) NOT NULL
+  `nb` int(11) NOT NULL,
+  PRIMARY KEY (`fen`,`move`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `openings`
+--
