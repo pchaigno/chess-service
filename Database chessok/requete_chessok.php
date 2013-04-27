@@ -23,22 +23,22 @@ function xmlToJson($xmlstr, $whiteToPlay) {
 		$move = (string)($item->Move);
 		
 		if($whiteToPlay) {
-			$probaToWin = round($nbWWhite/$nb,3);
+			$probaToWin = round($nbWWhite/$nb, 3);
 		} else {
-			$probaToWin = round($nbWBlack/$nb,3);
+			$probaToWin = round($nbWBlack/$nb, 3);
 		}
 		
-		$movesArray[]=array('move'=>$move, 'probatowin'=>$probaToWin, 'probatonull'=>round($nbDraws/$nb,3), 'nb'=>$nb);
+		$movesArray[] = array('move'=>$move, 'probatowin'=>$probaToWin, 'probatonull'=>round($nbDraws/$nb, 3), 'nb'=>$nb);
 	}
 	echo json_encode($movesArray);
 }
 
 // Parseur de l'url.
 $input = file_get_contents('php://input');
-$chars = preg_split('/\//', $_SERVER['REQUEST_URI'], 4, PREG_SPLIT_NO_EMPTY); // Remplacer 4 par -1 (pour gerer les slahs).
+$chars = preg_split('/\//', $_SERVER['REQUEST_URI'], 3, PREG_SPLIT_NO_EMPTY); // Remplacer 4 par -1 (pour gerer les slahs).
 
-if(count($chars)==4 && $chars[1]=='rest') {
-	if($chars[2]=='openings') {
+if(count($chars)==3) {
+	if($chars[1]=='openings') {
 		// Interrogation du site chessok et recuperation des coups.
 		$fen = rawurlencode(rawurldecode($chars[3]));
 		
@@ -69,7 +69,7 @@ if(count($chars)==4 && $chars[1]=='rest') {
     	redirectionErreur404();
 	}
       
-} elseif(count($chars)==3 && $chars[1]=='rest' && $chars[2]=='version') {
+} elseif(count($chars)==2 && $chars[1]=='version') {
 	// Envoie du numero de version
 	echo $version;
 } else {
