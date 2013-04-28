@@ -1,4 +1,4 @@
-package centralserver;
+package core;
 
 /**
  * Represent the suggestion of move made by the bots.

@@ -1,4 +1,4 @@
-package centralserver;
+package core;
 
 import java.io.UnsupportedEncodingException;
 

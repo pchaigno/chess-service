@@ -1,4 +1,4 @@
-package centralserver;
+package core;
 
 /**
  * The model for all suggestion of move (from databases or bots).
