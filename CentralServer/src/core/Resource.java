@@ -10,6 +10,8 @@ import com.sun.jersey.api.client.WebResource;
  * The model for all resources (databases and bots).
  */
 public abstract class Resource {
+	public final static int DATABASE = 0;
+	public final static int BOT = 1;
 	protected final static int CONNECT_TIMEOUT = 2000;
 	protected final static int READ_TIMEOUT = 3000;
 	protected String uri;

@@ -1,73 +1,31 @@
 package core;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 
 /**
  * Manage the list of resources.
  */
 public class CentralServer {
-	private List<Resource> resources;
-	private static final String DATABASES_RESOURCE_TABLE = "databases";
-	private static final String BOTS_RESOURCE_TABLE = "bots";
-	private static final String DB_NAME = "testResources.db";
+	private Set<Resource> resources;
 	private static final String version = "1.0";
 
 	/**
 	 * Constructor
 	 */
 	public CentralServer() {
-		this.resources = new ArrayList<Resource>();
-		try {
-			this.restoreResources();
-		} catch(ClassNotFoundException e) {
-			//TODO
-		} catch(SQLException e) {
-			//TODO
-		}
+		this.resources = new HashSet<Resource>();
+		this.restoreResources();
 		this.checkVersion();
 	}
 
 	/**
-	 * Restore the list of resources from a file (or a database file ?).
-	 * @throws ClassNotFoundException TODO
-	 * @throws SQLException TODO
+	 * Restore the list of resources from the database file.
 	 */
-	private void restoreResources() throws ClassNotFoundException, SQLException {
-		// TODO Read the list of resources from a file.
-		Class.forName("org.sqlite.JDBC");
-		Connection dbConnect = DriverManager.getConnection("jdbc:sqlite:"+DB_NAME);
-
-		String baseRequest = "SELECT * FROM "; 
-
-		PreparedStatement databasesState = dbConnect.prepareStatement(baseRequest + DATABASES_RESOURCE_TABLE);
-		// We make the query to get databases names
-		ResultSet dbResultSet = databasesState.executeQuery();
-
-		// We create the databases Resources
-		while(dbResultSet.next()) {
-			this.resources.add(new Database(dbResultSet.getString("uri"), dbResultSet.getString("name"), dbResultSet.getInt("trust")));
-		}
-
-		// Now the same with bots
-		PreparedStatement botsState = dbConnect.prepareStatement(baseRequest + BOTS_RESOURCE_TABLE);
-		ResultSet botResultSet = botsState.executeQuery();
-
-		while(botResultSet.next()) {
-			this.resources.add(new Bot(botResultSet.getString("uri"), botResultSet.getString("name"), botResultSet.getInt("trust")));
-		}
-
-		System.out.println("Nombre de resources : " + resources.size());
+	private void restoreResources() {
+		this.resources = ResourcesManager.getResources();
 	}
 
 	/**
@@ -75,20 +33,19 @@ public class CentralServer {
 	 */
 	private void checkVersion() {
 		String centralserveur_version = CentralServer.version.substring(0, CentralServer.version.indexOf('.'));
-		List<Resource> incompatibleResources = new ArrayList<Resource>();
+		Set<Resource> incompatibleResources = new HashSet<Resource>();
 
-		for(Resource resource : this.resources) {
+		for(Resource resource: this.resources) {
 			resource.checkVersion();
 			String resource_version = resource.getVersion().substring(0, resource.getVersion().indexOf("."));
 
-			if(!resource.isConnected()){
+			if(!resource.isConnected()) {
 				incompatibleResources.add(resource);
-			}else{
-				if(!centralserveur_version.equals(resource_version)){
+			} else {
+				if(!centralserveur_version.equals(resource_version)) {
 					incompatibleResources.add(resource);
 				}
 			}
-
 		}
 
 		// TODO Save incompatible resources.
@@ -96,47 +53,13 @@ public class CentralServer {
 		for(Resource resource : incompatibleResources) {
 			this.resources.remove(resource);
 		}
-
-	}
-
-	/**
-	 * Save the list of resources in a file if there was changes.
-	 */
-	private void saveResources() {
-		for(Resource resource: this.resources) {
-			if(resource.isChanged()) {
-				try {
-					saveResource(resource);
-				} catch(ClassNotFoundException e) {
-					// TODO
-				} catch(SQLException e) {
-					// TODO
-				}
-			}
-		}
 	}
 
 	/**
 	 * save a resource in the corresponding table
-	 * @throws ClassNotFoundException TODO
-	 * @throws SQLException TODO
 	 */
-	public void saveResource(Resource r) throws ClassNotFoundException, SQLException{
-		String database;
-		String query = new String();
-
-		if(r instanceof Bot) {
-			database = BOTS_RESOURCE_TABLE;
-			query = "INSERT OR REPLACE INTO " + database + " VALUES (NULL, '" + r.getURI() + "', '" + r.getName() + "' , " + r.getTrust() + ")";
-		} else if(r instanceof Database) {
-			database = DATABASES_RESOURCE_TABLE;
-			query = "INSERT OR REPLACE INTO " + database + " VALUES (NULL, '" + r.getURI() + "', '" + r.getName() + "', " + r.getTrust() + ")";
-		}
-
-		Connection dbConnect = DriverManager.getConnection("jdbc:sqlite:"+DB_NAME);		
-		PreparedStatement insertStmt = dbConnect.prepareStatement(query);
-
-		insertStmt.executeUpdate();		
+	public void saveResourcesTrust(Set<Resource> resources) {
+		ResourcesManager.updateResourcesTrust(resources);	
 	}
 
 	/**
