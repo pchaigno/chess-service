@@ -118,6 +118,10 @@ public class GUI {
 		resourcesTable.setHeaderVisible(true);
 		resourcesTable.setLinesVisible(true);
 		
+		Menu contextMenu = new Menu(resourcesTable);
+		buildContextMenu(contextMenu, resourcesTable);
+		resourcesTable.setMenu(contextMenu);
+		
 		Set<Resource> resources = ResourcesManager.getResources();
 		for(Resource resource: resources) {
 			TableItem resourceItem = new TableItem(resourcesTable, SWT.NONE);
@@ -127,6 +131,25 @@ public class GUI {
 		}
 	}
 	
+	private static void buildContextMenu(Menu contextMenu, final Table resourcesTable) {
+		MenuItem optionRemove = new MenuItem(contextMenu, SWT.PUSH);
+		optionRemove.setText("Remove");
+		optionRemove.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Remove selected.
+			}
+		});
+		MenuItem optionEdit = new MenuItem(contextMenu, SWT.PUSH);
+		optionEdit.setText("Edit");
+		optionEdit.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Edit selected.
+			}
+		});
+	}
+
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display, SWT.SHELL_TRIM);
