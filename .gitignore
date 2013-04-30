@@ -1,3 +1,4 @@
 *.class
 bin/
 CentralServer/libs/swt.jar
+CentralServer/resources.db
