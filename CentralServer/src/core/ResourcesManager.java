@@ -10,6 +10,9 @@ import java.util.Set;
 
 import org.sqlite.SQLiteConfig;
 
+/**
+ * Handle all the accesses to the SQLite database for the resources.
+ */
 public class ResourcesManager {
 	private static final String DATABASE_FILE = "resources.db";
 	private static final String RESOURCES = "resources";
@@ -18,6 +21,9 @@ public class ResourcesManager {
 	private static final String RESOURCE_TRUST = "trust";
 	private static final String RESOURCE_TYPE = "type";
 
+	/**
+	 * @return All resources from the database.
+	 */
 	public static Set<Resource> getResources() {
 		Set<Resource> resources = new HashSet<Resource>();
 		Connection dbConnect = getConnection();
@@ -42,6 +48,11 @@ public class ResourcesManager {
 		return resources;
 	}
 	
+	/**
+	 * Add a resource to the database.
+	 * @param resource The resource to add.
+	 * @return True if the operation succeed, false otherwise.
+	 */
 	public static boolean addResource(Resource resource) {
 		Connection dbConnect = getConnection();
 		String query = "INSERT INTO "+RESOURCES+"("+RESOURCE_TYPE+", "+RESOURCE_NAME+", "+RESOURCE_URI+", "+RESOURCE_TRUST+") VALUES(?, ?, ?, ?)";
@@ -53,13 +64,18 @@ public class ResourcesManager {
 			statement.setString(3, resource.getURI());
 			statement.setInt(4, resource.getTrust());
 			statement.executeUpdate();
-			return true;
+			return true; // TODO Check execution.
 		} catch (SQLException e) {
 			System.err.println("addResource: "+e.getMessage());
 		}
 		return false;
 	}
 	
+	/**
+	 * Remove a resource from the database.
+	 * @param resource The resource to remove.
+	 * @return True if the operation succeed, false otherwise.
+	 */
 	public static boolean removeResource(Resource resource) {
 		Connection dbConnect = getConnection();
 		String query = "DELETE FROM "+RESOURCES+" WHERE "+RESOURCE_URI+" = ?";
@@ -67,13 +83,18 @@ public class ResourcesManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setString(1, resource.getURI());
 			statement.executeUpdate();
-			return true;
+			return true; // TODO Check execution.
 		} catch (SQLException e) {
 			System.err.println("removeResource: "+e.getMessage());
 		}
 		return false;
 	}
 	
+	/**
+	 * Remove resources from the database.
+	 * @param resources The resources to remove.
+	 * @return The resources that weren't removed.
+	 */
 	public static Set<Resource> removeResources(Set<Resource> resources) {
 		Set<Resource> notRemoved = new HashSet<Resource>();
 		Connection dbConnect = getConnection();
@@ -83,15 +104,21 @@ public class ResourcesManager {
 			for(Resource resource: resources) {
 				statement.setString(1, resource.getURI());
 				statement.addBatch();
-				// TODO Update notRemoved.
 			}
 			statement.executeBatch();
+			// TODO Update notRemoved.
 		} catch (SQLException e) {
 			System.err.println("removeResources: "+e.getMessage());
 		}
 		return notRemoved;
 	}
 	
+	/**
+	 * Update a resource in the database.
+	 * All fields except the URI can be updated.
+	 * @param resource The resource to update.
+	 * @return True if the update succeed, false otherwise.
+	 */
 	public static boolean updateResource(Resource resource) {
 		Connection dbConnect = getConnection();
 		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_NAME+" = ?, "+RESOURCE_TRUST+" = ?, "+RESOURCE_TYPE+" = ? WHERE "+RESOURCE_URI+" = ?";
@@ -102,14 +129,19 @@ public class ResourcesManager {
 			int type = resource.getClass().equals(Database.class)? Resource.DATABASE : Resource.BOT; 
 			statement.setInt(3, type);
 			statement.setString(4, resource.getURI());
-			System.out.println(statement.executeUpdate());
-			return true;
+			statement.executeUpdate();
+			return true; // TODO Check execution.
 		} catch (SQLException e) {
 			System.err.println("updateResource: "+e.getMessage());
 		}
 		return false;
 	}
 	
+	/**
+	 * Update the trust parameter of resources.
+	 * @param resources The resources whose trust is to update.
+	 * @return The resources that weren't updated.
+	 */
 	public static Set<Resource> updateResourcesTrust(Set<Resource> resources) {
 		Set<Resource> notUpdated = new HashSet<Resource>();
 		Connection dbConnect = getConnection();

@@ -19,9 +19,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
@@ -35,18 +33,28 @@ import core.Database;
 import core.Resource;
 import core.ResourcesManager;
 
+/**
+ * The graphical user interface to manage resources and control the server.
+ */
 public class GUI {
 	private static Shell shell;
 
+	/**
+	 * Main constructor.
+	 * @param shell The principal shell.
+	 */
 	public static void buildInterface(Shell shell) {
 		GUI.shell = shell;
-		buildMenu(shell);
-		buildResourcesTable(shell);
+		buildMenu();
+		buildResourcesTable();
 	}
 	
-	private static void buildMenu(final Shell shell) {
+	/**
+	 * Build the menu bar.
+	 */
+	private static void buildMenu() {
 		Menu menu = new Menu(shell, SWT.BAR);
-		MenuItem optionFile= new MenuItem(menu, SWT.CASCADE);
+		MenuItem optionFile = new MenuItem(menu, SWT.CASCADE);
 		optionFile.setText("File");
 		Menu menuFile = new Menu(shell, SWT.DROP_DOWN);
 		optionFile.setMenu(menuFile);
@@ -115,6 +123,10 @@ public class GUI {
 		shell.setMenuBar(menu);
 	}
 	
+	/**
+	 * Build the option shell.
+	 * The window allow the user to change the settings.
+	 */
 	private static void buildOptionsShell() {
 		Shell shell = new Shell();
 		shell.setText("Options");
@@ -147,7 +159,12 @@ public class GUI {
 		shell.open();
 	}
 	
-	private static void buildResourcesTable(Shell shell) {
+	/**
+	 * Build the resources table, the main component.
+	 * This resources table contains all the resources and allow the user
+	 * to quickly remove, edit or add a resource.
+	 */
+	private static void buildResourcesTable() {
 		final TableViewer tableViewer = new TableViewer(shell, SWT.BORDER|SWT.FULL_SELECTION|SWT.MULTI);
 		final Table resourcesTable = tableViewer.getTable();
 		TableColumn columnType = new TableColumn(resourcesTable, SWT.LEFT);
@@ -165,9 +182,7 @@ public class GUI {
 		resourcesTable.setHeaderVisible(true);
 		resourcesTable.setLinesVisible(true);
 		
-		Menu contextMenu = new Menu(resourcesTable);
-		buildContextMenu(contextMenu, resourcesTable);
-		resourcesTable.setMenu(contextMenu);
+		buildContextMenu(resourcesTable);
 		
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
@@ -192,6 +207,11 @@ public class GUI {
 		}
 	}
 	
+	/**
+	 * Add an item representing a resource to the resources table.
+	 * @param resourcesTable The resources table.
+	 * @param resource The new resource to add.
+	 */
 	private static void addResourceItem(Table resourcesTable, Resource resource) {
 		TableItem resourceItem = new TableItem(resourcesTable, SWT.NONE);
 		String type = resource.getClass().equals(Database.class)? "Database" : "Bot";
@@ -200,7 +220,13 @@ public class GUI {
 		resourceItem.setData(resource);
 	}
 	
-	private static void buildContextMenu(Menu contextMenu, final Table resourcesTable) {
+	/**
+	 * Build the contextual menu for the resources table.
+	 * @param resourcesTable The resources table.
+	 */
+	private static void buildContextMenu(final Table resourcesTable) {
+		Menu contextMenu = new Menu(resourcesTable);
+		
 		MenuItem optionAdd = new MenuItem(contextMenu, SWT.PUSH);
 		optionAdd.setText("Add");
 		optionAdd.addSelectionListener(new SelectionAdapter() {
@@ -230,8 +256,15 @@ public class GUI {
 				removeResources(resourcesTable);
 			}
 		});
+		
+		resourcesTable.setMenu(contextMenu);
 	}
 	
+	/**
+	 * Remove the resources selected in the resources table after
+	 * a quick confirmation from the user.
+	 * @param resourcesTable The resources table.
+	 */
 	private static void removeResources(Table resourcesTable) {
 		boolean confirm = MessageDialog.openConfirm(shell, "Remove resources", "Do you really want to remove those resources?");
         if(confirm) {
@@ -244,6 +277,10 @@ public class GUI {
         }
 	}
 	
+	/**
+	 * Build the window to add a new resource.
+	 * Simply a small form.
+	 */
 	private static void buildAddShell() {
 		final Shell shell = new Shell();
 		shell.setText("Add a new resource");
@@ -296,6 +333,12 @@ public class GUI {
 		shell.open();
 	}
 	
+	/**
+	 * Build the edition window.
+	 * Simply the same form than in the add window but with the information.
+	 * The URI field can't be changed.
+	 * @param resource The resource to be editing.
+	 */
 	private static void buildEditShell(final Resource resource) {
 		final Shell shell = new Shell();
 		shell.setText("Edit "+resource.getName());
@@ -352,6 +395,10 @@ public class GUI {
 		shell.open();
 	}
 
+	/**
+	 * Main method.
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		Display display = new Display();
 		Shell shell = new Shell(display, SWT.SHELL_TRIM);
