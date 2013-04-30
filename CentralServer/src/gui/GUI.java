@@ -163,8 +163,10 @@ public class GUI {
 		optionEdit.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				System.out.println(e.item);
-				buildEditShell((Resource)e.item.getData()); // TODO Get the resource.
+				TableItem[] resourceItems = resourcesTable.getSelection();
+				if(resourceItems.length==1) {
+					buildEditShell((Resource)resourceItems[0].getData());
+				}
 			}
 		});
 		MenuItem optionRemove = new MenuItem(contextMenu, SWT.PUSH);
@@ -226,9 +228,9 @@ public class GUI {
 			public void widgetSelected(SelectionEvent e) {
 				Resource resource = null;
 				if(type.getText().equals("Database")) {
-					resource = new Database(name.getText(), uri.getText(), Integer.parseInt(trust.getText()));
+					resource = new Database(uri.getText(), name.getText(), Integer.parseInt(trust.getText()));
 				} else {
-					resource = new Bot(name.getText(), uri.getText(), Integer.parseInt(trust.getText()));
+					resource = new Bot(uri.getText(), name.getText(), Integer.parseInt(trust.getText()));
 				}
 				ResourcesManager.addResource(resource);
 				shell.dispose();
@@ -239,7 +241,7 @@ public class GUI {
 		shell.open();
 	}
 	
-	private static void buildEditShell(Resource resource) {
+	private static void buildEditShell(final Resource resource) {
 		final Shell shell = new Shell();
 		shell.setText("Edit "+resource.getName());
 		GridLayout gridLayout = new GridLayout();
@@ -256,13 +258,13 @@ public class GUI {
 		
 		Label nameLabel = new Label(shell, SWT.NONE);
 		nameLabel.setText("Name: ");
-		final Text name = new Text(shell, SWT.BORDER|SWT.READ_ONLY);
+		final Text name = new Text(shell, SWT.BORDER);
 		name.setText(resource.getName());
 		name.setLayoutData(new GridData(100, 13));
 
 		Label uriLabel = new Label(shell, SWT.NONE);
 		uriLabel.setText("URI: ");
-		final Text uri = new Text(shell, SWT.BORDER);
+		Text uri = new Text(shell, SWT.BORDER|SWT.READ_ONLY);
 		uri.setText(resource.getURI());
 		uri.setLayoutData(new GridData(100, 13));
 
@@ -273,20 +275,20 @@ public class GUI {
 		trust.setLayoutData(new GridData(100, 13));
 		
 		Button submit = new Button(shell, SWT.PUSH);
-		submit.setText("Add");
+		submit.setText("Update");
 		GridData dataSubmit = new GridData();
 		dataSubmit.widthHint = 100;
 		submit.setLayoutData(dataSubmit);
 		submit.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				Resource resource = null;
+				Resource newResource = null;
 				if(type.getText().equals("Database")) {
-					new Database(name.getText(), uri.getText(), Integer.parseInt(trust.getText()));
+					newResource = new Database(name.getText(), resource.getURI(), Integer.parseInt(trust.getText()));
 				} else {
-					new Bot(name.getText(), uri.getText(), Integer.parseInt(trust.getText()));
+					newResource = new Bot(name.getText(), resource.getURI(), Integer.parseInt(trust.getText()));
 				}
-				ResourcesManager.updateResource(resource);
+				ResourcesManager.updateResource(newResource);
 				shell.dispose();
 			}
 		});

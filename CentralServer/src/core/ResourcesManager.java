@@ -21,9 +21,6 @@ public class ResourcesManager {
 	public static Set<Resource> getResources() {
 		Set<Resource> resources = new HashSet<Resource>();
 		Connection dbConnect = getConnection();
-		if(dbConnect==null) {
-			// TODO Throw exception.
-		}
 		String query = "SELECT * FROM "+RESOURCES;
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
@@ -39,7 +36,7 @@ public class ResourcesManager {
 			}
 			dbConnect.close();
 		} catch (SQLException e) {
-			// TODO Throw exception.
+			System.err.println("getResources: "+e.getMessage());
 		}
 		
 		return resources;
@@ -47,9 +44,6 @@ public class ResourcesManager {
 	
 	public static boolean addResource(Resource resource) {
 		Connection dbConnect = getConnection();
-		if(dbConnect==null) {
-			// TODO Throw exception.
-		}
 		String query = "INSERT INTO "+RESOURCES+"("+RESOURCE_TYPE+", "+RESOURCE_NAME+", "+RESOURCE_URI+", "+RESOURCE_TRUST+") VALUES(?, ?, ?, ?)";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
@@ -61,16 +55,13 @@ public class ResourcesManager {
 			statement.executeUpdate();
 			return true;
 		} catch (SQLException e) {
-			// TODO Throw exception.
+			System.err.println("addResource: "+e.getMessage());
 		}
 		return false;
 	}
 	
 	public static boolean removeResource(Resource resource) {
 		Connection dbConnect = getConnection();
-		if(dbConnect==null) {
-			// TODO Throw exception.
-		}
 		String query = "DELETE FROM "+RESOURCES+" WHERE "+RESOURCE_URI+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
@@ -78,7 +69,7 @@ public class ResourcesManager {
 			statement.executeUpdate();
 			return true;
 		} catch (SQLException e) {
-			// TODO Throw exception.
+			System.err.println("removeResource: "+e.getMessage());
 		}
 		return false;
 	}
@@ -86,9 +77,6 @@ public class ResourcesManager {
 	public static Set<Resource> removeResources(Set<Resource> resources) {
 		Set<Resource> notRemoved = new HashSet<Resource>();
 		Connection dbConnect = getConnection();
-		if(dbConnect==null) {
-			// TODO Throw exception.
-		}
 		String query = "DELETE FROM "+RESOURCES+" WHERE "+RESOURCE_URI+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
@@ -99,16 +87,13 @@ public class ResourcesManager {
 			}
 			statement.executeBatch();
 		} catch (SQLException e) {
-			// TODO Throw exception.
+			System.err.println("removeResources: "+e.getMessage());
 		}
 		return notRemoved;
 	}
 	
 	public static boolean updateResource(Resource resource) {
 		Connection dbConnect = getConnection();
-		if(dbConnect==null) {
-			// TODO Throw exception.
-		}
 		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_NAME+" = ?, "+RESOURCE_TRUST+" = ?, "+RESOURCE_TYPE+" = ? WHERE "+RESOURCE_URI+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
@@ -120,7 +105,7 @@ public class ResourcesManager {
 			statement.executeUpdate();
 			// TODO Return result.
 		} catch (SQLException e) {
-			// TODO Throw exception.
+			System.err.println("updateResource: "+e.getMessage());
 		}
 		return false;
 	}
@@ -128,9 +113,6 @@ public class ResourcesManager {
 	public static Set<Resource> updateResourcesTrust(Set<Resource> resources) {
 		Set<Resource> notUpdated = new HashSet<Resource>();
 		Connection dbConnect = getConnection();
-		if(dbConnect==null) {
-			// TODO Throw exception.
-		}
 		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_TRUST+" = ? WHERE "+RESOURCE_URI+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
@@ -145,7 +127,7 @@ public class ResourcesManager {
 			statement.executeBatch();
 			// TODO Update notUpdated.
 		} catch (SQLException e) {
-			// TODO Throw exception.
+			System.err.println("updateResourcesTrust: "+e.getMessage());
 		}
 		return notUpdated;
 	}
