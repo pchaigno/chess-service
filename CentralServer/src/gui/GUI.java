@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -27,14 +28,15 @@ import core.Resource;
 import core.ResourcesManager;
 
 public class GUI {
+	private static Shell shell;
 
 	public static void buildInterface(Shell shell) {
+		GUI.shell = shell;
 		buildMenu(shell);
 		buildResourcesTable(shell);
 	}
 	
 	private static void buildMenu(final Shell shell) {
-		// - start/stop server;
 		Menu menu = new Menu(shell, SWT.BAR);
 		MenuItem optionFichier = new MenuItem(menu, SWT.CASCADE);
 		optionFichier.setText("Fichier");
@@ -48,7 +50,6 @@ public class GUI {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Start the server.
-				
 				optionStop.setEnabled(true);
 				optionStart.setEnabled(false);
 			}
@@ -57,7 +58,6 @@ public class GUI {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				// TODO Stop the server.
-				
 				optionStop.setEnabled(false);
 				optionStart.setEnabled(true);
 			}
@@ -172,13 +172,17 @@ public class GUI {
 		optionRemove.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// TODO Confirmation dialog.
-				TableItem[] resourceItems = resourcesTable.getSelection();
-				Set<Resource> resources = new HashSet<Resource>();
-				for(TableItem resourceItem: resourceItems) {
-					resources.add((Resource)resourceItem.getData());
-				}
-				ResourcesManager.removeResources(resources);
+				MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO);
+                messageBox.setMessage("Do you really want to remove those resources?");
+                messageBox.setText("Remove resources");
+                if(SWT.YES==messageBox.open()) {
+					TableItem[] resourceItems = resourcesTable.getSelection();
+					Set<Resource> resources = new HashSet<Resource>();
+					for(TableItem resourceItem: resourceItems) {
+						resources.add((Resource)resourceItem.getData());
+					}
+					ResourcesManager.removeResources(resources);
+                }
 			}
 		});
 	}
