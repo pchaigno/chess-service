@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.sqlite.SQLiteConfig;
@@ -95,7 +96,7 @@ public class ResourcesManager {
 	 * @param resources The resources to remove.
 	 * @return The resources that weren't removed.
 	 */
-	public static Set<Resource> removeResources(Set<Resource> resources) {
+	public static Set<Resource> removeResources(List<Resource> resources) {
 		Set<Resource> notRemoved = new HashSet<Resource>();
 		Connection dbConnect = getConnection();
 		String query = "DELETE FROM "+RESOURCES+" WHERE "+RESOURCE_URI+" = ?";
@@ -105,8 +106,12 @@ public class ResourcesManager {
 				statement.setString(1, resource.getURI());
 				statement.addBatch();
 			}
-			statement.executeBatch();
-			// TODO Update notRemoved.
+			int[] results = statement.executeBatch();
+			for(int i=0 ; i<results.length ; i++) {
+				if(results[i]==0) {
+					notRemoved.add(resources.get(i));
+				}
+			}
 		} catch (SQLException e) {
 			System.err.println("removeResources: "+e.getMessage());
 		}

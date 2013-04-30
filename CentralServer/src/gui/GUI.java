@@ -1,6 +1,7 @@
 package gui;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -38,6 +39,7 @@ import core.ResourcesManager;
  */
 public class GUI {
 	private static Shell shell;
+	private static Table resourcesTable;
 
 	/**
 	 * Main constructor.
@@ -166,7 +168,7 @@ public class GUI {
 	 */
 	private static void buildResourcesTable() {
 		final TableViewer tableViewer = new TableViewer(shell, SWT.BORDER|SWT.FULL_SELECTION|SWT.MULTI);
-		final Table resourcesTable = tableViewer.getTable();
+		resourcesTable = tableViewer.getTable();
 		TableColumn columnType = new TableColumn(resourcesTable, SWT.LEFT);
 		columnType.setText("Type");
 		columnType.setWidth(100);
@@ -182,7 +184,7 @@ public class GUI {
 		resourcesTable.setHeaderVisible(true);
 		resourcesTable.setLinesVisible(true);
 		
-		buildContextMenu(resourcesTable);
+		buildContextMenu();
 		
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
@@ -196,23 +198,22 @@ public class GUI {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				if(e.keyCode==SWT.DEL) {
-					removeResources(resourcesTable);
+					removeResources();
 				}
 			}
 		});
 		
 		Set<Resource> resources = ResourcesManager.getResources();
 		for(Resource resource: resources) {
-			addResourceItem(resourcesTable, resource);
+			addResourceItem(resource);
 		}
 	}
 	
 	/**
 	 * Add an item representing a resource to the resources table.
-	 * @param resourcesTable The resources table.
 	 * @param resource The new resource to add.
 	 */
-	private static void addResourceItem(Table resourcesTable, Resource resource) {
+	private static void addResourceItem(Resource resource) {
 		TableItem resourceItem = new TableItem(resourcesTable, SWT.NONE);
 		String type = resource.getClass().equals(Database.class)? "Database" : "Bot";
 		String trust = resource.getTrust()+"";
@@ -221,10 +222,23 @@ public class GUI {
 	}
 	
 	/**
+	 * Remove an item representing a resource from the resources table.
+	 * @param resource The resource to remove.
+	 */
+	private static void removeResourceItem(Resource resource) {
+		TableItem[] items = resourcesTable.getItems();
+		for(TableItem item: items) {
+			if(resource.equals(item.getData())) {
+				item.dispose();
+			}
+		}
+	}
+	
+	/**
 	 * Build the contextual menu for the resources table.
 	 * @param resourcesTable The resources table.
 	 */
-	private static void buildContextMenu(final Table resourcesTable) {
+	private static void buildContextMenu() {
 		Menu contextMenu = new Menu(resourcesTable);
 		
 		MenuItem optionAdd = new MenuItem(contextMenu, SWT.PUSH);
@@ -253,7 +267,7 @@ public class GUI {
 		optionRemove.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				removeResources(resourcesTable);
+				removeResources();
 			}
 		});
 		
@@ -263,17 +277,22 @@ public class GUI {
 	/**
 	 * Remove the resources selected in the resources table after
 	 * a quick confirmation from the user.
-	 * @param resourcesTable The resources table.
+	 * Update the resources table.
 	 */
-	private static void removeResources(Table resourcesTable) {
+	private static void removeResources() {
 		boolean confirm = MessageDialog.openConfirm(shell, "Remove resources", "Do you really want to remove those resources?");
         if(confirm) {
 			TableItem[] resourceItems = resourcesTable.getSelection();
-			Set<Resource> resources = new HashSet<Resource>();
+			List<Resource> resources = new ArrayList<Resource>();
 			for(TableItem resourceItem: resourceItems) {
 				resources.add((Resource)resourceItem.getData());
 			}
-			ResourcesManager.removeResources(resources);
+			Set<Resource> notRemoved = ResourcesManager.removeResources(resources);
+			for(TableItem resourceItem: resourceItems) {
+				if(!notRemoved.contains(resourceItem.getData())) {
+					resourceItem.dispose();
+				}
+			}
         }
 	}
 	
@@ -324,7 +343,9 @@ public class GUI {
 				} else {
 					resource = new Bot(uri.getText(), name.getText(), Integer.parseInt(trust.getText()));
 				}
-				ResourcesManager.addResource(resource);
+				if(ResourcesManager.addResource(resource)) {
+					addResourceItem(resource);
+				}
 				shell.dispose();
 			}
 		});
@@ -386,7 +407,10 @@ public class GUI {
 				} else {
 					newResource = new Bot(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()));
 				}
-				ResourcesManager.updateResource(newResource);
+				if(ResourcesManager.updateResource(newResource)) {
+					removeResourceItem(resource);
+					addResourceItem(newResource);
+				}
 				shell.dispose();
 			}
 		});
