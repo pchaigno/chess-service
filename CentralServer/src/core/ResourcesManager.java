@@ -102,8 +102,8 @@ public class ResourcesManager {
 			int type = resource.getClass().equals(Database.class)? Resource.DATABASE : Resource.BOT; 
 			statement.setInt(3, type);
 			statement.setString(4, resource.getURI());
-			statement.executeUpdate();
-			// TODO Return result.
+			System.out.println(statement.executeUpdate());
+			return true;
 		} catch (SQLException e) {
 			System.err.println("updateResource: "+e.getMessage());
 		}

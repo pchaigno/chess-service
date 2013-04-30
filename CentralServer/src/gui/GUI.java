@@ -284,9 +284,9 @@ public class GUI {
 			public void widgetSelected(SelectionEvent e) {
 				Resource newResource = null;
 				if(type.getText().equals("Database")) {
-					newResource = new Database(name.getText(), resource.getURI(), Integer.parseInt(trust.getText()));
+					newResource = new Database(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()));
 				} else {
-					newResource = new Bot(name.getText(), resource.getURI(), Integer.parseInt(trust.getText()));
+					newResource = new Bot(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()));
 				}
 				ResourcesManager.updateResource(newResource);
 				shell.dispose();
