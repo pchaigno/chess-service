@@ -45,8 +45,24 @@ public class ResourcesManager {
 		return resources;
 	}
 	
-	public static boolean addResource(Resource resources) {
-		// TODO
+	public static boolean addResource(Resource resource) {
+		Connection dbConnect = getConnection();
+		if(dbConnect==null) {
+			// TODO Throw exception.
+		}
+		String query = "INSERT INTO "+RESOURCES+"("+RESOURCE_TYPE+", "+RESOURCE_NAME+", "+RESOURCE_URI+", "+RESOURCE_TRUST+") VALUES(?, ?, ?, ?)";
+		try {
+			PreparedStatement statement = dbConnect.prepareStatement(query);
+			int type = resource.getClass().equals(Database.class)? Resource.DATABASE : Resource.BOT;
+			statement.setInt(0, type);
+			statement.setString(1, resource.getName());
+			statement.setString(2, resource.getURI());
+			statement.setInt(3, resource.getTrust());
+			statement.executeUpdate();
+			return true;
+		} catch (SQLException e) {
+			// TODO Throw exception.
+		}
 		return false;
 	}
 	
@@ -60,6 +76,7 @@ public class ResourcesManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setString(0, resource.getURI());
 			statement.executeUpdate();
+			return true;
 		} catch (SQLException e) {
 			// TODO Throw exception.
 		}
