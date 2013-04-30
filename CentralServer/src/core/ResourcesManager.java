@@ -34,9 +34,9 @@ public class ResourcesManager {
 			while(results.next()) {
 				Resource resource;
 				if(results.getInt("type")==Resource.DATABASE) {
-					resource = new Bot(results.getString("uri"), results.getString("name"), results.getInt("trust"));
-				} else {
 					resource = new Database(results.getString("uri"), results.getString("name"), results.getInt("trust"));
+				} else {
+					resource = new Bot(results.getString("uri"), results.getString("name"), results.getInt("trust"));
 				}
 				resources.add(resource);
 			}
