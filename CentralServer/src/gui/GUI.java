@@ -3,7 +3,14 @@ package gui;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -12,10 +19,11 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -38,12 +46,13 @@ public class GUI {
 	
 	private static void buildMenu(final Shell shell) {
 		Menu menu = new Menu(shell, SWT.BAR);
-		MenuItem optionFichier = new MenuItem(menu, SWT.CASCADE);
-		optionFichier.setText("Fichier");
-		Menu menuFichier = new Menu(shell, SWT.DROP_DOWN);
-		final MenuItem optionStart = new MenuItem(menuFichier, SWT.PUSH);
+		MenuItem optionFile= new MenuItem(menu, SWT.CASCADE);
+		optionFile.setText("File");
+		Menu menuFile = new Menu(shell, SWT.DROP_DOWN);
+		optionFile.setMenu(menuFile);
+		final MenuItem optionStart = new MenuItem(menuFile, SWT.PUSH);
 		optionStart.setText("Start server");
-		final MenuItem optionStop = new MenuItem(menuFichier, SWT.PUSH);
+		final MenuItem optionStop = new MenuItem(menuFile, SWT.PUSH);
 		optionStop.setText("Stop server");
 		optionStop.setEnabled(false);
 		optionStart.addSelectionListener(new SelectionAdapter() {
@@ -63,16 +72,15 @@ public class GUI {
 			}
 		});
 		@SuppressWarnings("unused")
-		MenuItem optionSeparator = new MenuItem(menuFichier, SWT.SEPARATOR);
-		MenuItem optionFermer = new MenuItem(menuFichier, SWT.PUSH);
-		optionFermer.setText("Quitter");
+		MenuItem optionSeparator = new MenuItem(menuFile, SWT.SEPARATOR);
+		MenuItem optionFermer = new MenuItem(menuFile, SWT.PUSH);
+		optionFermer.setText("Exit");
 		optionFermer.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				shell.dispose();
 			}
 		});
-		optionFichier.setMenu(menuFichier);
 		
 		MenuItem optionOptions = new MenuItem(menu, SWT.CASCADE);
 		optionOptions.setText("Options");
@@ -83,9 +91,13 @@ public class GUI {
 			}
 		});
 		
-		MenuItem optionAide = new MenuItem(menu, SWT.CASCADE);
-		optionAide.setText("A propos");
-		optionAide.addSelectionListener(new SelectionAdapter() {
+		MenuItem optionHelp = new MenuItem(menu, SWT.CASCADE);
+		Menu menuHelp = new Menu(shell, SWT.DROP_DOWN);
+		optionHelp.setMenu(menuHelp);
+		optionHelp.setText("Help");
+		MenuItem optionAbout = new MenuItem(menuHelp, SWT.CASCADE);
+		optionAbout.setText("About");
+		optionAbout.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				final Shell aPropos = new Shell(shell, SWT.TITLE | SWT.CLOSE);
@@ -104,22 +116,40 @@ public class GUI {
 	}
 	
 	private static void buildOptionsShell() {
-		// - change the listened port;
-		// - change the timeouts;
 		Shell shell = new Shell();
 		shell.setText("Options");
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 2;
 		shell.setLayout(gridLayout);
+
+		Label portLabel = new Label(shell, SWT.NONE);
+		portLabel.setText("Listening port: ");
+		final Text port = new Text(shell, SWT.BORDER);
+		port.setLayoutData(new GridData(100, 13));
 		
-		// TODO Add options.
+		Label connectTimeoutLabel = new Label(shell, SWT.NONE);
+		connectTimeoutLabel.setText("Connect Timeout: ");
+		final Text connectTimeout = new Text(shell, SWT.BORDER);
+		connectTimeout.setLayoutData(new GridData(100, 13));
+		
+		Label readTimeoutLabel = new Label(shell, SWT.NONE);
+		readTimeoutLabel.setText("Read Timeout: ");
+		final Text readTimeout = new Text(shell, SWT.BORDER);
+		readTimeout.setLayoutData(new GridData(100, 13));
+		
+		Button submit = new Button(shell, SWT.PUSH);
+		submit.setText("Submit");
+		GridData dataSubmit = new GridData();
+		dataSubmit.widthHint = 100;
+		submit.setLayoutData(dataSubmit);
 		
 		shell.pack();
 		shell.open();
 	}
 	
 	private static void buildResourcesTable(Shell shell) {
-		Table resourcesTable = new Table(shell, SWT.BORDER);
+		final TableViewer tableViewer = new TableViewer(shell, SWT.BORDER|SWT.FULL_SELECTION|SWT.MULTI);
+		final Table resourcesTable = tableViewer.getTable();
 		TableColumn columnType = new TableColumn(resourcesTable, SWT.LEFT);
 		columnType.setText("Type");
 		columnType.setWidth(100);
@@ -139,14 +169,35 @@ public class GUI {
 		buildContextMenu(contextMenu, resourcesTable);
 		resourcesTable.setMenu(contextMenu);
 		
+		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+			@Override
+			public void doubleClick(DoubleClickEvent e) {
+				IStructuredSelection select = (IStructuredSelection)e.getSelection();
+				buildEditShell((Resource)select.getFirstElement());
+			}
+		});
+		
+		resourcesTable.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if(e.keyCode==SWT.DEL) {
+					removeResources(resourcesTable);
+				}
+			}
+		});
+		
 		Set<Resource> resources = ResourcesManager.getResources();
 		for(Resource resource: resources) {
-			TableItem resourceItem = new TableItem(resourcesTable, SWT.NONE);
-			String type = resource.getClass().equals(Database.class)? "Database" : "Bot";
-			String trust = resource.getTrust()+"";
-			resourceItem.setText(new String[] {type, resource.getName(), resource.getURI(), trust});
-			resourceItem.setData(resource);
+			addResourceItem(resourcesTable, resource);
 		}
+	}
+	
+	private static void addResourceItem(Table resourcesTable, Resource resource) {
+		TableItem resourceItem = new TableItem(resourcesTable, SWT.NONE);
+		String type = resource.getClass().equals(Database.class)? "Database" : "Bot";
+		String trust = resource.getTrust()+"";
+		resourceItem.setText(new String[] {type, resource.getName(), resource.getURI(), trust});
+		resourceItem.setData(resource);
 	}
 	
 	private static void buildContextMenu(Menu contextMenu, final Table resourcesTable) {
@@ -166,6 +217,8 @@ public class GUI {
 				TableItem[] resourceItems = resourcesTable.getSelection();
 				if(resourceItems.length==1) {
 					buildEditShell((Resource)resourceItems[0].getData());
+				} else {
+					MessageDialog.openWarning(shell, "Action impossible", "You can only edit one resource at the time.");
 				}
 			}
 		});
@@ -174,19 +227,21 @@ public class GUI {
 		optionRemove.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				MessageBox messageBox = new MessageBox(shell, SWT.ICON_QUESTION|SWT.YES|SWT.NO);
-                messageBox.setMessage("Do you really want to remove those resources?");
-                messageBox.setText("Remove resources");
-                if(SWT.YES==messageBox.open()) {
-					TableItem[] resourceItems = resourcesTable.getSelection();
-					Set<Resource> resources = new HashSet<Resource>();
-					for(TableItem resourceItem: resourceItems) {
-						resources.add((Resource)resourceItem.getData());
-					}
-					ResourcesManager.removeResources(resources);
-                }
+				removeResources(resourcesTable);
 			}
 		});
+	}
+	
+	private static void removeResources(Table resourcesTable) {
+		boolean confirm = MessageDialog.openConfirm(shell, "Remove resources", "Do you really want to remove those resources?");
+        if(confirm) {
+			TableItem[] resourceItems = resourcesTable.getSelection();
+			Set<Resource> resources = new HashSet<Resource>();
+			for(TableItem resourceItem: resourceItems) {
+				resources.add((Resource)resourceItem.getData());
+			}
+			ResourcesManager.removeResources(resources);
+        }
 	}
 	
 	private static void buildAddShell() {
