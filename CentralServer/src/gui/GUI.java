@@ -164,7 +164,7 @@ public class GUI {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				System.out.println(e.item);
-				buildEditShell(null); // TODO Get the resource.
+				buildEditShell((Resource)e.item.getData()); // TODO Get the resource.
 			}
 		});
 		MenuItem optionRemove = new MenuItem(contextMenu, SWT.PUSH);

@@ -54,10 +54,10 @@ public class ResourcesManager {
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			int type = resource.getClass().equals(Database.class)? Resource.DATABASE : Resource.BOT;
-			statement.setInt(0, type);
-			statement.setString(1, resource.getName());
-			statement.setString(2, resource.getURI());
-			statement.setInt(3, resource.getTrust());
+			statement.setInt(1, type);
+			statement.setString(2, resource.getName());
+			statement.setString(3, resource.getURI());
+			statement.setInt(4, resource.getTrust());
 			statement.executeUpdate();
 			return true;
 		} catch (SQLException e) {
@@ -74,7 +74,7 @@ public class ResourcesManager {
 		String query = "DELETE FROM "+RESOURCES+" WHERE "+RESOURCE_URI+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
-			statement.setString(0, resource.getURI());
+			statement.setString(1, resource.getURI());
 			statement.executeUpdate();
 			return true;
 		} catch (SQLException e) {
@@ -93,7 +93,7 @@ public class ResourcesManager {
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			for(Resource resource: resources) {
-				statement.setString(0, resource.getURI());
+				statement.setString(1, resource.getURI());
 				statement.addBatch();
 				// TODO Update notRemoved.
 			}
@@ -112,11 +112,11 @@ public class ResourcesManager {
 		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_NAME+" = ?, "+RESOURCE_TRUST+" = ?, "+RESOURCE_TYPE+" = ? WHERE "+RESOURCE_URI+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
-			statement.setString(0, resource.getName());
-			statement.setInt(1, resource.getTrust());
+			statement.setString(1, resource.getName());
+			statement.setInt(2, resource.getTrust());
 			int type = resource.getClass().equals(Database.class)? Resource.DATABASE : Resource.BOT; 
-			statement.setInt(2, type);
-			statement.setString(3, resource.getURI());
+			statement.setInt(3, type);
+			statement.setString(4, resource.getURI());
 			statement.executeUpdate();
 			// TODO Return result.
 		} catch (SQLException e) {
@@ -136,8 +136,8 @@ public class ResourcesManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			for(Resource resource: resources) {
 				if(resource.isChanged()) {
-					statement.setInt(0, resource.getTrust());
-					statement.setString(1, resource.getURI());
+					statement.setInt(1, resource.getTrust());
+					statement.setString(2, resource.getURI());
 					statement.addBatch();
 				}
 				// TODO And if nothing has been changed?
