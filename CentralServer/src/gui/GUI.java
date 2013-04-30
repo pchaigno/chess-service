@@ -1,11 +1,16 @@
 package gui;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
@@ -14,7 +19,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
+import core.Bot;
 import core.Database;
 import core.Resource;
 import core.ResourcesManager;
@@ -28,8 +35,6 @@ public class GUI {
 	
 	private static void buildMenu(final Shell shell) {
 		// - start/stop server;
-		// - change the listened port;
-		// - change the timeouts;
 		Menu menu = new Menu(shell, SWT.BAR);
 		MenuItem optionFichier = new MenuItem(menu, SWT.CASCADE);
 		optionFichier.setText("Fichier");
@@ -74,7 +79,7 @@ public class GUI {
 		optionOptions.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// TODO Show options.
+				buildOptionsShell();
 			}
 		});
 		
@@ -98,10 +103,22 @@ public class GUI {
 		shell.setMenuBar(menu);
 	}
 	
+	private static void buildOptionsShell() {
+		// - change the listened port;
+		// - change the timeouts;
+		Shell shell = new Shell();
+		shell.setText("Options");
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 2;
+		shell.setLayout(gridLayout);
+		
+		// TODO Add options.
+		
+		shell.pack();
+		shell.open();
+	}
+	
 	private static void buildResourcesTable(Shell shell) {
-		// - add resource;
-		// - remove resources;
-		// - edit resource;
 		Table resourcesTable = new Table(shell, SWT.BORDER);
 		TableColumn columnType = new TableColumn(resourcesTable, SWT.LEFT);
 		columnType.setText("Type");
@@ -128,16 +145,17 @@ public class GUI {
 			String type = resource.getClass().equals(Database.class)? "Database" : "Bot";
 			String trust = resource.getTrust()+"";
 			resourceItem.setText(new String[] {type, resource.getName(), resource.getURI(), trust});
+			resourceItem.setData(resource);
 		}
 	}
 	
 	private static void buildContextMenu(Menu contextMenu, final Table resourcesTable) {
-		MenuItem optionRemove = new MenuItem(contextMenu, SWT.PUSH);
-		optionRemove.setText("Remove");
-		optionRemove.addSelectionListener(new SelectionAdapter() {
+		MenuItem optionAdd = new MenuItem(contextMenu, SWT.PUSH);
+		optionAdd.setText("Add");
+		optionAdd.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// TODO Remove selected.
+				buildAddShell();
 			}
 		});
 		MenuItem optionEdit = new MenuItem(contextMenu, SWT.PUSH);
@@ -145,9 +163,132 @@ public class GUI {
 		optionEdit.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// TODO Edit selected.
+				System.out.println(e.item);
+				buildEditShell(null); // TODO Get the resource.
 			}
 		});
+		MenuItem optionRemove = new MenuItem(contextMenu, SWT.PUSH);
+		optionRemove.setText("Remove");
+		optionRemove.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// TODO Confirmation dialog.
+				TableItem[] resourceItems = resourcesTable.getSelection();
+				Set<Resource> resources = new HashSet<Resource>();
+				for(TableItem resourceItem: resourceItems) {
+					resources.add((Resource)resourceItem.getData());
+				}
+				ResourcesManager.removeResources(resources);
+			}
+		});
+	}
+	
+	private static void buildAddShell() {
+		final Shell shell = new Shell();
+		shell.setText("Add a new resource");
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 2;
+		shell.setLayout(gridLayout);
+
+		Label typeLabel = new Label(shell, SWT.NONE);
+		typeLabel.setText("Type: ");
+		final Combo type = new Combo(shell, SWT.READ_ONLY);
+		type.add("Database");
+		type.add("Bot");
+		type.setLayoutData(new GridData(100, 13));
+		
+		Label nameLabel = new Label(shell, SWT.NONE);
+		nameLabel.setText("Name: ");
+		final Text name = new Text(shell, SWT.BORDER);
+		name.setLayoutData(new GridData(100, 13));
+
+		Label uriLabel = new Label(shell, SWT.NONE);
+		uriLabel.setText("URI: ");
+		final Text uri = new Text(shell, SWT.BORDER);
+		uri.setLayoutData(new GridData(100, 13));
+
+		Label trustLabel = new Label(shell, SWT.NONE);
+		trustLabel.setText("Trust: ");
+		final Text trust = new Text(shell, SWT.BORDER);
+		trust.setLayoutData(new GridData(100, 13));
+		
+		Button submit = new Button(shell, SWT.PUSH);
+		submit.setText("Add");
+		GridData dataSubmit = new GridData();
+		dataSubmit.widthHint = 100;
+		submit.setLayoutData(dataSubmit);
+		submit.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Resource resource = null;
+				if(type.getText().equals("Database")) {
+					resource = new Database(name.getText(), uri.getText(), Integer.parseInt(trust.getText()));
+				} else {
+					resource = new Bot(name.getText(), uri.getText(), Integer.parseInt(trust.getText()));
+				}
+				ResourcesManager.addResource(resource);
+				shell.dispose();
+			}
+		});
+		
+		shell.pack();
+		shell.open();
+	}
+	
+	private static void buildEditShell(Resource resource) {
+		final Shell shell = new Shell();
+		shell.setText("Edit "+resource.getName());
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 2;
+		shell.setLayout(gridLayout);
+
+		Label typeLabel = new Label(shell, SWT.NONE);
+		typeLabel.setText("Type: ");
+		final Combo type = new Combo(shell, SWT.READ_ONLY);
+		type.add("Database");
+		type.add("Bot");
+		type.setText(resource.getClass().equals(Database.class)? "Database" : "Bot");
+		type.setLayoutData(new GridData(100, 13));
+		
+		Label nameLabel = new Label(shell, SWT.NONE);
+		nameLabel.setText("Name: ");
+		final Text name = new Text(shell, SWT.BORDER|SWT.READ_ONLY);
+		name.setText(resource.getName());
+		name.setLayoutData(new GridData(100, 13));
+
+		Label uriLabel = new Label(shell, SWT.NONE);
+		uriLabel.setText("URI: ");
+		final Text uri = new Text(shell, SWT.BORDER);
+		uri.setText(resource.getURI());
+		uri.setLayoutData(new GridData(100, 13));
+
+		Label trustLabel = new Label(shell, SWT.NONE);
+		trustLabel.setText("Trust: ");
+		final Text trust = new Text(shell, SWT.BORDER);
+		trust.setText(""+resource.getTrust());
+		trust.setLayoutData(new GridData(100, 13));
+		
+		Button submit = new Button(shell, SWT.PUSH);
+		submit.setText("Add");
+		GridData dataSubmit = new GridData();
+		dataSubmit.widthHint = 100;
+		submit.setLayoutData(dataSubmit);
+		submit.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Resource resource = null;
+				if(type.getText().equals("Database")) {
+					new Database(name.getText(), uri.getText(), Integer.parseInt(trust.getText()));
+				} else {
+					new Bot(name.getText(), uri.getText(), Integer.parseInt(trust.getText()));
+				}
+				ResourcesManager.updateResource(resource);
+				shell.dispose();
+			}
+		});
+
+		shell.pack();
+		shell.open();
 	}
 
 	public static void main(String[] args) {
@@ -158,7 +299,6 @@ public class GUI {
 		
 		buildInterface(shell);
 		
-		shell.pack();
 		shell.open();
 		while(!shell.isDisposed()) {
 			if(!display.readAndDispatch()) {
