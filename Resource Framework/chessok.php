@@ -3,7 +3,7 @@
 require('resource_framework.php');
 
 $wrapper = new ResourceWrapper('1.0', false, false);
-$wrapper->setOpenings('http://chessok.com/onlineserv/opening/connection.php?timestamp='.time(), 'parserXMLToJSON');
+$wrapper->setDatabaseOpenings('http://chessok.com/onlineserv/opening/connection.php?timestamp='.time(), 'parserXMLToJSON');
 $wrapper->rest();
 
 // Transforme le xml renvoye par chessok en JSon et l'affiche.
