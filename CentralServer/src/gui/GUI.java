@@ -134,6 +134,8 @@ public class GUI {
 		shell.setText("Options");
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 2;
+		gridLayout.marginHeight = 10;
+		gridLayout.marginWidth = 10;
 		shell.setLayout(gridLayout);
 
 		Label portLabel = new Label(shell, SWT.NONE);
@@ -156,6 +158,7 @@ public class GUI {
 		GridData dataSubmit = new GridData();
 		dataSubmit.widthHint = 100;
 		submit.setLayoutData(dataSubmit);
+		shell.setDefaultButton(submit);
 		
 		shell.pack();
 		shell.open();
@@ -280,20 +283,23 @@ public class GUI {
 	 * Update the resources table.
 	 */
 	private static void removeResources() {
-		boolean confirm = MessageDialog.openConfirm(shell, "Remove resources", "Do you really want to remove those resources?");
-        if(confirm) {
-			TableItem[] resourceItems = resourcesTable.getSelection();
-			List<Resource> resources = new ArrayList<Resource>();
-			for(TableItem resourceItem: resourceItems) {
-				resources.add((Resource)resourceItem.getData());
-			}
-			Set<Resource> notRemoved = ResourcesManager.removeResources(resources);
-			for(TableItem resourceItem: resourceItems) {
-				if(!notRemoved.contains(resourceItem.getData())) {
-					resourceItem.dispose();
+		TableItem[] resourceItems = resourcesTable.getSelection();
+		if(resourceItems.length>0) {
+			String message = resourceItems.length>1? "Do you really want to remove those resources?" : "Do you really want to remove this resource?";
+			boolean confirm = MessageDialog.openConfirm(shell, "Remove resources", message);
+	        if(confirm) {
+				List<Resource> resources = new ArrayList<Resource>();
+				for(TableItem resourceItem: resourceItems) {
+					resources.add((Resource)resourceItem.getData());
 				}
-			}
-        }
+				Set<Resource> notRemoved = ResourcesManager.removeResources(resources);
+				for(TableItem resourceItem: resourceItems) {
+					if(!notRemoved.contains(resourceItem.getData())) {
+						resourceItem.dispose();
+					}
+				}
+	        }
+		}
 	}
 	
 	/**
@@ -305,6 +311,8 @@ public class GUI {
 		shell.setText("Add a new resource");
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 2;
+		gridLayout.marginHeight = 10;
+		gridLayout.marginWidth = 10;
 		shell.setLayout(gridLayout);
 
 		Label typeLabel = new Label(shell, SWT.NONE);
@@ -349,6 +357,7 @@ public class GUI {
 				shell.dispose();
 			}
 		});
+		shell.setDefaultButton(submit);
 		
 		shell.pack();
 		shell.open();
@@ -365,6 +374,8 @@ public class GUI {
 		shell.setText("Edit "+resource.getName());
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 2;
+		gridLayout.marginHeight = 10;
+		gridLayout.marginWidth = 10;
 		shell.setLayout(gridLayout);
 
 		Label typeLabel = new Label(shell, SWT.NONE);
@@ -414,6 +425,7 @@ public class GUI {
 				shell.dispose();
 			}
 		});
+		shell.setDefaultButton(submit);
 
 		shell.pack();
 		shell.open();
