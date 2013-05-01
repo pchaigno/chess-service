@@ -11,6 +11,9 @@ import junit.framework.TestCase;
 
 public class TestResourcesManager extends TestCase {
 
+	/**
+	 * Test the methods of ResourcesManager.
+	 */
 	public void test() {
 		// Backup to compare after.
 		Set<Resource> oldResources = ResourcesManager.getResources();
@@ -78,5 +81,15 @@ public class TestResourcesManager extends TestCase {
 		assertEquals(0, ResourcesManager.removeResources(newResources).size());
 		resources = ResourcesManager.getResources();
 		assertEquals(oldResources, resources);
+	}
+	
+	/**
+	 * Test the primary key of the database.
+	 */
+	public void testPrimaryKey() {
+		ResourcesManager.addResource(new Bot("test123.com", "TestBot", 50));
+		assertFalse(ResourcesManager.addResource(new Database("test123.com", "TestDatabase", 50)));
+		assertFalse(ResourcesManager.addResource(new Bot("test123.com", "TestBot", 50)));
+		ResourcesManager.removeResource(new Bot("test123.com", "TestBot", 50));
 	}
 }

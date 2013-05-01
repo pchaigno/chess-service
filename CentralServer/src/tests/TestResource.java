@@ -5,8 +5,14 @@ import core.Bot;
 import core.Database;
 import core.Resource;
 
+/**
+ * Test Resource.
+ */
 public class TestResource extends TestCase {
 
+	/**
+	 * Test the equals method.
+	 */
 	public void testEquals() {
 		Resource bot1 = new Bot("test123.com", "TestBot", 50);
 		Bot bot2 = new Bot("test123.com", "Test Bot", 70);
