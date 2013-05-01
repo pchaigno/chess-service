@@ -1,6 +1,6 @@
 <?php
 
-class ResourceWrapper() {
+class ResourceWrapper {
 	private $version; // Version of the wrapper.
 	private $complete_fen; // False to remove the end of the FEN before submit.
 	private $openings; // True to support opengings.
@@ -9,7 +9,7 @@ class ResourceWrapper() {
 	private $open_post; // True if the website need a POST request for openings.
 	private $endings; // True to support endings.
 	private $end_url; // URL of the website for openings.
-	private $end_parser; // THe function to convert the result for endings requested to a JSON document.
+	private $end_parser; // The function to convert the result for endings requested to a JSON document.
 	private $end_post; // True if the website need a POST request for endings.
 
 	// Constructor.
@@ -27,7 +27,7 @@ class ResourceWrapper() {
 	public function setOpenings($url, $parser = null) {
 		$this->openings = true;
 		$this->open_url = $url;
-		$this->open_post = strstr($url, '$url_fen')!==false;
+		$this->open_post = strstr($url, '$url_fen$')===false;
 		$this->open_parser = $parser;
 	}
 	
@@ -35,7 +35,7 @@ class ResourceWrapper() {
 	public function setEndings($url, $parser = null) {
 		$this->endings = true;
 		$this->end_url = $url;
-		$this->end_post = strstr($url, '$url_fen')!==false;
+		$this->end_post = strstr($url, '$url_fen$')===false;
 		$this->end_parser = $parser;
 	}
 	
@@ -53,9 +53,9 @@ class ResourceWrapper() {
 				$fen = str_replace('$', '/', $fen);
 				
 				if($this->open_post) {
-					curlPOST($fen);
+					$result = $this->curlPost($this->open_url, $fen);
 				} else {
-					curlGET($fen);
+					$result = $this->curlGet($this->open_url, $fen);
 				}
 				
 				// Display the result as a JSON document:
@@ -63,7 +63,7 @@ class ResourceWrapper() {
 				if($this->open_parser==null) {
 					echo $result;
 				} else {
-					echo $this->open_parser($result);
+					echo call_user_func($this->open_parser, $result, $fen);
 				}
 			} else if($this->endings && $chars[1]=='endings') {
 				// Get the FEN:
@@ -72,9 +72,9 @@ class ResourceWrapper() {
 				$fen = str_replace('$', '/', $fen);
 				
 				if($this->end_post) {
-					curlPOST($fen);
+					$result = $this->curlPost($this->end_url, $fen);
 				} else {
-					curlGET($fen);
+					$result = $this->curlGet($this->end_url, $fen);
 				}
 				
 				// Display the result as a JSON document:
@@ -82,7 +82,7 @@ class ResourceWrapper() {
 				if($this->end_parser==null) {
 					echo $result;
 				} else {
-					echo $this->end_parser($result);
+					echo call_user_func($this->end_parser, $result, $fen);
 				}
 			} else {
 				redirectionErreur404();
@@ -96,12 +96,13 @@ class ResourceWrapper() {
 	}
 
 	// Make an HTTP GET request using cURL.
-	private function curlGET($fen) {
+	private function curlGet($url, $fen) {
 		if(!$this->complete_fen) {
 			$fen = substr($fen, 0, strpos($fen, '-')+1);
 		}
-		$url_fen = rawurlencode($fen);
-		$curlRequest = curl_init($this->url);
+		$fen = rawurlencode($fen);
+		$url = str_replace('$url_fen$', $fen, $url);
+		$curlRequest = curl_init($url);
 		curl_setopt($curlRequest, CURLOPT_RETURNTRANSFER, true);
 
 		$result = curl_exec($curlRequest);
@@ -111,13 +112,13 @@ class ResourceWrapper() {
 	}
 	
 	// Make an HTTP POST request using cURL.
-	private function curlPOST($fen) {
+	private function curlPost($url, $fen) {
 		if(!$this->complete_fen) {
 			$fen = substr($fen, 0, strpos($fen, '-')+1);
 		}
 		$query = 'fen='.rawurlencode($fen);
 
-		$curlRequest = curl_init($this->url);
+		$curlRequest = curl_init($url);
 		curl_setopt($curlRequest, CURLOPT_HTTPHEADER, array("Content-Type: application/x-www-form-urlencoded; charset=utf-8", "Content-length: ".strlen($query), "Connection: close"));
 		curl_setopt($curlRequest, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($curlRequest, CURLOPT_POST, true);
