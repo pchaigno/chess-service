@@ -14,6 +14,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -38,17 +39,22 @@ import core.ResourcesManager;
  * The graphical user interface to manage resources and control the server.
  */
 public class GUI {
+	private static Display display;
 	private static Shell shell;
 	private static Table resourcesTable;
 
 	/**
 	 * Main constructor.
-	 * @param shell The principal shell.
 	 */
-	public static void buildInterface(Shell shell) {
-		GUI.shell = shell;
+	public static Shell buildInterface() {
+		display = new Display();
+		shell = new Shell(display, SWT.SHELL_TRIM);
+		shell.setText("Central Server");
+		shell.setImage(new Image(display, "chess.ico"));
+		shell.setLayout(new FillLayout());
 		buildMenu();
 		buildResourcesTable();
+		return shell;
 	}
 	
 	/**
@@ -132,6 +138,7 @@ public class GUI {
 	private static void buildOptionsShell() {
 		Shell shell = new Shell();
 		shell.setText("Options");
+		shell.setImage(new Image(display, "chess.ico"));
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 2;
 		gridLayout.marginHeight = 10;
@@ -309,6 +316,7 @@ public class GUI {
 	private static void buildAddShell() {
 		final Shell shell = new Shell();
 		shell.setText("Add a new resource");
+		shell.setImage(new Image(display, "chess.ico"));
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 2;
 		gridLayout.marginHeight = 10;
@@ -372,6 +380,7 @@ public class GUI {
 	private static void buildEditShell(final Resource resource) {
 		final Shell shell = new Shell();
 		shell.setText("Edit "+resource.getName());
+		shell.setImage(new Image(display, "chess.ico"));
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 2;
 		gridLayout.marginHeight = 10;
@@ -436,13 +445,7 @@ public class GUI {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Display display = new Display();
-		Shell shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setText("Central Server");
-		shell.setLayout(new FillLayout());
-		
-		buildInterface(shell);
-		
+		buildInterface();
 		shell.open();
 		while(!shell.isDisposed()) {
 			if(!display.readAndDispatch()) {
