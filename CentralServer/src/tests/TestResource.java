@@ -23,7 +23,7 @@ public class TestResource extends TestCase {
 		Resource database1 = new Database("test123.com", "TestDatabase", 50);
 		Database database2 = new Database("test123.com", "Test Database", 70);
 		Resource database3 = new Database("test12.com", "Test Database", 70);
-		assertFalse(bot1.equals(database1));
+		assertTrue(bot1.equals(database1));
 		assertEquals(database1, database2);
 		assertFalse(database3.equals(database1));
 	}

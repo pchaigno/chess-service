@@ -126,4 +126,34 @@ public abstract class Resource {
 	 * @param fen The FEN representing the current position of the chessboard.
 	 */
 	public abstract void query(String fen);
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (!(obj instanceof Resource)) {
+			return false;
+		}
+		Resource other = (Resource) obj;
+		if (uri == null) {
+			if (other.uri != null) {
+				return false;
+			}
+		} else if (!uri.equals(other.uri)) {
+			return false;
+		}
+		return true;
+	}
 }
