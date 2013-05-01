@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -96,20 +97,22 @@ public class ResourcesManager {
 	 * @param resources The resources to remove.
 	 * @return The resources that weren't removed.
 	 */
-	public static Set<Resource> removeResources(List<Resource> resources) {
+	public static Set<Resource> removeResources(Set<Resource> resources) {
+		List<Resource> resourcesToRemove = new ArrayList<Resource>();
+		resourcesToRemove.addAll(resources);
 		Set<Resource> notRemoved = new HashSet<Resource>();
 		Connection dbConnect = getConnection();
 		String query = "DELETE FROM "+RESOURCES+" WHERE "+RESOURCE_URI+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
-			for(Resource resource: resources) {
+			for(Resource resource: resourcesToRemove) {
 				statement.setString(1, resource.getURI());
 				statement.addBatch();
 			}
 			int[] results = statement.executeBatch();
 			for(int i=0 ; i<results.length ; i++) {
 				if(results[i]==0) {
-					notRemoved.add(resources.get(i));
+					notRemoved.add(resourcesToRemove.get(i));
 				}
 			}
 		} catch (SQLException e) {

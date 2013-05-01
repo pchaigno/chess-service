@@ -1,7 +1,6 @@
 package gui;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -295,7 +294,7 @@ public class GUI {
 			String message = resourceItems.length>1? "Do you really want to remove those resources?" : "Do you really want to remove this resource?";
 			boolean confirm = MessageDialog.openConfirm(shell, "Remove resources", message);
 	        if(confirm) {
-				List<Resource> resources = new ArrayList<Resource>();
+				Set<Resource> resources = new HashSet<Resource>();
 				for(TableItem resourceItem: resourceItems) {
 					resources.add((Resource)resourceItem.getData());
 				}
