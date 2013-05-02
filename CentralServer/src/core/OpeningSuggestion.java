@@ -3,7 +3,7 @@ package core;
 /**
  * Represent the suggestion of move made by the databases.
  */
-public class DatabaseSuggestion extends MoveSuggestion {
+public class OpeningSuggestion extends MoveSuggestion {
 	private int nb;
 	private float probatowin;
 	private float probatonull;
@@ -15,7 +15,7 @@ public class DatabaseSuggestion extends MoveSuggestion {
 	 * @param probatowin The probability of winning.
 	 * @param probatonull The probability of drawing.
 	 */
-	public DatabaseSuggestion(String move, int nb, float probatowin, float probatonull) {
+	public OpeningSuggestion(String move, int nb, float probatowin, float probatonull) {
 		super(move);
 		this.nb = nb;
 		this.probatonull = probatonull;

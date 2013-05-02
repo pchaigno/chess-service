@@ -74,8 +74,8 @@ public class CentralServer {
 
 		for(Resource resource : this.resources) {
 			for(MoveSuggestion move : resource.getMoveSuggestions()) {
-				if(move.getClass().equals(DatabaseSuggestion.class)) {
-					double moveScore = computeScoreDatabase((DatabaseSuggestion)move, resource);
+				if(move.getClass().equals(OpeningSuggestion.class)) {
+					double moveScore = computeScoreDatabase((OpeningSuggestion)move, resource);
 					this.includeScore(moves, move, moveScore);
 				}
 			}
@@ -124,7 +124,7 @@ public class CentralServer {
 	 * @param resource TODO
 	 * @return The score computed according to the formulas we defined
 	 */
-	private double computeScoreDatabase(DatabaseSuggestion move, Resource resource) {
+	private double computeScoreDatabase(OpeningSuggestion move, Resource resource) {
 		// TODO change the formula
 		return move.getprobatowin()*move.getnb()*resource.getTrust();
 	}

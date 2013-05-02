@@ -15,7 +15,7 @@ import com.sun.jersey.api.client.WebResource;
  * Represent a database.
  */
 public class Database extends Resource {
-	private List<DatabaseSuggestion> moves;
+	private List<OpeningSuggestion> moves;
 	
 	/**
 	 * Constructor
@@ -28,13 +28,13 @@ public class Database extends Resource {
 	}
 
 	@Override
-	public List<DatabaseSuggestion> getMoveSuggestions() {
+	public List<OpeningSuggestion> getMoveSuggestions() {
 		return this.moves;
 	}
 
 	@Override
 	public void query(String fen) {
-		this.moves = new ArrayList<DatabaseSuggestion>();
+		this.moves = new ArrayList<OpeningSuggestion>();
 		
 		// We call the client
 		Client c = Client.create();
@@ -46,7 +46,7 @@ public class Database extends Resource {
 		
 		// We parse the json response with Gson
 		Gson gson = new Gson();
-		Type collectionType = new TypeToken<ArrayList<DatabaseSuggestion>>(){}.getType();
+		Type collectionType = new TypeToken<ArrayList<OpeningSuggestion>>(){}.getType();
 		this.moves = gson.fromJson(response, collectionType);	
 	}
 	
