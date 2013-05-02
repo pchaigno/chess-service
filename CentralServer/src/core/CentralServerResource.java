@@ -14,17 +14,16 @@ import javax.ws.rs.Produces;
 @Path("/resource/rest/{stage}/{fenNotation}")
 public class CentralServerResource {
 	protected static final String NO_RESULT = "NULL";
-	//protected CentralServer server = new CentralServer();
+	protected CentralServer server = new CentralServer();
 	
 	@GET
 	@Produces("text/plain")
 	public String getBestMove(@PathParam("stage")String stageInGame, @PathParam("fenNotation")String fen) throws UnsupportedEncodingException {
-		/*String move = this.server.getBestMove(fen).getMove();
+		String move = this.server.getBestMove(fen).getMove();
 		if(move==null) {
 			return NO_RESULT;
 		} else {
 			return move;
-		}*/
-		return "e4";
+		}
 	}
 }
