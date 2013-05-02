@@ -2,8 +2,8 @@
 
 require('resourcewrapper.class.php');
 
-$wrapper = new ResourceWrapper('1.0', false, false);
-$wrapper->setDatabaseOpenings('http://chessok.com/onlineserv/opening/connection.php?timestamp='.time(), 'parserXMLToJSON');
+$wrapper = new ResourceWrapper(false);
+$wrapper->setDatabaseOpenings('http://chessok.com/onlineserv/opening/connection.php?timestamp='.time(), '1.0', false, 'parserXMLToJSON');
 $wrapper->rest();
 
 // Transforme le xml renvoye par chessok en JSon et l'affiche.

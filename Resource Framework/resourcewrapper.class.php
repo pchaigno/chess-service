@@ -1,42 +1,44 @@
 <?php
 
 class ResourceWrapper {
-	private $version; // Version of the wrapper.
 	private $complete_fen; // False to remove the end of the FEN before submit.
 	
 	private $openings; // True to support opengings.
+	private $open_version; // Version of the openings' code.
 	private $open_url; // URL of the website for openings.
 	private $open_parser; // The function to convert the result for openings requested to a JSON document.
 	private $open_post; // True if the website need a POST request for openings.
 	private $open_function; // The function for custom openings.
 	
 	private $endings; // True to support endings.
+	private $end_version; // Version of the endings' code.
 	private $end_url; // URL of the website for openings.
 	private $end_parser; // The function to convert the result for endings requested to a JSON document.
 	private $end_post; // True if the website need a POST request for endings.
 	private $end_function; // The function for custom endings.
 	
 	private $middle; // True to support middle game.
+	private $middle_version; // Version of the middle game's code.
 	private $middle_function; // The function for the middle game (to call the chess engine).
 	
 
 	// Constructor.
-	public function __construct($version, $san, $complete_fen = true) {
-		$this->version = $version;
+	public function __construct($complete_fen = true) {
 		$this->complete_fen = $complete_fen;
-		if($san) {
-			$this->version .= 's'; // SAN version.
-		} else {
-			$this->version .= 'l'; // LAN version.
-		}
 		$this->openings = false;
 		$this->endings = false;
 		$this->middle = false;
 	}
 	
 	// Configure the openings part for typical database requests.
-	public function setDatabaseOpenings($url, $parser = null) {
+	public function setDatabaseOpenings($url, $version, $san, $parser = null) {
 		$this->openings = true;
+		$this->open_version = $version;
+		if($san) {
+			$this->open_version .= 's'; // SAN version.
+		} else {
+			$this->open_version .= 'l'; // LAN version.
+		}
 		$this->open_url = $url;
 		$this->open_post = strstr($url, '$url_fen$')===false;
 		$this->open_parser = $parser;
@@ -44,15 +46,27 @@ class ResourceWrapper {
 	}
 	
 	// Configure the openings part with a custom function.
-	public function setCustomOpenings($function) {
+	public function setCustomOpenings($function, $version, $san) {
 		$this->openings = true;
+		$this->open_version = $version;
+		if($san) {
+			$this->open_version .= 's'; // SAN version.
+		} else {
+			$this->open_version .= 'l'; // LAN version.
+		}
 		$this->open_function = $function;
 		$this->open_parser = null;
 	}
 	
 	// Configure the endings part for typical database requests.
-	public function setDatabaseEndings($url, $parser = null) {
+	public function setDatabaseEndings($url, $version, $san, $parser = null) {
 		$this->endings = true;
+		$this->end_version = $version;
+		if($san) {
+			$this->end_version .= 's'; // SAN version.
+		} else {
+			$this->end_version .= 'l'; // LAN version.
+		}
 		$this->end_url = $url;
 		$this->end_post = strstr($url, '$url_fen$')===false;
 		$this->end_parser = $parser;
@@ -60,15 +74,27 @@ class ResourceWrapper {
 	}
 	
 	// Configure the openings part with a custom function.
-	public function setCustomEndings($function) {
+	public function setCustomEndings($function, $version, $san) {
 		$this->endings = true;
+		$this->end_version = $version;
+		if($san) {
+			$this->end_version .= 's'; // SAN version.
+		} else {
+			$this->end_version .= 'l'; // LAN version.
+		}
 		$this->end_function = $function;
 		$this->end_parser = null;
 	}
 	
 	// Configure the middle game part with a custom function.
-	public function setMiddleGame($function) {
+	public function setMiddleGame($function, $version, $san) {
 		$this->middle = true;
+		$this->middle_version = $version;
+		if($san) {
+			$this->middle_version .= 's'; // SAN version.
+		} else {
+			$this->middle_version .= 'l'; // LAN version.
+		}
 		$this->middle_function = $function;
 	}
 	
@@ -80,46 +106,56 @@ class ResourceWrapper {
 
 		if(count($chars)==3) {
 			if($this->openings && $chars[1]=='openings') {
-				// Get the FEN:
-				// $ are replaced by /.
-				$fen = rawurldecode($chars[2]);
-				$fen = str_replace('$', '/', $fen);
-				
-				if($this->open_function!=null) {
-					$result = call_user_func($this->open_function, $fen);
-				} else if($this->open_post) {
-					$result = $this->curlPost($this->open_url, $fen);
+				if($chars[2]=='version') {
+					// Return the version number.
+					echo $this->open_version;
 				} else {
-					$result = $this->curlGet($this->open_url, $fen);
-				}
-				
-				// Display the result as a JSON document:
-				header("Content-Type: application/json");
-				if($this->open_parser==null) {
-					echo $result;
-				} else {
-					echo call_user_func($this->open_parser, $result, $fen);
+					// Get the FEN:
+					// $ are replaced by /.
+					$fen = rawurldecode($chars[2]);
+					$fen = str_replace('$', '/', $fen);
+					
+					if($this->open_function!=null) {
+						$result = call_user_func($this->open_function, $fen);
+					} else if($this->open_post) {
+						$result = $this->curlPost($this->open_url, $fen);
+					} else {
+						$result = $this->curlGet($this->open_url, $fen);
+					}
+					
+					// Display the result as a JSON document:
+					header("Content-Type: application/json");
+					if($this->open_parser==null) {
+						echo $result;
+					} else {
+						echo call_user_func($this->open_parser, $result, $fen);
+					}
 				}
 			} else if($this->endings && $chars[1]=='endings') {
-				// Get the FEN:
-				// $ are replaced by /.
-				$fen = rawurldecode($chars[2]);
-				$fen = str_replace('$', '/', $fen);
-				
-				if($this->end_function!=null) {
-					$result = call_user_func($this->end_function, $fen);
-				} else if($this->end_post) {
-					$result = $this->curlPost($this->end_url, $fen);
+				if($chars[2]=='version') {
+					// Return the version number.
+					echo $this->end_version;
 				} else {
-					$result = $this->curlGet($this->end_url, $fen);
-				}
-				
-				// Display the result as a JSON document:
-				header("Content-Type: application/json");
-				if($this->end_parser==null) {
-					echo $result;
-				} else {
-					echo call_user_func($this->end_parser, $result, $fen);
+					// Get the FEN:
+					// $ are replaced by /.
+					$fen = rawurldecode($chars[2]);
+					$fen = str_replace('$', '/', $fen);
+					
+					if($this->end_function!=null) {
+						$result = call_user_func($this->end_function, $fen);
+					} else if($this->end_post) {
+						$result = $this->curlPost($this->end_url, $fen);
+					} else {
+						$result = $this->curlGet($this->end_url, $fen);
+					}
+					
+					// Display the result as a JSON document:
+					header("Content-Type: application/json");
+					if($this->end_parser==null) {
+						echo $result;
+					} else {
+						echo call_user_func($this->end_parser, $result, $fen);
+					}
 				}
 			} else {
 				redirectionErreur404();
@@ -127,7 +163,7 @@ class ResourceWrapper {
 		} elseif(count($chars)==2) {
 			if($chars[1]=='version') {
 				// Return the version number.
-				echo $this->version;
+				echo $this->middle_version;
 			} else if($this->middle) {
 				// Get the FEN:
 				// $ are replaced by /.

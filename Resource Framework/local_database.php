@@ -2,9 +2,9 @@
 
 require('resourcewrapper.class.php');
 
-$wrapper = new ResourceWrapper('1.0', true);
-$wrapper->setCustomOpenings('getOpenings');
-$wrapper->setCustomEndings('getEndings');
+$wrapper = new ResourceWrapper();
+$wrapper->setCustomOpenings('getOpenings', '1.0', true);
+$wrapper->setCustomEndings('getEndings', '1.0', true);
 $wrapper->rest();
 
 // Open the connection to the local mysql database.
