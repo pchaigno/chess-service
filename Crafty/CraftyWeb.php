@@ -15,25 +15,22 @@ $outputpath = 'game.001';
 
 // Step 1 : Get FEN and create "input.txt" file 
 // ----------------------------------------------
-
 if (copy($originalpath, $inputpath)) {
 	$inputfile = fopen($inputpath, "a"); // "a" = Start writing at the end of the file
 		$fen = "";
-		if(count($_GET) > 0) {
+		if(isset($_GET['fen'])) {
 			$fen = htmlspecialchars($_GET["fen"]);
-		}
-		// temporary, for testing
-		if (strlen($fen) == 0) {
-			$fen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR";
+		} else {
+			// Just for test.
+			$fen = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR';
 		}
 		fwrite($inputfile, "\nsetboard ".$fen." b \n");
 		fwrite($inputfile, "go\n"); // *Important* Write \n at the end to launch search
 	fclose($inputfile);
 
 } else {
-    echo "failed to copy $file...\n";
+    echo "Failed to copy $file...\n";
 }
-
 
 
 // Step 2 : Crafty process the move
@@ -48,13 +45,13 @@ echo("<hr/>");
 // ----------------------------------------------
 // Note : the best move is the last line of the output file
 
-if (file_exists($outputpath)) {
+if(file_exists($outputpath)) {
 	$outputfile = fopen($outputpath, "r");
 		fseek($outputfile, -1, SEEK_END); // Place reading at end file
 		$pos = ftell($outputfile);
 		$lastLine = "";
 		// Loop backword util a space is found.
-		while((($C = fgetc($outputfile)) != " ") && ($pos > 0)) {
+		while(($C = fgetc($outputfile))!=' ' && $pos>0) {
 		    $lastLine = $C.$lastLine;
 		    fseek($outputfile, $pos--);
 		}
@@ -67,6 +64,7 @@ if (file_exists($outputpath)) {
 	unlink($outputpath);
 
 } else {
-	echo "failed to get output file...\n";
+	echo "Failed to get output file...\n";
 }
+
 ?>
