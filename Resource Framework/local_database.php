@@ -1,6 +1,6 @@
 <?php
 
-require('resource_framework.php');
+require('resourcewrapper.class.php');
 
 $wrapper = new ResourceWrapper('1.0', true);
 $wrapper->setCustomOpenings('getOpenings');

@@ -1,6 +1,6 @@
 <?php
 
-require('resource_framework.php');
+require('resourcewrapper.class.php');
 
 $wrapper = new ResourceWrapper('1.0', false, false);
 $wrapper->setDatabaseOpenings('http://chessok.com/onlineserv/opening/connection.php?timestamp='.time(), 'parserXMLToJSON');
