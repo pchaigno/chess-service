@@ -33,6 +33,7 @@ import core.Bot;
 import core.Database;
 import core.Resource;
 import core.ResourcesManager;
+import core.CentralServerResourceDeployer;
 
 /**
  * The graphical user interface to manage resources and control the server.
@@ -73,17 +74,25 @@ public class GUI {
 		optionStart.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// TODO Start the server.
-				optionStop.setEnabled(true);
-				optionStart.setEnabled(false);
+				if(CentralServerResourceDeployer.start()){
+					optionStop.setEnabled(true);
+					optionStart.setEnabled(false);
+				}
+				else{
+					MessageDialog.openError(shell, "Server error", "Unable to start server");
+				}
 			}
 		});
 		optionStop.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				// TODO Stop the server.
-				optionStop.setEnabled(false);
-				optionStart.setEnabled(true);
+				if(CentralServerResourceDeployer.stop()){
+					optionStop.setEnabled(false);
+					optionStart.setEnabled(true);
+				}
+				else{
+					MessageDialog.openError(shell, "Server error", "Unable to stop server");
+				}
 			}
 		});
 		@SuppressWarnings("unused")
