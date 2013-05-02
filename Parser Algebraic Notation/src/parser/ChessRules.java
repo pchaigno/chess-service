@@ -21,7 +21,7 @@ public class ChessRules {
 		letter.put('h', 8);
 	}
 	
-	public BoardSquare pawn(Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	public BoardSquare pawn(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		List<BoardPiece> legalPawns = new LinkedList<BoardPiece>();
 		BoardSquare result = null;
 		int toXnum = letter.get(toX);
@@ -58,7 +58,7 @@ public class ChessRules {
 		return result;
 	}
 
-	public BoardSquare knight(Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	public BoardSquare knight(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		List<BoardPiece> legalKnights = new LinkedList<BoardPiece>();
 		BoardPiece knight;
 		int knightX;
@@ -78,7 +78,7 @@ public class ChessRules {
 		return this.executeCheck(board, legalKnights, toX, toY, capture);
 	}
 
-	public BoardSquare bishop(Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	public BoardSquare bishop(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		List<BoardPiece> legalBishops = new LinkedList<BoardPiece>();
 		int bishopX;
 		int bishopY;
@@ -123,7 +123,7 @@ public class ChessRules {
 		return this.executeCheck(board, legalBishops, toX, toY, capture);
 	}
 
-	public BoardSquare rook(Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	public BoardSquare rook(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		List<BoardPiece> legalRooks = new LinkedList<BoardPiece>();
 		int rookX;
 		int rookY;
@@ -170,7 +170,7 @@ public class ChessRules {
 		return this.executeCheck(board, legalRooks, toX, toY, capture);
 	}
 
-	public BoardSquare queen(Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	public BoardSquare queen(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		List<BoardPiece> legalQueens = new LinkedList<BoardPiece>();
 		int queenX;
 		int queenY;
@@ -250,15 +250,19 @@ public class ChessRules {
 	/**
 	 * Gets the king position
 	 */
-	public BoardSquare king(Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	public BoardSquare king(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		BoardPiece king;
 		BoardSquare result = null;
-		king = board.pieces.get(board.getPiece("king", board.currentMove, (char)0, -1));
-		result = new BoardSquare(king.square.x, king.square.y);
-		return result;
+		List<Integer> pieces = board.getPiece("king", board.currentMove, (char)0, -1);
+		if(pieces.size()==1) {
+			king = board.pieces.get(pieces.get(0));
+			result = new BoardSquare(king.square.x, king.square.y);
+			return result;
+		}
+		throw new IllegalArgumentException("Can't get the piece in king.");
 	}
 
-	public BoardSquare executeCheck(Board board, List<BoardPiece> legalPieces, char toX, int toY, boolean capture) {
+	public BoardSquare executeCheck(ChessBoard board, List<BoardPiece> legalPieces, char toX, int toY, boolean capture) {
 		BoardSquare result = null;
 		if(legalPieces.size() > 1) {
 			for(int i=0 ; i<legalPieces.size() ; i++) {
@@ -283,7 +287,7 @@ public class ChessRules {
 	}
 
 	// Sees if board is in check state for the current player
-	public boolean check(Board board) {
+	public boolean check(ChessBoard board) {
 		BoardSquare attackArray;
 		String kingColor;
 		BoardPiece king;
@@ -297,22 +301,25 @@ public class ChessRules {
 		} else {
 			kingColor = "white";
 		}
-		king = board.pieces.get(board.getPiece("king", kingColor, (char)0, -1));
-		kingX = king.square.x;
-		kingY = king.square.y;
-		for(int i=0 ; i<board.pieces.size() ; i++) {
-			if(board.pieces.get(i).color == board.currentMove) {
-				fromX = board.pieces.get(i).square.x;
-				fromY = board.pieces.get(i).square.y;
-				// We simply check if any of the pieces can "capture" enemy king, if so, its check
-				attackArray = this.eval(board.pieces.get(i).name, board, fromX, fromY, kingX, kingY, true);
-				if(attackArray != null) {
-					return true;
-					break;
+		List<Integer> pieces = board.getPiece("king", kingColor, (char)0, -1);
+		if(pieces.size()==1) {
+			king = board.pieces.get(pieces.get(0));
+			kingX = king.square.x;
+			kingY = king.square.y;
+			for(int i=0 ; i<board.pieces.size() ; i++) {
+				if(board.pieces.get(i).color == board.currentMove) {
+					fromX = board.pieces.get(i).square.x;
+					fromY = board.pieces.get(i).square.y;
+					// We simply check if any of the pieces can "capture" enemy king, if so, its check
+					attackArray = this.eval(board.pieces.get(i).name, board, fromX, fromY, kingX, kingY, true);
+					if(attackArray != null) {
+						return true;
+					}
 				}
 			}
+			return false;
 		}
-		return false;
+		throw new IllegalArgumentException("Can't get the piece in check.");
 	}
 	
 	/**
@@ -326,7 +333,7 @@ public class ChessRules {
 	 * @param capture
 	 * @return
 	 */
-	private BoardSquare eval(String piece, Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private BoardSquare eval(String piece, ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		if(piece.equals("pawn")) {
 			return this.pawn(board, fromX, fromY, toX, toY, capture);
 		}

@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class Board {
+public class ChessBoard {
 	// Board square notation:
 	final int[] numbers = {0, 8, 7, 6, 5, 4, 3, 2, 1};
 	final char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
@@ -34,7 +34,7 @@ public class Board {
 	/**
 	 * Constructor
 	 */
-	public Board() {
+	public ChessBoard() {
 		this.pieces = new LinkedList<BoardPiece>();
 		
 		this.letter = new HashMap<Character, Integer>();
@@ -275,9 +275,9 @@ public class Board {
 	
 	/**
 	 * MoveHandler
-	 * @param vurNum TODO Useless?
+	 * @param varNum TODO Useless?
 	 */
-	public void moveHandler(String piece, char fromX, int fromY, char toX, int toY, boolean capture, boolean promotion, String promoteTo, Object varNum) {
+	public void moveHandler(String piece, char fromX, int fromY, char toX, int toY, boolean capture, boolean promotion, String promoteTo/*, Object varNum*/) {
 		// Make piece move
 		this.makeMove(fromX, fromY, toX, toY, capture);
 		if(piece.equals("pawn")) {

@@ -26,9 +26,9 @@ public class Parser {
 	}
 
 	// Convert UCI style move into PGN style move
-	public String UCItoPGN(Map<String, String> moveArray, Board board) {
+	public String UCItoPGN(Map<String, String> moveArray, ChessBoard board) {
 		// GE is "empty" move, indicates the line end (as game populating this line ended there)
-		if (moveArray.get("Move").equals("GE")) {
+		if(moveArray.get("Move").equals("GE")) {
 			return "GE";
 		}
 
@@ -41,14 +41,14 @@ public class Parser {
 		boolean capture = false;
 		boolean promotion = false;
 
-		if (board.squares.get(toX)[toY].piece != null) {
+		if(board.squares.get(toX)[toY].piece != null) {
 			capture = true;
 		}
 		
 
 		// Castling
-		if (piece.equals("king") && Math.abs(letter.get(fromX) - letter.get(toX)) == 2) {
-			if (toX == 'g') {
+		if(piece.equals("king") && Math.abs(letter.get(fromX)-letter.get(toX))==2) {
+			if(toX == 'g') {
 				return "O-O";
 			} else {
 				return "O-O-O";
@@ -115,9 +115,9 @@ public class Parser {
 		PGN = PGN.replaceFirst("(;[\\W\\w]*?)\n", "");
 		
 		// Split the Games
-		var game = tree.game;
+		ChessGame game = tree.game;
 
-		var notation = PGN.replaceAll("(\\[[\\W\\w]*?\\])", "");
+		String notation = PGN.replaceAll("(\\[[\\W\\w]*?\\])", "");
 		
 		// Strip numbers notation 
 		notation = notation.replaceAll("\\b[\\d]+[\\s]*[\\.]+", "");
@@ -131,24 +131,25 @@ public class Parser {
 		// Assign notation to game object for later parsing
 		game.notation = notation;
 
-		game.displayNotation = [];
+		game.displayNotation.clear();
 	}
 
 	// Parses the notation of given game. Uses board object
-	public void parseNotation(Board board, ChessGame game) {
+	public void parseNotation(ChessBoard board, ChessGame game) {
 		// Determine starting position
-		game.FENs = [];
-		game.FENs.push("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+		game.FENs.clear();
+		// TODO Adapt the FEN.
+		game.FENs.add("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 		
-		var dispMove = [];
-		dispMove["type"] = "start";
-		dispMove["fenlink"] = 0;
-		game.displayNotation["start"] = dispMove;
+		DisplayMove dispMove = new DisplayMove();
+		dispMove.type = "start";
+		dispMove.fenlink = 0;
+		game.displayNotation.add(dispMove);
 
 		//game.currPosition = game.FENs[0];
 
 		// Load starting position into board
-		board.loadFEN(game.FENs[0]);
+		board.loadFEN(game.FENs.get(0));
 
 		// Parse the notation tokens
 		this.parseNotationTokens(board, game, game.notation);
@@ -156,7 +157,7 @@ public class Parser {
 
 	// Recursive move parsing
 	// Also prepare notation for display
-	public void parseNotationTokens(Board board, ChessGame game, String notation) {
+	public void parseNotationTokens(ChessBoard board, ChessGame game, String notation) {
 		String[] notationTokens = notation.split("[\\s]+");
 		String token;
 		// Loop through notation tokens
@@ -172,7 +173,7 @@ public class Parser {
 		}
 	}
 	
-	public void parseMove(Board board, ChessGame game, String token) {
+	public void parseMove(ChessBoard board, ChessGame game, String token) {
 		Matcher matcher = Pattern.compile("([RBQKPN])?([a-h])?([1-8])?([x])?([a-h])([1-8])([=]?)([QNRB]?)([+#]?)").matcher(token);
 		
 		// TODO End to replace the match after...
@@ -190,7 +191,7 @@ public class Parser {
 			}
 		}
 		
-		String piece;
+		String piece = "pawn";
 		if(moveArray[1]!=0) {
 			switch (Character.toLowerCase(moveArray[1])) {
 				case 'r':
@@ -211,8 +212,6 @@ public class Parser {
 				default:
 					break;
 			}
-		} else {
-			piece = "pawn";
 		}
 
 		char fromX = moveArray[2];
@@ -228,8 +227,8 @@ public class Parser {
 		char toX = moveArray[5];
 		int toY = Integer.parseInt(""+moveArray[6]);
 
-		boolean promotion;
-		String promoteTo;
+		boolean promotion = false;
+		String promoteTo = "";
 		if(moveArray[8]!=0) {
 			promotion = true;
 			switch(Character.toLowerCase(moveArray[8])) {
@@ -248,19 +247,19 @@ public class Parser {
 				default:
 					break;
 			}
-		} else {
-			promotion = false;
-			promoteTo = "";
 		}
 
 		// Determine the location of the piece to move using chess rules and incomplete information about it
 		BoardSquare pieceXY = evalRules(piece, board, fromX, fromY, toX, toY, capture);
 
-		Map<String, String> dispMove = new HashMap<String, String>();
-		dispMove.put("type", "regular");
-		dispMove.put("token", token);
-		dispMove.put("color", board.currentMove);
-		dispMove.put("fromto", {fromX: pieceXY.x, fromY: pieceXY.y, toX: toX, toY: toY});
+		DisplayMove dispMove = new DisplayMove();
+		dispMove.type = "regular";
+		dispMove.token = token;
+		dispMove.color = board.currentMove;
+		dispMove.fromX = pieceXY.x;
+		dispMove.fromY = pieceXY.y;
+		dispMove.toX = toX;
+		dispMove.toY = toY;
 
 		// Make piece move
 		board.moveHandler(piece, pieceXY.x, pieceXY.y, toX, toY, capture, promotion, promoteTo);
@@ -268,12 +267,12 @@ public class Parser {
 		// Add FEN to game.FENs
 		game.FENs.add(board.currentFEN(false));
 
-		dispMove.put("num", board.fullMoves);
-		dispMove.put("fenlink", game.FENs.size()-1);
-		game.displayNotation.push(dispMove);
+		dispMove.num = board.fullMoves;
+		dispMove.fenlink = game.FENs.size()-1;
+		game.displayNotation.add(dispMove);
 	}
 	
-	public void castle(Board board, ChessGame game, String token) {
+	public void castle(ChessBoard board, ChessGame game, String token) {
 		int line;
 		if(board.currentMove == "white") {
 			line = 1;
@@ -281,27 +280,33 @@ public class Parser {
 			line = 8;
 		}
 
-		Map<Character, Character> dispMove = new HashMap<Character, Character>();
-		dispMove.get("type") = "regular";
-		dispMove.get("token") = token;
-		dispMove.get("color") = board.currentMove;
+		DisplayMove dispMove = new DisplayMove();
+		dispMove.type = "regular";
+		dispMove.token = token;
+		dispMove.color = board.currentMove;
 
 		// Add move to game.moves[]
 		if(token.matches("^O-O\\+?$")) {
-			dispMove["fromto"] = {fromX: "e", fromY: line, toX: "g", toY: line};
+			dispMove.fromX = 'e';
+			dispMove.fromY = line; 
+			dispMove.toX = 'g';
+			dispMove.toY = line;
 		} else {
-			dispMove["fromto"] = {fromX: "e", fromY: line, toX: "c", toY: line};
+			dispMove.fromX = 'e';
+			dispMove.fromY = line;
+			dispMove.toX = 'c';
+			dispMove.toY = line;
 		}
 
 		// Castle on board
 		board.castle(token);
 
 		// Add FEN to game.FENs
-		game.FENs.push(board.currentFEN());
+		game.FENs.add(board.currentFEN(false));
 
-		dispMove["num"] = board.fullMoves;
-		dispMove["fenlink"] = game.FENs.length-1;
-		game.displayNotation.push(dispMove);
+		dispMove.num = board.fullMoves;
+		dispMove.fenlink = game.FENs.size()-1;
+		game.displayNotation.add(dispMove);
 	}
 	
 	/**
@@ -315,7 +320,7 @@ public class Parser {
 	 * @param capture
 	 * @return
 	 */
-	private BoardSquare evalRules(String piece, Board board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private BoardSquare evalRules(String piece, ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		if(piece.equals("pawn")) {
 			return this.rules.pawn(board, fromX, fromY, toX, toY, capture);
 		}
