@@ -121,6 +121,13 @@ class ResourceWrapper {
 				} else {
 					echo call_user_func($this->end_parser, $result, $fen);
 				}
+			} else {
+				redirectionErreur404();
+			}
+		} elseif(count($chars)==2) {
+			if($chars[1]=='version') {
+				// Return the version number.
+				echo $this->version;
 			} else if($this->middle) {
 				// Get the FEN:
 				// $ are replaced by /.
@@ -132,12 +139,7 @@ class ResourceWrapper {
 				// Display the result as a JSON document:
 				header("Content-Type: application/json");
 				echo $result;
-			} else {
-				redirectionErreur404();
 			}
-		} elseif(count($chars)==2 && $chars[1]=='version') {
-			// Return the version number.
-			echo $this->version;
 		} else {
 			redirectionErreur404();
 		}
