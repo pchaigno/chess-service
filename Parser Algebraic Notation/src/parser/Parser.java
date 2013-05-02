@@ -1,8 +1,6 @@
 package parser;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,6 +8,8 @@ import java.util.regex.Pattern;
 public class Parser {
 	private Map<Character, Integer> letter;
 	private ChessRules rules;
+	
+	private Tree tree; // Added
 	
 	public Parser() {
 		this.letter = new HashMap<Character, Integer>();
@@ -39,7 +39,7 @@ public class Parser {
 		int toY = ucimove.charAt(3);
 		String piece = board.squares.get(fromX)[fromY].piece.name;
 		boolean capture = false;
-		boolean promotion = false;
+		//boolean promotion = false; // TODO Useless?
 
 		if(board.squares.get(toX)[toY].piece != null) {
 			capture = true;
@@ -74,16 +74,16 @@ public class Parser {
 		}
 
 		char pgnpiece = 0;
-		if (piece == "knight") {
+		if(piece == "knight") {
 			pgnpiece = 'N';
-		} else if (piece == "pawn") {
+		} else if(piece == "pawn") {
 			pgnpiece = 0;
 		} else {
 			pgnpiece = Character.toUpperCase(piece.charAt(0));
 		}
 
 		// En passant capture
-		if ((""+toX+toY).equals(board.enPassant) && piece.equals("pawn")) {
+		if((""+toX+toY).equals(board.enPassant) && piece.equals("pawn")) {
 			capture = true;
 		}
 
@@ -108,7 +108,7 @@ public class Parser {
 
 		// Replace strings (because they can contain the semicolon comments,
 		// which could once again cripple our ability to parse the games correctly) and store them in array
-		Object[] tagStrings = new Object[0]; // TODO Useless?
+		//Object[] tagStrings = new Object[0]; // TODO Useless?
 		PGN = PGN.replaceAll("\"([^ \" \\ \\r \\n]*(?:\\.[^\" \\ \\r \\n]*)*)\"", "");
 
 		// Replace semicolon this.commentaries and store them in array
@@ -146,8 +146,6 @@ public class Parser {
 		dispMove.fenlink = 0;
 		game.displayNotation.add(dispMove);
 
-		//game.currPosition = game.FENs[0];
-
 		// Load starting position into board
 		board.loadFEN(game.FENs.get(0));
 
@@ -175,8 +173,6 @@ public class Parser {
 	
 	public void parseMove(ChessBoard board, ChessGame game, String token) {
 		Matcher matcher = Pattern.compile("([RBQKPN])?([a-h])?([1-8])?([x])?([a-h])([1-8])([=]?)([QNRB]?)([+#]?)").matcher(token);
-		
-		// TODO End to replace the match after...
 		char[] moveArray = new char[9];
 		if(matcher.find()) {
 			for(int i=0 ; i<9 ; i++) {

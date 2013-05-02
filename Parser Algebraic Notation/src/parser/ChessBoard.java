@@ -48,14 +48,14 @@ public class ChessBoard {
 		this.letter.put('h', 8);
 		
 		this.squares = new HashMap<Character, BoardSquare[]>();
-		this.squares.put('a', new BoardSquare[8]);
-		this.squares.put('b', new BoardSquare[8]);
-		this.squares.put('c', new BoardSquare[8]);
-		this.squares.put('d', new BoardSquare[8]);
-		this.squares.put('e', new BoardSquare[8]);
-		this.squares.put('f', new BoardSquare[8]);
-		this.squares.put('g', new BoardSquare[8]);
-		this.squares.put('h', new BoardSquare[8]);
+		this.squares.put('a', new BoardSquare[9]);
+		this.squares.put('b', new BoardSquare[9]);
+		this.squares.put('c', new BoardSquare[9]);
+		this.squares.put('d', new BoardSquare[9]);
+		this.squares.put('e', new BoardSquare[9]);
+		this.squares.put('f', new BoardSquare[9]);
+		this.squares.put('g', new BoardSquare[9]);
+		this.squares.put('h', new BoardSquare[9]);
 		for(char keyVar: this.squares.keySet()) {
 			for(int j=1 ; j<=8 ; j++) {
 				this.squares.get(keyVar)[j] = new BoardSquare(keyVar, j);
