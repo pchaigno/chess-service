@@ -69,7 +69,7 @@ public class PropertiesManager {
 		conf = new Properties();
 		setProperty(PROPERTY_CONNECT_TIMEOUT, "2000");
 		setProperty(PROPERTY_READ_TIMEOUT, "3000");
-		setProperty(PROPERTY_DATABASE, "resources.db");
+		setProperty(PROPERTY_DATABASE, "resources_empty.db");
 		setProperty(PROPERTY_PORT_LISTENER, "9998");
 		saveProperties();
 	}

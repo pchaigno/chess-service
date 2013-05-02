@@ -3,11 +3,13 @@ package gui;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -17,9 +19,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -34,6 +38,7 @@ import core.Database;
 import core.Resource;
 import core.ResourcesManager;
 import core.CentralServerResourceDeployer;
+import core.PropertiesManager;
 
 /**
  * The graphical user interface to manage resources and control the server.
@@ -49,7 +54,7 @@ public class GUI {
 	public static Shell buildInterface() {
 		display = new Display();
 		shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setText("Central Server");
+		shell.setText("Central Server (working db:"+ResourcesManager.getDatabaseName()+")");
 		shell.setImage(new Image(display, "chess.ico"));
 		shell.setLayout(new FillLayout());
 		buildMenu();
@@ -66,6 +71,37 @@ public class GUI {
 		optionFile.setText("File");
 		Menu menuFile = new Menu(shell, SWT.DROP_DOWN);
 		optionFile.setMenu(menuFile);
+		final MenuItem optionChangeDatabase = new MenuItem(menuFile, SWT.PUSH);
+		optionChangeDatabase.setText("Change database");
+		optionChangeDatabase.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				InputDialog dialogDatabase = new InputDialog(Display.getCurrent().getActiveShell(),
+						"Change database", "Enter the name of you want to work on", "", null);
+				if (dialogDatabase.open() == Window.OK) {
+					ResourcesManager.changeDatabase(dialogDatabase.getValue());
+					shell.setText("Central Server (working db:"+ResourcesManager.getDatabaseName()+")");
+					for(TableItem item : resourcesTable.getItems()){
+						item.dispose();
+					}
+					Set<Resource> resources = ResourcesManager.getResources();
+					for(Resource resource: resources) {
+						addResourceItem(resource);
+					}
+				}
+			}
+		});
+		final MenuItem optionSetWorkingDbAsDefault = new MenuItem(menuFile, SWT.PUSH);
+		optionSetWorkingDbAsDefault.setText("Set working database as default");
+		optionSetWorkingDbAsDefault.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				PropertiesManager.setProperty(PropertiesManager.PROPERTY_DATABASE, ResourcesManager.getDatabaseName());
+				PropertiesManager.saveProperties();
+			}
+		});
+		@SuppressWarnings("unused")
+		MenuItem databaseSeparator = new MenuItem(menuFile, SWT.SEPARATOR);
 		final MenuItem optionStart = new MenuItem(menuFile, SWT.PUSH);
 		optionStart.setText("Start server");
 		final MenuItem optionStop = new MenuItem(menuFile, SWT.PUSH);
@@ -144,7 +180,7 @@ public class GUI {
 	 * The window allow the user to change the settings.
 	 */
 	private static void buildOptionsShell() {
-		Shell shell = new Shell();
+		final Shell shell = new Shell();
 		shell.setText("Options");
 		shell.setImage(new Image(display, "chess.ico"));
 		GridLayout gridLayout = new GridLayout();
@@ -156,23 +192,46 @@ public class GUI {
 		Label portLabel = new Label(shell, SWT.NONE);
 		portLabel.setText("Listening port: ");
 		final Text port = new Text(shell, SWT.BORDER);
-		port.setLayoutData(new GridData(100, 13));
+		port.setText(PropertiesManager.getProperty(PropertiesManager.PROPERTY_PORT_LISTENER));
+		port.setLayoutData(new GridData(150, 13));
 		
 		Label connectTimeoutLabel = new Label(shell, SWT.NONE);
-		connectTimeoutLabel.setText("Connect Timeout: ");
+		connectTimeoutLabel.setText("Connect Timeout(ms): ");
 		final Text connectTimeout = new Text(shell, SWT.BORDER);
-		connectTimeout.setLayoutData(new GridData(100, 13));
+		connectTimeout.setText(PropertiesManager.getProperty(PropertiesManager.PROPERTY_CONNECT_TIMEOUT));
+		connectTimeout.setLayoutData(new GridData(150, 13));
 		
 		Label readTimeoutLabel = new Label(shell, SWT.NONE);
-		readTimeoutLabel.setText("Read Timeout: ");
+		readTimeoutLabel.setText("Read Timeout(ms): ");
 		final Text readTimeout = new Text(shell, SWT.BORDER);
-		readTimeout.setLayoutData(new GridData(100, 13));
+		readTimeout.setText(PropertiesManager.getProperty(PropertiesManager.PROPERTY_READ_TIMEOUT));
+		readTimeout.setLayoutData(new GridData(150, 13));
+		
+		Label databaseLabel = new Label(shell, SWT.NONE);
+		databaseLabel.setText("Database used by central server: ");
+		final Text database = new Text(shell, SWT.BORDER);
+		database.setText(PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE));
+		database.setLayoutData(new GridData(150, 13));
 		
 		Button submit = new Button(shell, SWT.PUSH);
 		submit.setText("Submit");
 		GridData dataSubmit = new GridData();
 		dataSubmit.widthHint = 100;
 		submit.setLayoutData(dataSubmit);
+		submit.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				PropertiesManager.setProperty(PropertiesManager.PROPERTY_PORT_LISTENER, port.getText());
+				PropertiesManager.setProperty(PropertiesManager.PROPERTY_CONNECT_TIMEOUT, connectTimeout.getText());
+				PropertiesManager.setProperty(PropertiesManager.PROPERTY_READ_TIMEOUT, readTimeout.getText());
+				PropertiesManager.setProperty(PropertiesManager.PROPERTY_DATABASE, database.getText());
+				if(!PropertiesManager.saveProperties()){
+					MessageDialog.openError(shell, "Saving error", "Unable to save otions");
+				}
+				
+				shell.dispose();
+			}
+		});
 		shell.setDefaultButton(submit);
 		
 		shell.pack();

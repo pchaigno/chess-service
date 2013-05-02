@@ -1,5 +1,7 @@
 package core;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,13 +18,27 @@ import org.sqlite.SQLiteConfig;
  * Handle all the accesses to the SQLite database for the resources.
  */
 public class ResourcesManager {
-	private static final String DATABASE_FILE = PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE);
+	public static final String DATABASES_DIRECTORY = "databases/";
+	private static String DATABASE_NAME = PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE);
+	private static String DATABASE_FILE = DATABASES_DIRECTORY + DATABASE_NAME;
 	private static final String RESOURCES = "resources";
 	private static final String RESOURCE_URI = "uri";
 	private static final String RESOURCE_NAME = "name";
 	private static final String RESOURCE_TRUST = "trust";
 	private static final String RESOURCE_TYPE = "type";
 
+	/**
+	 * Change the current database
+	 * @param newDatabase the new database used
+	 */
+	public static void changeDatabase(String newDatabase){
+		DATABASE_NAME = newDatabase;
+		DATABASE_FILE = DATABASES_DIRECTORY + DATABASE_NAME;
+	}
+	
+	public static String getDatabaseName(){
+		return DATABASE_NAME;
+	}
 	/**
 	 * @return All resources from the database.
 	 */
