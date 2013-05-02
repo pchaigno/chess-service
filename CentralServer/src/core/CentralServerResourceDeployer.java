@@ -14,7 +14,7 @@ import com.sun.jersey.api.container.grizzly.GrizzlyWebContainerFactory;
 public class CentralServerResourceDeployer {
 	
 	private static SelectorThread threadSelector=null;
-	private static final String BASE_URI = "http://localhost:9998/";
+	private static final String BASE_URI = "http://localhost:"+PropertiesManager.getProperty(PropertiesManager.PROPERTY_PORT_LISTENER)+"/";
 	private static final String RESOURCE_PACKAGE = "core";
 	
 	/**

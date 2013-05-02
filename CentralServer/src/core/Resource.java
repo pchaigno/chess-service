@@ -12,8 +12,8 @@ import com.sun.jersey.api.client.WebResource;
 public abstract class Resource {
 	public final static int DATABASE = 0;
 	public final static int BOT = 1;
-	protected final static int CONNECT_TIMEOUT = 2000;
-	protected final static int READ_TIMEOUT = 3000;
+	protected final static int CONNECT_TIMEOUT = Integer.parseInt(PropertiesManager.getProperty(PropertiesManager.PROPERTY_CONNECT_TIMEOUT));
+	protected final static int READ_TIMEOUT = Integer.parseInt(PropertiesManager.getProperty(PropertiesManager.PROPERTY_READ_TIMEOUT));
 	protected String uri;
 	protected String name;
 	protected int trust;
