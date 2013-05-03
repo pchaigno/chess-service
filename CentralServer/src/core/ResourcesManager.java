@@ -1,7 +1,5 @@
 package core;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -28,17 +26,21 @@ public class ResourcesManager {
 	private static final String RESOURCE_TYPE = "type";
 
 	/**
-	 * Change the current database
-	 * @param newDatabase the new database used
+	 * Change the current database.
+	 * @param newDatabase The new database used.
 	 */
 	public static void changeDatabase(String newDatabase){
 		DATABASE_NAME = newDatabase;
 		DATABASE_FILE = DATABASES_DIRECTORY + DATABASE_NAME;
 	}
 	
+	/**
+	 * @return The database name.
+	 */
 	public static String getDatabaseName(){
 		return DATABASE_NAME;
 	}
+	
 	/**
 	 * @return All resources from the database.
 	 */

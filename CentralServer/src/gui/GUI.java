@@ -19,11 +19,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
@@ -78,12 +76,10 @@ public class GUI {
 			public void widgetSelected(SelectionEvent e) {
 				InputDialog dialogDatabase = new InputDialog(Display.getCurrent().getActiveShell(),
 						"Change database", "Enter the name of you want to work on", "", null);
-				if (dialogDatabase.open() == Window.OK) {
+				if(dialogDatabase.open() == Window.OK) {
 					ResourcesManager.changeDatabase(dialogDatabase.getValue());
 					shell.setText("Central Server (working db:"+ResourcesManager.getDatabaseName()+")");
-					for(TableItem item : resourcesTable.getItems()){
-						item.dispose();
-					}
+					resourcesTable.removeAll();
 					Set<Resource> resources = ResourcesManager.getResources();
 					for(Resource resource: resources) {
 						addResourceItem(resource);
@@ -115,19 +111,18 @@ public class GUI {
 					optionStart.setEnabled(false);
 				}
 				else{
-					MessageDialog.openError(shell, "Server error", "Unable to start server");
+					MessageDialog.openError(shell, "Server error", "Unable to start the server");
 				}
 			}
 		});
 		optionStop.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if(CentralServerResourceDeployer.stop()){
+				if(CentralServerResourceDeployer.stop()) {
 					optionStop.setEnabled(false);
 					optionStart.setEnabled(true);
-				}
-				else{
-					MessageDialog.openError(shell, "Server error", "Unable to stop server");
+				} else {
+					MessageDialog.openError(shell, "Server error", "Unable to stop the server");
 				}
 			}
 		});
@@ -225,8 +220,8 @@ public class GUI {
 				PropertiesManager.setProperty(PropertiesManager.PROPERTY_CONNECT_TIMEOUT, connectTimeout.getText());
 				PropertiesManager.setProperty(PropertiesManager.PROPERTY_READ_TIMEOUT, readTimeout.getText());
 				PropertiesManager.setProperty(PropertiesManager.PROPERTY_DATABASE, database.getText());
-				if(!PropertiesManager.saveProperties()){
-					MessageDialog.openError(shell, "Saving error", "Unable to save otions");
+				if(!PropertiesManager.saveProperties()) {
+					MessageDialog.openError(shell, "Saving error", "Unable to save the new options.");
 				}
 				
 				shell.dispose();

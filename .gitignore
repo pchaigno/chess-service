@@ -2,3 +2,4 @@
 bin/
 CentralServer/libs/swt.jar
 CentralServer/resources.db
+CentralServer/conf.properties
