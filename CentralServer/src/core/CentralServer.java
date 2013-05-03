@@ -74,7 +74,7 @@ public class CentralServer {
 
 		for(Resource resource : this.resources) {
 			for(MoveSuggestion move : resource.getMoveSuggestions()) {
-				if(move.getClass().equals(OpeningSuggestion.class)) {
+				if(move.getClass()==OpeningSuggestion.class) {
 					double moveScore = computeScoreDatabase((OpeningSuggestion)move, resource);
 					this.includeScore(moves, move, moveScore);
 				}
