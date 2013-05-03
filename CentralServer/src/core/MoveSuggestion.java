@@ -6,6 +6,7 @@ package core;
  */
 public abstract class MoveSuggestion {
 	protected String move;
+	protected double score;
 	
 	/**
 	 * Constructor
@@ -13,6 +14,7 @@ public abstract class MoveSuggestion {
 	 */
 	public MoveSuggestion(String move) {
 		this.move = move;
+		this.score = 1;
 	}
 	
 	/**
@@ -20,6 +22,13 @@ public abstract class MoveSuggestion {
 	 */
 	public String getMove() {
 		return this.move;
+	}
+	
+	/**
+	 * @return The score compute.
+	 */
+	public double getScore() {
+		return this.score;
 	}
 
 	@Override

@@ -7,6 +7,8 @@ public class OpeningSuggestion extends MoveSuggestion {
 	private int nbPlay;
 	private float probaWin;
 	private float probaDraw;
+	private static final int WEIGHT_NB_PLAY = 1;
+	private static final int WEIGHT_PROBA_WIN = 1;
 	
 	/**
 	 * Constructor
@@ -20,6 +22,7 @@ public class OpeningSuggestion extends MoveSuggestion {
 		this.nbPlay = nbPlay;
 		this.probaWin = probaWin;
 		this.probaDraw = probaDraw;
+		this.score = WEIGHT_NB_PLAY*this.nbPlay+WEIGHT_PROBA_WIN*this.probaWin;
 	}
 
 	/**

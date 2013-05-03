@@ -65,68 +65,39 @@ public class CentralServer {
 	/**
 	 * Get the suggestion of move from the resources and compute the best answer.
 	 * @param fen The FEN.
-	 * @return The best suggestion of move or null if no suggestion.
+	 * @return The best move or null if no suggestion.
 	 */
-	public MoveSuggestion getBestMove(String fen) {
+	public String getBestMove(String fen) {
 		this.updateResources(fen);
-		// The hashMap contains all the moves and the score associated 
-		Map<MoveSuggestion, Double> moves = new HashMap<MoveSuggestion, Double>();
+		// The map contains all the moves and the scores associated.
+		Map<String, Double> scores = new HashMap<String, Double>();
 
 		for(Resource resource : this.resources) {
 			for(MoveSuggestion move : resource.getMoveSuggestions()) {
-				if(move.getClass()==OpeningSuggestion.class) {
-					double moveScore = computeScoreDatabase((OpeningSuggestion)move, resource);
-					this.includeScore(moves, move, moveScore);
+				if(scores.containsKey(move.getMove())) {
+					double newScore = scores.get(move)+resource.getTrust()*move.getScore();
+					scores.put(move.getMove(), newScore);
 				}
 			}
 		}
-		return bestMove(moves);
+		return this.bestMove(scores);
 	}
 
 	/**
-	 * TODO
-	 * @param moves TODO
+	 * Get the best move by comparing the scores among all moves suggested.
+	 * @param moves The map containing all the moves and the scores associated.
 	 * @return The best move (with the highest score) among all moves or null if no suggestion.
 	 */
-	private MoveSuggestion bestMove(Map<MoveSuggestion, Double> moves) {
+	private String bestMove(Map<String, Double> moves) {
 		double max = -1;
-		MoveSuggestion move = null;
-
-		for(Map.Entry<MoveSuggestion, Double> entry : moves.entrySet()) {
+		String move = null;
+		for(Map.Entry<String, Double> entry : moves.entrySet()) {
 			if(entry.getValue() > max) {
 				max = entry.getValue();
 				move = entry.getKey();
 			}
 		}
 		return move;
-	}
-
-
-	/**
-	 * Include the move in the HashMap:
-	 * if the move already exist, we add the score
-	 * otherwise we create a new one in the HashMap
-	 * @param moves TODO
-	 * @param move TODO
-	 * @param moveScore TODO
-	 */
-	private void includeScore(Map<MoveSuggestion, Double> moves, MoveSuggestion move, double moveScore) {
-		if(moves.containsKey(move.getMove())) {
-			moves.put(move, moves.get(move)+moveScore);
-		} else {
-			moves.put(move, moveScore);
-		}
-	}
-
-	/**
-	 * TODO
-	 * @param move TODO
-	 * @param resource TODO
-	 * @return The score computed according to the formulas we defined
-	 */
-	private double computeScoreDatabase(OpeningSuggestion move, Resource resource) {
-		// TODO change the formula
-		return move.getProbaWin()*move.getNbPlay()*resource.getTrust();
 	}
 
 	/**
