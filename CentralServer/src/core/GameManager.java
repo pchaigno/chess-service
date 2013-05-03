@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.sqlite.SQLiteConfig;
@@ -121,8 +122,9 @@ public class GameManager {
 				statement.setInt(1, game_id);
 				ResultSet set = statement.executeQuery();
 				set.next();
+				int nbMoves = set.getInt(NUMBER_OF_MOVES);
 				dbConnect.close();
-				return set.getInt(NUMBER_OF_MOVES);
+				return nbMoves;
 			}catch(SQLException e){
 				System.err.println("getNumberOfMoves: "+e.getMessage());
 				return -1;
@@ -154,6 +156,7 @@ public class GameManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, game_id);
 			ResultSet set = statement.executeQuery();
+			dbConnect.close();
 			return set.next();
 		}catch(SQLException e){
 			System.err.println("gameExist: "+e.getMessage());
@@ -245,6 +248,22 @@ public class GameManager {
 			System.err.println("Driver missing for SQLite JDBC.");
 		}
 		return dbConnect;
+	}
+	
+	public static void main(String[] args) {
+		ArrayList<Integer> games = new ArrayList<Integer>();
+		games.add(addNewGame());
+		
+		addMove(games.get(0),1, "e4", 1);
+		addMove(games.get(0),1, "e5", 2);
+		addMove(games.get(0),1, "e6", 3);
+		addMove(games.get(0),2, "e4", 1);
+		addMove(games.get(0),2, "d4", 2);
+		
+		updateGame(games.get(0), "fen3coups", 3);
+		
+		System.out.println(getResourcesStats(games.get(0)).toString());
+		
 	}
 
 }
