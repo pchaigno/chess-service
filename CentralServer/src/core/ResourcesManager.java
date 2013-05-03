@@ -14,9 +14,10 @@ import org.sqlite.SQLiteConfig;
 
 /**
  * Handle all the accesses to the SQLite database for the resources.
+ * TODO ajouter un id (integer) pour chaque resource
  */
 public class ResourcesManager {
-	public static final String DATABASES_DIRECTORY = "databases/";
+	public static final String DATABASES_DIRECTORY = "databases/resources/";
 	private static String DATABASE_NAME = PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE);
 	private static String DATABASE_FILE = DATABASES_DIRECTORY + DATABASE_NAME;
 	private static final String RESOURCES = "resources";
