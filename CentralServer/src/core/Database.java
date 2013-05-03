@@ -39,20 +39,21 @@ public class Database extends Resource {
 		// We call the client
 		Client c = Client.create();
 		// TODO handle the last slash
-		WebResource r = c.resource(uri+fen);
+		WebResource r = c.resource(this.uri+fen);
 		c.setConnectTimeout(CONNECT_TIMEOUT);
 		c.setReadTimeout(READ_TIMEOUT);
 		String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
 		
-		// We parse the json response with Gson
+		// We parse the JSON response with Gson:
+		// TODO Convert LAN to SAN.
 		Gson gson = new Gson();
 		Type collectionType = new TypeToken<ArrayList<OpeningSuggestion>>(){}.getType();
 		this.moves = gson.fromJson(response, collectionType);	
 	}
 	
 	/**
-	 * For testing (maybe an other class after)
-	 * @param args
+	 * For testing (maybe another class after)
+	 * @param args Unused
 	 */
 	public static void main(String[] args) {
 		Database db1 = new Database("http://localhost/1.0/rest/openings/", "Db1", 1);
