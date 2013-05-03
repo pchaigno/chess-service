@@ -10,8 +10,7 @@ import javax.ws.rs.Produces;
 /**
  * This class will handle the call from the client to the central server and will send the answer.
  */
-// The stage is opening, middle or ending (may not be this path)
-@Path("/resource/rest/{stage}/{fenNotation}")
+@Path("/resource/rest/{fenNotation}")
 public class CentralServerResource {
 	protected static final String NO_RESULT = "NULL";
 	protected CentralServer server = new CentralServer();
