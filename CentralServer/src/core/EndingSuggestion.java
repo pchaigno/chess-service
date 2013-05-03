@@ -26,6 +26,7 @@ public class EndingSuggestion extends MoveSuggestion {
 		} else {
 			this.result = result;
 		}
+		this.score = this.result*this.nbMoves;
 	}
 	
 	/**

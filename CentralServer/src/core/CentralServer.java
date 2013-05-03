@@ -69,29 +69,50 @@ public class CentralServer {
 	 */
 	public String getBestMove(String fen) {
 		this.updateResources(fen);
-		// The map contains all the moves and the scores associated.
+		// This map contains all the moves and the scores associated except the ending moves.
 		Map<String, Double> scores = new HashMap<String, Double>();
+		// This map contains the ending moves with their scores.
+		Map<String, Double> ends = new HashMap<String, Double>();
 
 		for(Resource resource : this.resources) {
 			for(MoveSuggestion move : resource.getMoveSuggestions()) {
-				if(scores.containsKey(move.getMove())) {
-					double newScore = scores.get(move)+resource.getTrust()*move.getScore();
-					scores.put(move.getMove(), newScore);
+				if(move.getClass()==EndingSuggestion.class) {
+					ends.put(move.getMove(), move.getScore());	
+				} else {
+					if(scores.containsKey(move.getMove())) {
+						double newScore = scores.get(move)+resource.getTrust()*move.getScore();
+						scores.put(move.getMove(), newScore);
+					}
 				}
 			}
 		}
-		return this.bestMove(scores);
+		return this.bestMove(scores, ends);
 	}
 
 	/**
 	 * Get the best move by comparing the scores among all moves suggested.
 	 * @param moves The map containing all the moves and the scores associated.
-	 * @return The best move (with the highest score) among all moves or null if no suggestion.
+	 * @param ends The map containing all the ending moves and their scores.
+	 * @return The best move among all moves or null if no suggestion.
 	 */
-	private String bestMove(Map<String, Double> moves) {
-		double max = -1;
+	private String bestMove(Map<String, Double> moves, Map<String, Double> ends) {
 		String move = null;
-		for(Map.Entry<String, Double> entry : moves.entrySet()) {
+		if(ends.size()>0) {
+			double min = Double.MAX_VALUE;
+			for(Map.Entry<String, Double> entry: ends.entrySet()) {
+				if(entry.getValue() < min) {
+					min = entry.getValue();
+					move = entry.getKey();
+				}
+			}
+			if(min>0) {
+				// Use an end suggestion only if we'll win.
+				return move;
+			}
+		}
+		double max = Double.MIN_VALUE;
+		move = null;
+		for(Map.Entry<String, Double> entry: moves.entrySet()) {
 			if(entry.getValue() > max) {
 				max = entry.getValue();
 				move = entry.getKey();
