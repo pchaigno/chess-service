@@ -2,6 +2,8 @@ package core;
 
 import java.util.List;
 
+import javax.ws.rs.core.MediaType;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -21,6 +23,7 @@ public abstract class Resource {
 	protected boolean san;
 	protected String version;
 	protected boolean connected;
+	protected static final String JSON_MOVE = "move";
 
 	/**
 	 * Constructor
@@ -51,9 +54,43 @@ public abstract class Resource {
 		this.changed = true;
 	}
 
+	/**
+	 * @return True if the resource was changed.
+	 */
 	public boolean isChanged() {
-		return changed;
+		return this.changed;
 	}
+	
+	/**
+	 * Clear the suggestions of moves.
+	 */
+	protected abstract void clearSuggestions();
+
+	/**
+	 * Query the resource on the network and update the suggestions of move.
+	 * @param fen The FEN representing the current position of the chessboard.
+	 */
+	public void query(String fen) {
+		this.clearSuggestions();
+		
+		// We call the client
+		Client c = Client.create();
+		// TODO handle the last slash
+		WebResource r = c.resource(this.uri+fen);
+		c.setConnectTimeout(CONNECT_TIMEOUT);
+		c.setReadTimeout(READ_TIMEOUT);
+		String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
+		
+		this.parseJSONMove(response, fen);
+	}
+
+	/**
+	 * Parse the JSON moves to openings move.
+	 * Convert the LAN to SAN if it's necessary.
+	 * @param response The JSON moves.
+	 * @param fen The FEN.
+	 */
+	protected abstract void parseJSONMove(String response, String fen);
 
 	/**
 	 * @return The URI.
@@ -120,12 +157,6 @@ public abstract class Resource {
 	 * @return The suggestions of move.
 	 */
 	public abstract List<? extends MoveSuggestion> getMoveSuggestions();
-
-	/**
-	 * Query the resource on the network and update the suggestions of move.
-	 * @param fen The FEN representing the current position of the chessboard.
-	 */
-	public abstract void query(String fen);
 
 	@Override
 	public int hashCode() {

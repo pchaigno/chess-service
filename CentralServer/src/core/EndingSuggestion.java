@@ -5,18 +5,27 @@ package core;
  */
 public class EndingSuggestion extends MoveSuggestion {
 	private int nbMoves;
-	private GameResult result;
+	private int result;
+	public static final int WIN_RESULT = 1;
+	public static final int LOOSE_RESULT = -1;
+	public static final int DRAW_RESULT = 0;
+	
 	
 	/**
 	 * Constructor
 	 * @param move The move suggested.
 	 * @param result The result of the game.
 	 * @param nbMoves The number of moves to the end of the game.
+	 * @throws IllegalArgumentException If the result is not -1, 0 or 1.
 	 */
-	public EndingSuggestion(String move, GameResult result, int nbMoves) {
+	public EndingSuggestion(String move, int result, int nbMoves) {
 		super(move);
 		this.nbMoves = nbMoves;
-		this.result = result;
+		if(result!=WIN_RESULT && result!=LOOSE_RESULT && result!=DRAW_RESULT) {
+			throw new IllegalArgumentException("The result must be one of the result's constants.");
+		} else {
+			this.result = result;
+		}
 	}
 	
 	/**
@@ -29,7 +38,7 @@ public class EndingSuggestion extends MoveSuggestion {
 	/**
 	 * @return The result of the game.
 	 */
-	public GameResult getResult() {
+	public int getResult() {
 		return this.result;
 	}
 

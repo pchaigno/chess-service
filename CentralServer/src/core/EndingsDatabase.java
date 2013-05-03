@@ -1,0 +1,53 @@
+package core;
+
+import java.util.LinkedList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import parser.ChessParser;
+
+public class EndingsDatabase extends Resource {
+	private List<EndingSuggestion> moves;
+	private static final String JSON_RESULT = "result";
+	private static final String JSON_NB_MOVES = "nb_moves";
+
+	/**
+	 * Constructor
+	 * @param uri The URI.
+	 * @param name The name.
+	 * @param trust The trust in this database.
+	 */
+	public EndingsDatabase(String uri, String name, int trust) {
+		super(uri, name, trust);
+		this.moves = new LinkedList<EndingSuggestion>();
+	}
+
+	@Override
+	public List<EndingSuggestion> getMoveSuggestions() {
+		return this.moves;
+	}
+	
+	@Override
+	protected void parseJSONMove(String response, String fen) {
+		JSONArray jsonArray = new JSONArray(response);
+		for(int i=0 ; i<jsonArray.length() ; i++) {
+			JSONObject json = jsonArray.getJSONObject(i);
+			String move = json.getString(JSON_MOVE);
+			if(!this.san) {
+				ChessParser parser = new ChessParser(fen);
+				move = parser.convertLANToSAN(move);
+			}
+			int result = json.getInt(JSON_RESULT);
+			int nbMoves = json.getInt(JSON_NB_MOVES);
+			EndingSuggestion suggestion = new EndingSuggestion(move, result, nbMoves);
+			this.moves.add(suggestion);
+		}
+	}
+
+	@Override
+	protected void clearSuggestions() {
+		this.moves.clear();
+	}
+}

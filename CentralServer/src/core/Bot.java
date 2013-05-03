@@ -1,6 +1,5 @@
 package core;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,8 +24,12 @@ public class Bot extends Resource {
 	}
 
 	@Override
-	public void query(String fen) {
-		this.moves = new ArrayList<BotSuggestion>();
-		// TODO Query the bot and update this.moves with the reponses.
+	protected void clearSuggestions() {
+		this.moves.clear();
+	}
+
+	@Override
+	protected void parseJSONMove(String response, String fen) {
+		// TODO and to rename?
 	}
 }
