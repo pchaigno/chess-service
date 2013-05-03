@@ -126,7 +126,7 @@ public class CentralServer {
 	 */
 	private double computeScoreDatabase(OpeningSuggestion move, Resource resource) {
 		// TODO change the formula
-		return move.getprobatowin()*move.getnb()*resource.getTrust();
+		return move.getProbaWin()*move.getNbPlay()*resource.getTrust();
 	}
 
 	/**

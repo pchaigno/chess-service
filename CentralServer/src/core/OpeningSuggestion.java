@@ -1,52 +1,51 @@
 package core;
 
 /**
- * Represent the suggestion of move made by the databases.
+ * Represent the suggestion of opening move made by a databases.
  */
 public class OpeningSuggestion extends MoveSuggestion {
-	private int nb;
-	private float probatowin;
-	private float probatonull;
+	private int nbPlay;
+	private float probaWin;
+	private float probaDraw;
 	
 	/**
 	 * Constructor
 	 * @param move The move suggested.
-	 * @param nb The number of times the move has been played.
-	 * @param probatowin The probability of winning.
-	 * @param probatonull The probability of drawing.
+	 * @param nbPlay The number of times the move has been played.
+	 * @param probaWin The probability of winning.
+	 * @param probaDraw The probability of drawing.
 	 */
-	public OpeningSuggestion(String move, int nb, float probatowin, float probatonull) {
+	public OpeningSuggestion(String move, int nbPlay, float probaWin, float probaDraw) {
 		super(move);
-		this.nb = nb;
-		this.probatonull = probatonull;
-		this.probatowin = probatowin;
+		this.nbPlay = nbPlay;
+		this.probaWin = probaWin;
+		this.probaDraw = probaDraw;
 	}
 
 	/**
 	 * @return The number of times the move has been played.
 	 */
-	public int getnb() {
-		return this.nb;
+	public int getNbPlay() {
+		return this.nbPlay;
 	}
 
 	/**
 	 * @return The probability of winning the game.
 	 */
-	public float getprobatowin() {
-		return this.probatowin;
+	public float getProbaWin() {
+		return this.probaWin;
 	}
 
 	/**
 	 * @return The probability of drawing.
 	 */
-	public float getprobatonull() {
-		return this.probatonull;
+	public float getProbaDraw() {
+		return this.probaDraw;
 	}
 
 	@Override
 	public String toString() {
-		return "DatabaseSuggestion [nb=" + nb + ", probatowin=" + probatowin
-				+ ", probatonull=" + probatonull + ", toString()="
-				+ super.toString() + "]";
+		return "DatabaseSuggestion [nbPlay=" + nbPlay + ", probaWin=" + probaWin
+				+ ", probaDraw=" + probaDraw + "]";
 	}
 }
