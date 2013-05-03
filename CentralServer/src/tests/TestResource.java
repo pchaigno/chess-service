@@ -2,7 +2,7 @@ package tests;
 
 import junit.framework.TestCase;
 import core.Bot;
-import core.Database;
+import core.OpeningsDatabase;
 import core.Resource;
 
 /**
@@ -20,9 +20,9 @@ public class TestResource extends TestCase {
 		assertEquals(bot1, bot2);
 		assertFalse(bot3.equals(bot1));
 		
-		Resource database1 = new Database("test123.com", "TestDatabase", 50);
-		Database database2 = new Database("test123.com", "Test Database", 70);
-		Resource database3 = new Database("test12.com", "Test Database", 70);
+		Resource database1 = new OpeningsDatabase("test123.com", "TestDatabase", 50);
+		OpeningsDatabase database2 = new OpeningsDatabase("test123.com", "Test Database", 70);
+		Resource database3 = new OpeningsDatabase("test12.com", "Test Database", 70);
 		assertTrue(bot1.equals(database1));
 		assertEquals(database1, database2);
 		assertFalse(database3.equals(database1));

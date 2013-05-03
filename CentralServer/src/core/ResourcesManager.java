@@ -55,7 +55,7 @@ public class ResourcesManager {
 			while(results.next()) {
 				Resource resource;
 				if(results.getInt("type")==Resource.DATABASE) {
-					resource = new Database(results.getString("uri"), results.getString("name"), results.getInt("trust"));
+					resource = new OpeningsDatabase(results.getString("uri"), results.getString("name"), results.getInt("trust"));
 				} else {
 					resource = new Bot(results.getString("uri"), results.getString("name"), results.getInt("trust"));
 				}
@@ -79,7 +79,7 @@ public class ResourcesManager {
 		String query = "INSERT INTO "+RESOURCES+"("+RESOURCE_TYPE+", "+RESOURCE_NAME+", "+RESOURCE_URI+", "+RESOURCE_TRUST+") VALUES(?, ?, ?, ?)";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
-			int type = resource.getClass()==Database.class? Resource.DATABASE : Resource.BOT;
+			int type = resource.getClass()==OpeningsDatabase.class? Resource.DATABASE : Resource.BOT;
 			statement.setInt(1, type);
 			statement.setString(2, resource.getName());
 			statement.setString(3, resource.getURI());
@@ -153,7 +153,7 @@ public class ResourcesManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setString(1, resource.getName());
 			statement.setInt(2, resource.getTrust());
-			int type = resource.getClass()==Database.class? Resource.DATABASE : Resource.BOT; 
+			int type = resource.getClass()==OpeningsDatabase.class? Resource.DATABASE : Resource.BOT; 
 			statement.setInt(3, type);
 			statement.setString(4, resource.getURI());
 			statement.executeUpdate();

@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import core.Bot;
-import core.Database;
+import core.OpeningsDatabase;
 import core.Resource;
 import core.ResourcesManager;
 import junit.framework.TestCase;
@@ -26,7 +26,7 @@ public class TestResourcesManager extends TestCase {
 		assertTrue(resources.contains(bot));
 		
 		// Add a new database:
-		Resource database = new Database("test321.com", "TestDatabase", 60);
+		Resource database = new OpeningsDatabase("test321.com", "TestDatabase", 60);
 		ResourcesManager.addResource(database);
 		resources = ResourcesManager.getResources();
 		assertTrue(resources.containsAll(oldResources));
@@ -48,7 +48,7 @@ public class TestResourcesManager extends TestCase {
 		assertTrue(found);
 		
 		// Update the database:
-		database = new Database("test321.com", "Test Database", 0);
+		database = new OpeningsDatabase("test321.com", "Test Database", 0);
 		ResourcesManager.updateResource(database);
 		resources = ResourcesManager.getResources();
 		assertTrue(resources.contains(database));
@@ -88,7 +88,7 @@ public class TestResourcesManager extends TestCase {
 	 */
 	public void testPrimaryKey() {
 		ResourcesManager.addResource(new Bot("test123.com", "TestBot", 50));
-		assertFalse(ResourcesManager.addResource(new Database("test123.com", "TestDatabase", 50)));
+		assertFalse(ResourcesManager.addResource(new OpeningsDatabase("test123.com", "TestDatabase", 50)));
 		assertFalse(ResourcesManager.addResource(new Bot("test123.com", "TestBot", 50)));
 		ResourcesManager.removeResource(new Bot("test123.com", "TestBot", 50));
 	}

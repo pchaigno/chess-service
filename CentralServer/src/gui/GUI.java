@@ -32,11 +32,11 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import core.Bot;
-import core.Database;
+import core.CentralServerResourceDeployer;
+import core.OpeningsDatabase;
+import core.PropertiesManager;
 import core.Resource;
 import core.ResourcesManager;
-import core.CentralServerResourceDeployer;
-import core.PropertiesManager;
 
 /**
  * The graphical user interface to manage resources and control the server.
@@ -287,7 +287,7 @@ public class GUI {
 	 */
 	private static void addResourceItem(Resource resource) {
 		TableItem resourceItem = new TableItem(resourcesTable, SWT.NONE);
-		String type = resource.getClass().equals(Database.class)? "Database" : "Bot";
+		String type = resource.getClass().equals(OpeningsDatabase.class)? "Database" : "Bot";
 		String trust = resource.getTrust()+"";
 		resourceItem.setText(new String[] {type, resource.getName(), resource.getURI(), trust});
 		resourceItem.setData(resource);
@@ -417,7 +417,7 @@ public class GUI {
 			public void widgetSelected(SelectionEvent e) {
 				Resource resource = null;
 				if(type.getText().equals("Database")) {
-					resource = new Database(uri.getText(), name.getText(), Integer.parseInt(trust.getText()));
+					resource = new OpeningsDatabase(uri.getText(), name.getText(), Integer.parseInt(trust.getText()));
 				} else {
 					resource = new Bot(uri.getText(), name.getText(), Integer.parseInt(trust.getText()));
 				}
@@ -454,7 +454,7 @@ public class GUI {
 		final Combo type = new Combo(shell, SWT.READ_ONLY);
 		type.add("Database");
 		type.add("Bot");
-		type.setText(resource.getClass().equals(Database.class)? "Database" : "Bot");
+		type.setText(resource.getClass().equals(OpeningsDatabase.class)? "Database" : "Bot");
 		type.setLayoutData(new GridData(100, 13));
 		
 		Label nameLabel = new Label(shell, SWT.NONE);
@@ -485,7 +485,7 @@ public class GUI {
 			public void widgetSelected(SelectionEvent e) {
 				Resource newResource = null;
 				if(type.getText().equals("Database")) {
-					newResource = new Database(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()));
+					newResource = new OpeningsDatabase(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()));
 				} else {
 					newResource = new Bot(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()));
 				}
