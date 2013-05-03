@@ -16,7 +16,7 @@ import com.sun.jersey.api.client.WebResource;
 /**
  * Represent a database.
  */
-public class Database extends Resource {
+public class OpeningsDatabase extends Resource {
 	private List<OpeningSuggestion> moves;
 	private static final String JSON_MOVE = "move";
 	private static final String JSON_NB_PLAY = "nb";
@@ -29,7 +29,7 @@ public class Database extends Resource {
 	 * @param name The name.
 	 * @param trust The trust in this database.
 	 */
-	public Database(String uri, String name, int trust) {
+	public OpeningsDatabase(String uri, String name, int trust) {
 		super(uri, name, trust);
 		this.moves = new LinkedList<OpeningSuggestion>();
 	}
@@ -82,7 +82,7 @@ public class Database extends Resource {
 	 * @param args Unused
 	 */
 	public static void main(String[] args) {
-		Database db1 = new Database("http://localhost/1.0/rest/openings/", "Db1", 1);
+		OpeningsDatabase db1 = new OpeningsDatabase("http://localhost/1.0/rest/openings/", "Db1", 1);
 		db1.query("rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR%20w%20KQkq%20-%200%20");
     }
 }
