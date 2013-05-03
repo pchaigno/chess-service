@@ -4,9 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libs/asm-3.1.jar"/>
 	<classpathentry kind="lib" path="libs/grizzly-servlet-webserver-1.9.18-i.jar"/>
-	<classpathentry kind="lib" path="libs/gson-2.2.2.jar"/>
-	<classpathentry kind="lib" path="libs/gson-2.2.2-javadoc.jar"/>
-	<classpathentry kind="lib" path="libs/gson-2.2.2-sources.jar"/>
 	<classpathentry kind="lib" path="libs/jersey-client-1.6.jar"/>
 	<classpathentry kind="lib" path="libs/jersey-core-1.6.jar"/>
 	<classpathentry kind="lib" path="libs/jersey-grizzly-1.6.jar"/>
@@ -18,5 +15,6 @@
 	<classpathentry kind="lib" path="libs/org.eclipse.equinox.common_3.6.100.v20120522-1841.jar"/>
 	<classpathentry kind="lib" path="libs/org.eclipse.core.commands_3.6.1.v20120814-150512.jar"/>
 	<classpathentry kind="lib" path="libs/org.eclipse.core.runtime_3.8.0.v20120521-2346.jar"/>
+	<classpathentry kind="lib" path="libs/org.json.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

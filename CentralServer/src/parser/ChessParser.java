@@ -6,7 +6,7 @@ import java.util.Map;
 /**
  * TODO
  */
-public class Parser {
+public class ChessParser {
 	private static Map<Character, Integer> letter;
 	private ChessRules rules;
 	private ChessBoard board;
@@ -16,7 +16,7 @@ public class Parser {
 	 * Constructor
 	 * @param fen The FEN.
 	 */
-	public Parser(String fen) {
+	public ChessParser(String fen) {
 		this.fen = fen;
 		
 		letter = new HashMap<Character, Integer>();
@@ -163,7 +163,7 @@ public class Parser {
 		// LAN from 127.0.0.1/rest/openings/rnbqkbnr$pppp1ppp$4p3$8$4P3$8$PPPP1PPP$RNBQKBNR w KQkq - 0 2
 		String lan = "b1c3";
 		String san;
-		Parser parser = new Parser(fen);
+		ChessParser parser = new ChessParser(fen);
 		san = parser.convertLANToSAN(lan);
 		System.out.println(san);
 	}

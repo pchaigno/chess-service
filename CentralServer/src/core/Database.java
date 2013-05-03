@@ -1,13 +1,15 @@
 package core;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import parser.ChessParser;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.WebResource;
 
@@ -16,6 +18,10 @@ import com.sun.jersey.api.client.WebResource;
  */
 public class Database extends Resource {
 	private List<OpeningSuggestion> moves;
+	private static final String JSON_MOVE = "move";
+	private static final String JSON_NB_PLAY = "nb";
+	private static final String JSON_PROBA_WIN = "probatowin";
+	private static final String JSON_PROBA_DRAW = "probatonull";
 	
 	/**
 	 * Constructor
@@ -25,6 +31,7 @@ public class Database extends Resource {
 	 */
 	public Database(String uri, String name, int trust) {
 		super(uri, name, trust);
+		this.moves = new LinkedList<OpeningSuggestion>();
 	}
 
 	@Override
@@ -34,7 +41,7 @@ public class Database extends Resource {
 
 	@Override
 	public void query(String fen) {
-		this.moves = new ArrayList<OpeningSuggestion>();
+		this.moves.clear();
 		
 		// We call the client
 		Client c = Client.create();
@@ -44,11 +51,30 @@ public class Database extends Resource {
 		c.setReadTimeout(READ_TIMEOUT);
 		String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
 		
-		// We parse the JSON response with Gson:
-		// TODO Convert LAN to SAN.
-		Gson gson = new Gson();
-		Type collectionType = new TypeToken<ArrayList<OpeningSuggestion>>(){}.getType();
-		this.moves = gson.fromJson(response, collectionType);	
+		this.parseJSONMove(response, fen);
+	}
+	
+	/**
+	 * Parse the JSON moves to openings move.
+	 * Convert the LAN to SAN if it's necessary.
+	 * @param response The JSON moves.
+	 * @param fen The FEN.
+	 */
+	private void parseJSONMove(String response, String fen) {
+		JSONArray jsonArray = new JSONArray(response);
+		for(int i=0 ; i<jsonArray.length() ; i++) {
+			JSONObject json = jsonArray.getJSONObject(i);
+			String move = json.getString(JSON_MOVE);
+			if(!this.san) {
+				ChessParser parser = new ChessParser(fen);
+				move = parser.convertLANToSAN(move);
+			}
+			double probaWin = json.getDouble(JSON_PROBA_WIN);
+			int nb = json.getInt(JSON_NB_PLAY);
+			double probaDraw = json.getDouble(JSON_PROBA_DRAW);
+			OpeningSuggestion suggestion = new OpeningSuggestion(move, nb, probaWin, probaDraw);
+			this.moves.add(suggestion);
+		}
 	}
 	
 	/**

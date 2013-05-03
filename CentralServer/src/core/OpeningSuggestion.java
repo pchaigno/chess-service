@@ -5,8 +5,8 @@ package core;
  */
 public class OpeningSuggestion extends MoveSuggestion {
 	private int nbPlay;
-	private float probaWin;
-	private float probaDraw;
+	private double probaWin;
+	private double probaDraw;
 	private static final int WEIGHT_NB_PLAY = 1;
 	private static final int WEIGHT_PROBA_WIN = 1;
 	
@@ -17,7 +17,7 @@ public class OpeningSuggestion extends MoveSuggestion {
 	 * @param probaWin The probability of winning.
 	 * @param probaDraw The probability of drawing.
 	 */
-	public OpeningSuggestion(String move, int nbPlay, float probaWin, float probaDraw) {
+	public OpeningSuggestion(String move, int nbPlay, double probaWin, double probaDraw) {
 		super(move);
 		this.nbPlay = nbPlay;
 		this.probaWin = probaWin;
@@ -35,20 +35,20 @@ public class OpeningSuggestion extends MoveSuggestion {
 	/**
 	 * @return The probability of winning the game.
 	 */
-	public float getProbaWin() {
+	public double getProbaWin() {
 		return this.probaWin;
 	}
 
 	/**
 	 * @return The probability of drawing.
 	 */
-	public float getProbaDraw() {
+	public double getProbaDraw() {
 		return this.probaDraw;
 	}
 
 	@Override
 	public String toString() {
-		return "DatabaseSuggestion [nbPlay=" + nbPlay + ", probaWin=" + probaWin
-				+ ", probaDraw=" + probaDraw + "]";
+		return "DatabaseSuggestion [move="+this.move+", nbPlay="+this.nbPlay+", probaWin="+this.probaWin
+				+", probaDraw="+this.probaDraw+"]";
 	}
 }
