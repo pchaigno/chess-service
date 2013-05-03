@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 
 import org.sqlite.SQLiteConfig;
 
@@ -191,8 +192,39 @@ public class GameManager {
 		}
 	}
 	
-	//TODO recuperer les resources correspondant a une partie, avec le nombre de fois qu'elle apparait
-	
+	/**
+	 * Return an hashMap that has the resource id as key and the ration of played move as value
+	 * @param id_game
+	 * @return
+	 */
+	public static HashMap<Integer,Double> getResourcesStats(int id_game){
+		HashMap<Integer, Double> stats = new HashMap<Integer, Double>();
+		int nbTotalMoves = getNumberOfMoves(id_game);
+		if(nbTotalMoves<=0){
+			return null;
+		}
+		if(gameExist(id_game)){
+			Connection dbConnect = getConnection();
+			String query = "SELECT COUNT(DISTINCT "+MOVE_NUMBER+") AS moveNumber, "+RESOURCE_ID+" FROM "+MOVES+" WHERE "+GAME_ID+"= ? GROUP BY "+RESOURCE_ID;
+			try{
+				PreparedStatement statement = dbConnect.prepareStatement(query);
+				statement.setInt(1, id_game);
+				ResultSet set = statement.executeQuery();
+				
+				while(set.next()){
+					stats.put(set.getInt(RESOURCE_ID), (Double)set.getDouble("moveNumber")/nbTotalMoves);
+				}
+				dbConnect.close();
+				return stats;
+			}catch(SQLException e){
+				System.err.println("getResourcesStats: "+e.getMessage());
+				return null;
+			}
+		}
+		else{
+			return null;
+		}
+	}
 	
 	/**
 	 * Get a connection to the SQLite database.
