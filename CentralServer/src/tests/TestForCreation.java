@@ -20,7 +20,23 @@ public class TestForCreation extends TestCase {
 		} catch (ClassNotFoundException e) {
 			System.err.println("Driver missing for SQLite JDBC.");
 		}
-		String query = "CREATE TABLE resources(name TEXT NOT NULL, uri TEXT primary key, trust INTEGER, type INTEGER);";
+		String query = "CREATE TABLE resources(id INTEGER PRIMARY KEY, name TEXT NOT NULL, uri TEXT NOT NULL, trust INTEGER, type INTEGER);";
+		try {
+			PreparedStatement statement = dbConnect.prepareStatement(query);
+			statement.executeUpdate();
+			dbConnect.close();
+		} catch (SQLException e) {
+			System.err.println("SQLException: "+e.getMessage());
+		}
+		query = "CREATE TABLE games(id INTEGER PRIMARY KEY, fen TEXT, nb_moves INTEGER);";
+		try {
+			PreparedStatement statement = dbConnect.prepareStatement(query);
+			statement.executeUpdate();
+			dbConnect.close();
+		} catch (SQLException e) {
+			System.err.println("SQLException: "+e.getMessage());
+		}
+		query = "CREATE TABLE moves(resource INTEGER REFERENCES resources(id), game INTEGER REFERENCES games(id), num_move INTEGER, PRIMARY KEY(resource, game, num_move))";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.executeUpdate();
