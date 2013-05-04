@@ -19,6 +19,7 @@ import org.sqlite.SQLiteConfig;
 public class ResourcesManager {
 	public static String DATABASE_FILE = PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE);
 	private static final String RESOURCES = "resources";
+	private static final String RESOURCE_ID = "id";
 	private static final String RESOURCE_URI = "uri";
 	private static final String RESOURCE_NAME = "name";
 	private static final String RESOURCE_TRUST = "trust";
@@ -56,6 +57,7 @@ public class ResourcesManager {
 				} else {
 					resource = new Bot(results.getString("uri"), results.getString("name"), results.getInt("trust"));
 				}
+				resource.setId(results.getInt(RESOURCE_ID));
 				resources.add(resource);
 			}
 			dbConnect.close();
@@ -67,7 +69,7 @@ public class ResourcesManager {
 	}
 	
 	/**
-	 * Add a resource to the database.
+	 * Add a resource to the database and set the resource id with the one used in the sql table
 	 * @param resource The resource to add.
 	 * @return True if the operation succeed, false otherwise.
 	 */
@@ -81,8 +83,18 @@ public class ResourcesManager {
 			statement.setString(2, resource.getName());
 			statement.setString(3, resource.getURI());
 			statement.setInt(4, resource.getTrust());
-			statement.executeUpdate();
-			return true; // TODO Check execution.
+			if(statement.executeUpdate()!=1){
+				dbConnect.close();
+				return false;
+			}
+			else{
+				String queryLastId = "SELECT last_insert_rowid() AS last_id";
+				statement = dbConnect.prepareStatement(queryLastId);
+				ResultSet res = statement.executeQuery();
+				res.next();
+				resource.setId(res.getInt("last_id"));
+				return true;
+			}
 		} catch (SQLException e) {
 			System.err.println("addResource: "+e.getMessage());
 		}
@@ -96,12 +108,16 @@ public class ResourcesManager {
 	 */
 	public static boolean removeResource(Resource resource) {
 		Connection dbConnect = getConnection();
-		String query = "DELETE FROM "+RESOURCES+" WHERE "+RESOURCE_URI+" = ?";
+		String query = "DELETE FROM "+RESOURCES+" WHERE "+RESOURCE_ID+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
-			statement.setString(1, resource.getURI());
-			statement.executeUpdate();
-			return true; // TODO Check execution.
+			statement.setInt(1, resource.getId());
+			if(statement.executeUpdate()!=1){
+				dbConnect.close();
+				return false;
+			}
+			dbConnect.close();
+			return true;
 		} catch (SQLException e) {
 			System.err.println("removeResource: "+e.getMessage());
 		}
@@ -118,11 +134,11 @@ public class ResourcesManager {
 		resourcesToRemove.addAll(resources);
 		Set<Resource> notRemoved = new HashSet<Resource>();
 		Connection dbConnect = getConnection();
-		String query = "DELETE FROM "+RESOURCES+" WHERE "+RESOURCE_URI+" = ?";
+		String query = "DELETE FROM "+RESOURCES+" WHERE "+RESOURCE_ID+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			for(Resource resource: resourcesToRemove) {
-				statement.setString(1, resource.getURI());
+				statement.setInt(1, resource.getId());
 				statement.addBatch();
 			}
 			int[] results = statement.executeBatch();
@@ -131,6 +147,7 @@ public class ResourcesManager {
 					notRemoved.add(resourcesToRemove.get(i));
 				}
 			}
+			dbConnect.close();
 		} catch (SQLException e) {
 			System.err.println("removeResources: "+e.getMessage());
 		}
@@ -145,16 +162,20 @@ public class ResourcesManager {
 	 */
 	public static boolean updateResource(Resource resource) {
 		Connection dbConnect = getConnection();
-		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_NAME+" = ?, "+RESOURCE_TRUST+" = ?, "+RESOURCE_TYPE+" = ? WHERE "+RESOURCE_URI+" = ?";
+		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_NAME+" = ?, "+RESOURCE_TRUST+" = ?, "+RESOURCE_TYPE+" = ? WHERE "+RESOURCE_ID+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setString(1, resource.getName());
 			statement.setInt(2, resource.getTrust());
 			int type = resource.getClass()==OpeningsDatabase.class? Resource.DATABASE : Resource.BOT; 
 			statement.setInt(3, type);
-			statement.setString(4, resource.getURI());
-			statement.executeUpdate();
-			return true; // TODO Check execution.
+			statement.setInt(4, resource.getId());
+			if(statement.executeUpdate()!=1){
+				dbConnect.close();
+				return false;
+			}
+			dbConnect.close();
+			return true;
 		} catch (SQLException e) {
 			System.err.println("updateResource: "+e.getMessage());
 		}
@@ -168,20 +189,30 @@ public class ResourcesManager {
 	 */
 	public static Set<Resource> updateResourcesTrust(Set<Resource> resources) {
 		Set<Resource> notUpdated = new HashSet<Resource>();
+		List<Resource> resourcesToUpdate = new ArrayList<Resource>();
+		resourcesToUpdate.addAll(resources);
 		Connection dbConnect = getConnection();
-		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_TRUST+" = ? WHERE "+RESOURCE_URI+" = ?";
+		boolean changed = false;
+		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_TRUST+" = ? WHERE "+RESOURCE_ID+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
-			for(Resource resource: resources) {
+			for(Resource resource: resourcesToUpdate) {
 				if(resource.isChanged()) {
+					changed=true;
 					statement.setInt(1, resource.getTrust());
-					statement.setString(2, resource.getURI());
+					statement.setInt(2, resource.getId());
 					statement.addBatch();
 				}
-				// TODO And if nothing has been changed?
 			}
-			statement.executeBatch();
-			// TODO Update notUpdated.
+			if(changed){
+				int[] results = statement.executeBatch();
+				for(int i=0 ; i<results.length ; i++) {
+					if(results[i]==0) {
+						notUpdated.add(resourcesToUpdate.get(i));
+					}
+				}
+				dbConnect.close();
+			}
 		} catch (SQLException e) {
 			System.err.println("updateResourcesTrust: "+e.getMessage());
 		}

@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.sqlite.SQLiteConfig;
 
@@ -19,11 +20,9 @@ public class GamesManager {
 	private static final String MOVES = "moves";
 	private static final String GAME_ID = "id";
 	private static final String GAME_FEN = "fen";
-	private static final String GAME_NB_MOVES = "nb_moves";
 	private static final String MOVE_GAME = "id_game";
 	private static final String MOVE_RESOURCE = "id_resource";
-	private static final String MOVE_MOVE = "move";
-	private static final String MOVE_NUMBER = "num_move"; // What's that?
+	private static final String MOVE_NUMBER = "num_move"; // The number of the move in the game
 	
 	
 	/**
@@ -33,12 +32,11 @@ public class GamesManager {
 	 */
 	public static boolean removeGame(int game_id) {
 		Connection dbConnect = getConnection();
-		String queryMoves = "DELETE FROM "+MOVES+" WHERE "+GAME_ID+"= ?";
+		String queryMoves = "DELETE FROM "+MOVES+" WHERE "+MOVE_GAME+"= ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(queryMoves);
 			statement.setInt(1, game_id);
 			statement.executeUpdate();
-			// TODO Check the success of the execution.
 		} catch(SQLException e) {
 			System.err.println("removeGame: "+e.getMessage());
 			return false;
@@ -48,8 +46,10 @@ public class GamesManager {
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(queryGames);
 			statement.setInt(1, game_id);
-			statement.executeUpdate();
-			// TODO Check the success of the execution.
+			if(statement.executeUpdate()!=1){
+				dbConnect.close();
+				return false;
+			}
 			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("removeGame: "+e.getMessage());
@@ -66,13 +66,14 @@ public class GamesManager {
 		int id = generateGameId();
 		try {
 			Connection dbConnect = getConnection();
-			String query = "INSERT INTO "+GAMES+" ("+GAME_ID+", "+GAME_FEN+", "+GAME_NB_MOVES+") VALUES(?, ?, ?)";
+			String query = "INSERT INTO "+GAMES+" ("+GAME_ID+", "+GAME_FEN+") VALUES(?, ?)";
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, id);
 			statement.setString(2, FIRST_FEN);
-			statement.setInt(3, 0);
-			statement.executeUpdate();
-			// TODO Check the success of the execution.
+			if(statement.executeUpdate()!=1){
+				dbConnect.close();
+				return -1;
+			}
 			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("addNewGame: "+e.getMessage());
@@ -85,20 +86,20 @@ public class GamesManager {
 	 * Update a game.
 	 * @param game_id The id of the game to update.
 	 * @param fen The new fen.
-	 * @param nb_moves The number of moves.
 	 * @return True if the update succeed. It can fail if the game doesn't exist in the database.
 	 */
-	public static boolean updateGame(int game_id, String fen, int nb_moves) {
+	public static boolean updateGame(int game_id, String fen) {
 		if(gameExist(game_id)) {
 			Connection dbConnect = getConnection();
-			String query = "UPDATE "+GAMES+" SET "+GAME_FEN+" = ?, "+GAME_NB_MOVES+" = ? WHERE "+GAME_ID+" = ?";
+			String query = "UPDATE "+GAMES+" SET "+GAME_FEN+" = ? WHERE "+GAME_ID+" = ?";
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
 				statement.setString(1, fen);
-				statement.setInt(2,nb_moves);
-				statement.setInt(3, game_id);
-				statement.executeUpdate();
-				// TODO Check the success of the execution.
+				statement.setInt(2, game_id);
+				if(statement.executeUpdate()!=1){
+					dbConnect.close();
+					return false;
+				}
 				dbConnect.close();
 				return true;
 			} catch(SQLException e) {
@@ -118,13 +119,13 @@ public class GamesManager {
 	public static int getNumberOfMoves(int game_id) {
 		if(gameExist(game_id)) {
 			Connection dbConnect = getConnection();
-			String query = "SELECT "+GAME_NB_MOVES+" FROM "+GAMES+" WHERE "+GAME_ID+"= ?";
+			String query = "SELECT MAX("+MOVE_NUMBER+") AS max FROM "+MOVES+" WHERE "+MOVE_GAME+"= ?";
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
 				statement.setInt(1, game_id);
 				ResultSet set = statement.executeQuery();
 				set.next();
-				int nbMoves = set.getInt(GAME_NB_MOVES);
+				int nbMoves = set.getInt("max");
 				dbConnect.close();
 				return nbMoves;
 			} catch(SQLException e) {
@@ -171,22 +172,28 @@ public class GamesManager {
 	 * Add a new move for reward.
 	 * @param id_game The id of the game.
 	 * @param id_resource The id of the resource.
-	 * @param move The move.
 	 * @param move_number The move number.
 	 * @return True if added, false otherwise.
 	 */
-	public static boolean addMove(int id_game, int id_resource, String move, int move_number) {
+	public static boolean addMove(int id_game, Set<Integer> resources_id, int move_number) {
 		if(gameExist(id_game)) {
 			Connection dbConnect = getConnection();
-			String query = "INSERT INTO "+MOVES+" ("+MOVE_GAME+", "+MOVE_RESOURCE+", "+MOVE_MOVE+", "+MOVE_NUMBER+") VALUES(?, ?, ?, ?)";
+			String query = "INSERT INTO "+MOVES+" ("+MOVE_GAME+", "+MOVE_RESOURCE+", "+MOVE_NUMBER+") VALUES(?, ?, ?)";
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
-				statement.setInt(1, id_game);
-				statement.setInt(2, id_resource);
-				statement.setString(3, move);
-				statement.setInt(4, move_number);
-				statement.executeUpdate();
-				// TODO Check the success of the execution.
+				for(Integer resource_id : resources_id){
+					statement.setInt(1, id_game);
+					statement.setInt(2, resource_id);
+					statement.setInt(3, move_number);
+					statement.addBatch();
+				}
+				int[] results = statement.executeBatch();
+				for(int i=0; i<results.length; i++){
+					if(results[i]!=1){
+						dbConnect.close();
+						return false;
+					}
+				}
 				dbConnect.close();
 				return true;
 			} catch(SQLException e) {
@@ -213,7 +220,7 @@ public class GamesManager {
 		}
 		if(gameExist(id_game)) {
 			Connection dbConnect = getConnection();
-			String query = "SELECT COUNT(DISTINCT "+MOVE_NUMBER+") AS moveNumber, "+MOVE_RESOURCE+" FROM "+MOVES+" WHERE "+GAME_ID+"= ? GROUP BY "+MOVE_RESOURCE;
+			String query = "SELECT COUNT(DISTINCT "+MOVE_NUMBER+") AS moveNumber, "+MOVE_RESOURCE+" FROM "+MOVES+" WHERE "+MOVE_GAME+"= ? GROUP BY "+MOVE_RESOURCE;
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
 				statement.setInt(1, id_game);

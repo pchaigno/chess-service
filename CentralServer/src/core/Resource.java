@@ -16,6 +16,7 @@ public abstract class Resource {
 	public final static int BOT = 1;
 	protected final static int CONNECT_TIMEOUT = Integer.parseInt(PropertiesManager.getProperty(PropertiesManager.PROPERTY_CONNECT_TIMEOUT));
 	protected final static int READ_TIMEOUT = Integer.parseInt(PropertiesManager.getProperty(PropertiesManager.PROPERTY_READ_TIMEOUT));
+	protected Integer id;
 	protected String uri;
 	protected String name;
 	protected int trust;
@@ -36,6 +37,7 @@ public abstract class Resource {
 		this.name = name;
 		this.changed = false;
 		this.trust = trust;
+		this.id = -1;
 	}
 
 	/**
@@ -130,6 +132,22 @@ public abstract class Resource {
 	public boolean isConnected() {
 		return connected;
 	}
+	
+	/**
+	 * 
+	 * @return The resource id
+	 */
+	public int getId() {
+		return id;
+	}
+	
+	/**
+	 * 
+	 * @param id the new id
+	 */
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	/**
 	 * Complete the version and the san parameters.
@@ -178,11 +196,11 @@ public abstract class Resource {
 			return false;
 		}
 		Resource other = (Resource) obj;
-		if (uri == null) {
-			if (other.uri != null) {
+		if (id == null) {
+			if (other.id != null) {
 				return false;
 			}
-		} else if (!uri.equals(other.uri)) {
+		} else if (!id.equals(other.id)) {
 			return false;
 		}
 		return true;

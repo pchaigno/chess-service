@@ -24,19 +24,19 @@ public class TestForCreation extends TestCase {
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.executeUpdate();
-			dbConnect.close();
+			//dbConnect.close();
 		} catch (SQLException e) {
 			System.err.println("SQLException: "+e.getMessage());
 		}
-		query = "CREATE TABLE games(id INTEGER PRIMARY KEY, fen TEXT, nb_moves INTEGER);";
+		query = "CREATE TABLE games(id INTEGER PRIMARY KEY, fen TEXT);";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.executeUpdate();
-			dbConnect.close();
+			//dbConnect.close();
 		} catch (SQLException e) {
 			System.err.println("SQLException: "+e.getMessage());
 		}
-		query = "CREATE TABLE moves(resource INTEGER REFERENCES resources(id), game INTEGER REFERENCES games(id), num_move INTEGER, PRIMARY KEY(resource, game, num_move))";
+		query = "CREATE TABLE moves(id_resource INTEGER REFERENCES resources(id), id_game INTEGER REFERENCES games(id), num_move INTEGER, PRIMARY KEY(id_resource, id_game, num_move))";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.executeUpdate();
