@@ -4,7 +4,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Handle the statistics about every parameters used for score computation (for openings mainly)
@@ -18,6 +20,13 @@ public class StatsManager {
 	public static final String STATS_NB_PLAY = "nb_play";
 	public static final String STATS_PROBAW = "proba_win";
 	public static final String STATS_PROBAD = "proba_draw";
+	
+	//TODO mieux gerer les parametres avec un "structure" commune (un nom et un rang par param) pour plus de généricite
+	private static final int NB_PARAMS = 3;
+	private static final int RANGE_NB_PLAY = 0;
+	private static final int RANGE_PROBAD = 1;
+	private static final int RANGE_PROBAW = 2;
+	
 	
 	/**
 	 * @return The object containing the configuration.
@@ -78,6 +87,44 @@ public class StatsManager {
 	}
 
 	/**
+	 * Update the statistics using the moves
+	 * @param moves the moves that will be played
+	 * @return true if stats are updated, false otherwise
+	 */
+	public static boolean updateStatistics(Set<OpeningSuggestion> moves){
+		double[] movesStats = computeStats(moves);
+		
+		boolean updated = updateEntity(STATS_NB_PLAY, movesStats[RANGE_NB_PLAY], movesStats[RANGE_NB_PLAY+NB_PARAMS], moves.size());
+		updated &= updateEntity(STATS_PROBAD, movesStats[RANGE_PROBAD], movesStats[RANGE_PROBAD+NB_PARAMS], moves.size());
+		updated &= updateEntity(STATS_PROBAW, movesStats[RANGE_PROBAW], movesStats[RANGE_PROBAW+NB_PARAMS], moves.size());
+		
+		return updated;
+	}
+	
+	/**
+	 * Return a table containing statistics about the moves
+	 * @param moves the moves to compute the stats about
+	 * @return a table of size 2*NB_PARAMS. The NB_PARAMS firsts elements contain the mean, the NB_PARAMS last the variance 
+	 * and the 2 "subtables" are ordered by RANGE_...
+	 */
+	private static double[] computeStats(Set<OpeningSuggestion> moves){
+		double[] stats = new double[2*NB_PARAMS];
+		Arrays.fill(stats, 0);
+		
+		for(OpeningSuggestion move : moves){
+			stats[RANGE_NB_PLAY]+=move.getNbPlay();
+			stats[RANGE_PROBAD]+=move.getProbaDraw();
+			stats[RANGE_PROBAW]+=move.getProbaWin();
+			stats[RANGE_NB_PLAY+NB_PARAMS]+=Math.pow(move.getNbPlay(),2);
+			stats[RANGE_PROBAD+NB_PARAMS]+=Math.pow(move.getProbaDraw(),2);
+			stats[RANGE_PROBAW+NB_PARAMS]+=Math.pow(move.getProbaWin(),2);
+		}
+		for(int i=0; i<3; i++)
+			stats[NB_PARAMS+i]-=Math.pow(stats[i], 2);
+		
+		return stats;
+	}
+	/**
 	 * Compute and save the new statistics about all values : the old one stored and the new in parameters
 	 * @param propertyEntity the entity to compute the stats about
 	 * @param mean the mean of the new data
@@ -85,7 +132,7 @@ public class StatsManager {
 	 * @param weight the weight (size) of the new data
 	 * @return true if entity is updated, false otherwise
 	 */
-	public static boolean updateEntity(String propertyEntity, double mean, double variance, int weight){
+	private static boolean updateEntity(String propertyEntity, double mean, double variance, int weight){
 		double newMean = computeMean(propertyEntity, mean, weight);
 		double newVariance = computeVariance(propertyEntity, mean, variance, weight);
 		int newWeight = computeWeight(propertyEntity, weight);
@@ -126,11 +173,11 @@ public class StatsManager {
 		conf = new Properties();
 		setProperty(STATS_NB_PLAY,Statistic.MEAN, "1000");
 		setProperty(STATS_NB_PLAY,Statistic.VARIANCE, "50");
-		setProperty(STATS_NB_PLAY,Statistic.WEIGHT, "1");
+		setProperty(STATS_NB_PLAY,Statistic.WEIGHT, "2");
 		
 		setProperty(STATS_PROBAD,Statistic.MEAN, "0.2");
 		setProperty(STATS_PROBAD,Statistic.VARIANCE, "0.1");
-		setProperty(STATS_PROBAD,Statistic.WEIGHT, "3");
+		setProperty(STATS_PROBAD,Statistic.WEIGHT, "2");
 		
 		setProperty(STATS_PROBAW,Statistic.MEAN, "0.5");
 		setProperty(STATS_PROBAW,Statistic.VARIANCE, "0.05");
