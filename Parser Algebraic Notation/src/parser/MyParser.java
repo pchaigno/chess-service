@@ -105,12 +105,6 @@ public class MyParser {
 			pgnfromX = ""+fromX;
 		}
 
-		System.out.println(pgnpiece);
-		System.out.println(pgnfromX);
-		System.out.println(pgnfromY);
-		System.out.println(pgncapture);
-		System.out.println(toX);
-		System.out.println(toY);
 		return pgnpiece + pgnfromX + pgnfromY + pgncapture + toX + toY;
 	}
 	

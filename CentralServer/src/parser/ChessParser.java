@@ -2,6 +2,8 @@ package parser;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * TODO
@@ -36,13 +38,21 @@ public class ChessParser {
 	}
 
 	/**
-	 * Main method.
 	 * Convert a LAN to a SAN.
 	 * @param lan The Long Algebraic Notation.
 	 * @return The Short Algebraic Notation.
 	 */
 	public String convertLANToSAN(String lan) {
 		return this.UCItoPGN(lan, this.board);
+	}
+	
+	/**
+	 * Convert a SAN to a LAN.
+	 * @param san The Short Algebraic Notation.
+	 * @return The Long Algebraic Notation.
+	 */
+	public String convertSANToLAN(String san) {
+		return this.parseMove(this.board, san);
 	}
 	
 	/**
@@ -112,13 +122,78 @@ public class ChessParser {
 			pgnfromX = ""+fromX;
 		}
 
-		System.out.println(pgnpiece);
-		System.out.println(pgnfromX);
-		System.out.println(pgnfromY);
-		System.out.println(pgncapture);
-		System.out.println(toX);
-		System.out.println(toY);
 		return pgnpiece + pgnfromX + pgnfromY + pgncapture + toX + toY;
+	}
+	
+	/**
+	 * TODO
+	 * @param board TODO
+	 * @param game TODO
+	 * @param token TODO
+	 * @return TODO
+	 */
+	private String parseMove(ChessBoard board, String token) {
+		Matcher matcher = Pattern.compile("([RBQKPN])?([a-h])?([1-8])?([x])?([a-h])([1-8])([=]?)([QNRB]?)([+#]?)").matcher(token);
+		char[] moveArray = new char[6];
+		if(matcher.find()) {
+			for(int i=0 ; i<6 ; i++) {
+				String match = matcher.group(i+1);
+				if(match==null) {
+					moveArray[i] = 0;
+				} else if(match.length()==1) {
+					moveArray[i] =  match.charAt(0);
+				} else {
+					moveArray[i] = 0;
+				}
+			}
+		}
+		
+		String piece = "pawn";
+		if(moveArray[0]!=0) {
+			switch(Character.toLowerCase(moveArray[0])) {
+				case 'r':
+					piece = "rook";
+					break;
+				case 'b':
+					piece = "bishop";
+					break;
+				case 'q':
+					piece = "queen";
+					break;
+				case 'n':
+					piece = "knight";
+					break;
+				case 'k':
+					piece = "king";
+					break;
+				default:
+					break;
+			}
+		}
+
+		char fromX = 0;
+		if(moveArray[1]!=0) {
+			fromX = moveArray[1];
+		}
+		int fromY = -1;
+		if(moveArray[2]!=0) {
+			fromY = Integer.parseInt(""+moveArray[2]);
+		}
+
+		boolean capture;
+		if(moveArray[3]!=0) {
+			capture = true;
+		} else {
+			capture = false;
+		}
+
+		char toX = moveArray[4];
+		int toY = Integer.parseInt(""+moveArray[5]);
+
+		// Determine the location of the piece to move using chess rules and incomplete information about it
+		BoardSquare pieceXY = evalRules(piece, board, fromX, fromY, toX, toY, capture);
+		
+		return ""+pieceXY.x+pieceXY.y+toX+toY;
 	}
 	
 	/**
@@ -166,5 +241,7 @@ public class ChessParser {
 		ChessParser parser = new ChessParser(fen);
 		san = parser.convertLANToSAN(lan);
 		System.out.println(san);
+		
+		System.out.println(parser.convertSANToLAN(san));
 	}
 }
