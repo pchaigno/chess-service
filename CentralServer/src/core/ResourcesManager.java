@@ -17,9 +17,7 @@ import org.sqlite.SQLiteConfig;
  * TODO ajouter un id (integer) pour chaque resource
  */
 public class ResourcesManager {
-	public static final String DATABASES_DIRECTORY = "databases/resources/";
-	private static String DATABASE_NAME = PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE);
-	private static String DATABASE_FILE = DATABASES_DIRECTORY + DATABASE_NAME;
+	public static String DATABASE_FILE = PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE);
 	private static final String RESOURCES = "resources";
 	private static final String RESOURCE_URI = "uri";
 	private static final String RESOURCE_NAME = "name";
@@ -31,15 +29,14 @@ public class ResourcesManager {
 	 * @param newDatabase The new database used.
 	 */
 	public static void changeDatabase(String newDatabase){
-		DATABASE_NAME = newDatabase;
-		DATABASE_FILE = DATABASES_DIRECTORY + DATABASE_NAME;
+		DATABASE_FILE= newDatabase;
 	}
 	
 	/**
-	 * @return The database name.
+	 * @return The database file.
 	 */
-	public static String getDatabaseName(){
-		return DATABASE_NAME;
+	public static String getDatabaseFile(){
+		return DATABASE_FILE;
 	}
 	
 	/**

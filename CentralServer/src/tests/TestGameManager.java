@@ -22,4 +22,8 @@ public class TestGameManager extends TestCase {
 		
 		System.out.println(GamesManager.getResourcesStats(games.get(0)).toString());
 	}
+	
+	public void testForeignKeys() {
+		
+	}
 }

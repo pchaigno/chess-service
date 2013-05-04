@@ -15,17 +15,15 @@ import org.sqlite.SQLiteConfig;
  */
 public class GamesManager {
 	private static final String FIRST_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -";
-	private static final String DATABASES_DIRECTORY = "databases/";
-	private static final String DATABASE_NAME = "games.db";
-	private static final String DATABASE_FILE = DATABASES_DIRECTORY + DATABASE_NAME;
-	private static final String GAMES = "current_games";
-	private static final String MOVES = "current_moves";
-	private static final String GAME_ID = "id_game";
-	private static final String FEN = "fen";
-	private static final String NUMBER_OF_MOVES = "nb_moves";
-	private static final String RESOURCE_ID = "id_resource";
-	private static final String MOVE = "move";
-	private static final String MOVE_NUMBER = "num_move";
+	private static final String GAMES = "games";
+	private static final String MOVES = "moves";
+	private static final String GAME_ID = "id";
+	private static final String GAME_FEN = "fen";
+	private static final String GAME_NB_MOVES = "nb_moves";
+	private static final String MOVE_GAME = "id_game";
+	private static final String MOVE_RESOURCE = "id_resource";
+	private static final String MOVE_MOVE = "move";
+	private static final String MOVE_NUMBER = "num_move"; // What's that?
 	
 	
 	/**
@@ -68,7 +66,7 @@ public class GamesManager {
 		int id = generateGameId();
 		try {
 			Connection dbConnect = getConnection();
-			String query = "INSERT INTO "+GAMES+" ("+GAME_ID+", "+FEN+", "+NUMBER_OF_MOVES+") VALUES(?, ?, ?)";
+			String query = "INSERT INTO "+GAMES+" ("+GAME_ID+", "+GAME_FEN+", "+GAME_NB_MOVES+") VALUES(?, ?, ?)";
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, id);
 			statement.setString(2, FIRST_FEN);
@@ -93,7 +91,7 @@ public class GamesManager {
 	public static boolean updateGame(int game_id, String fen, int nb_moves) {
 		if(gameExist(game_id)) {
 			Connection dbConnect = getConnection();
-			String query = "UPDATE "+GAMES+" SET "+FEN+" = ?, "+NUMBER_OF_MOVES+" = ? WHERE "+GAME_ID+" = ?";
+			String query = "UPDATE "+GAMES+" SET "+GAME_FEN+" = ?, "+GAME_NB_MOVES+" = ? WHERE "+GAME_ID+" = ?";
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
 				statement.setString(1, fen);
@@ -120,13 +118,13 @@ public class GamesManager {
 	public static int getNumberOfMoves(int game_id) {
 		if(gameExist(game_id)) {
 			Connection dbConnect = getConnection();
-			String query = "SELECT "+NUMBER_OF_MOVES+" FROM "+GAMES+" WHERE "+GAME_ID+"= ?";
+			String query = "SELECT "+GAME_NB_MOVES+" FROM "+GAMES+" WHERE "+GAME_ID+"= ?";
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
 				statement.setInt(1, game_id);
 				ResultSet set = statement.executeQuery();
 				set.next();
-				int nbMoves = set.getInt(NUMBER_OF_MOVES);
+				int nbMoves = set.getInt(GAME_NB_MOVES);
 				dbConnect.close();
 				return nbMoves;
 			} catch(SQLException e) {
@@ -180,7 +178,7 @@ public class GamesManager {
 	public static boolean addMove(int id_game, int id_resource, String move, int move_number) {
 		if(gameExist(id_game)) {
 			Connection dbConnect = getConnection();
-			String query = "INSERT INTO "+MOVES+" ("+GAME_ID+", "+RESOURCE_ID+", "+MOVE+", "+MOVE_NUMBER+") VALUES(?, ?, ?, ?)";
+			String query = "INSERT INTO "+MOVES+" ("+MOVE_GAME+", "+MOVE_RESOURCE+", "+MOVE_MOVE+", "+MOVE_NUMBER+") VALUES(?, ?, ?, ?)";
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
 				statement.setInt(1, id_game);
@@ -215,13 +213,13 @@ public class GamesManager {
 		}
 		if(gameExist(id_game)) {
 			Connection dbConnect = getConnection();
-			String query = "SELECT COUNT(DISTINCT "+MOVE_NUMBER+") AS moveNumber, "+RESOURCE_ID+" FROM "+MOVES+" WHERE "+GAME_ID+"= ? GROUP BY "+RESOURCE_ID;
+			String query = "SELECT COUNT(DISTINCT "+MOVE_NUMBER+") AS moveNumber, "+MOVE_RESOURCE+" FROM "+MOVES+" WHERE "+GAME_ID+"= ? GROUP BY "+MOVE_RESOURCE;
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
 				statement.setInt(1, id_game);
 				ResultSet set = statement.executeQuery();
 				while(set.next()) {
-					stats.put(set.getInt(RESOURCE_ID), (Double)set.getDouble("moveNumber")/nbTotalMoves);
+					stats.put(set.getInt(MOVE_RESOURCE), (Double)set.getDouble("moveNumber")/nbTotalMoves);
 				}
 				dbConnect.close();
 				return stats;
@@ -245,9 +243,9 @@ public class GamesManager {
 			Class.forName("org.sqlite.JDBC");
 			SQLiteConfig config = new SQLiteConfig();
 	        config.enforceForeignKeys(true);
-			dbConnect = DriverManager.getConnection("jdbc:sqlite:"+DATABASE_FILE, config.toProperties());
+			dbConnect = DriverManager.getConnection("jdbc:sqlite:"+ResourcesManager.DATABASE_FILE, config.toProperties());
 		} catch (SQLException e) {
-			System.err.println("Impossible to connect to the database "+DATABASE_FILE+".");
+			System.err.println("Impossible to connect to the database "+ResourcesManager.DATABASE_FILE+".");
 			System.err.println(e.getMessage());
 		} catch (ClassNotFoundException e) {
 			System.err.println("Driver missing for SQLite JDBC.");

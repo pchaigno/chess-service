@@ -52,7 +52,7 @@ public class GUI {
 	public static Shell buildInterface() {
 		display = new Display();
 		shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setText("Central Server (working db:"+ResourcesManager.getDatabaseName()+")");
+		shell.setText("Central Server (working db:"+ResourcesManager.getDatabaseFile()+")");
 		shell.setImage(new Image(display, "chess.ico"));
 		shell.setLayout(new FillLayout());
 		buildMenu();
@@ -78,7 +78,7 @@ public class GUI {
 						"Change database", "Enter the name of you want to work on", "", null);
 				if(dialogDatabase.open() == Window.OK) {
 					ResourcesManager.changeDatabase(dialogDatabase.getValue());
-					shell.setText("Central Server (working db:"+ResourcesManager.getDatabaseName()+")");
+					shell.setText("Central Server (working db:"+ResourcesManager.getDatabaseFile()+")");
 					resourcesTable.removeAll();
 					Set<Resource> resources = ResourcesManager.getResources();
 					for(Resource resource: resources) {
@@ -92,7 +92,7 @@ public class GUI {
 		optionSetWorkingDbAsDefault.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				PropertiesManager.setProperty(PropertiesManager.PROPERTY_DATABASE, ResourcesManager.getDatabaseName());
+				PropertiesManager.setProperty(PropertiesManager.PROPERTY_DATABASE, ResourcesManager.getDatabaseFile());
 				PropertiesManager.saveProperties();
 			}
 		});
