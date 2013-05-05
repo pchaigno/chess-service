@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Text;
 
 import core.Bot;
 import core.CentralServerResourceDeployer;
+import core.EndingsDatabase;
 import core.OpeningsDatabase;
 import core.PropertiesManager;
 import core.Resource;
@@ -286,7 +287,12 @@ public class GUI {
 	 */
 	private static void addResourceItem(Resource resource) {
 		TableItem resourceItem = new TableItem(resourcesTable, SWT.NONE);
-		String type = resource.getClass().equals(OpeningsDatabase.class)? "Database" : "Bot";
+		String type = "Bot";
+		if(resource.getClass()==OpeningsDatabase.class) {
+			type = "Openings Database";
+		} else if(resource.getClass()==EndingsDatabase.class) {
+			type = "Endings Database";
+		}
 		String trust = String.valueOf(resource.getTrust());
 		resourceItem.setText(new String[] {type, resource.getName(), resource.getURI(), trust});
 		resourceItem.setData(resource);
@@ -387,7 +393,8 @@ public class GUI {
 		Label typeLabel = new Label(shell, SWT.NONE);
 		typeLabel.setText("Type: ");
 		final Combo type = new Combo(shell, SWT.READ_ONLY);
-		type.add("Database");
+		type.add("Openings Database");
+		type.add("Endings Database");
 		type.add("Bot");
 		type.setLayoutData(new GridData(100, 13));
 		
@@ -415,8 +422,10 @@ public class GUI {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Resource resource = null;
-				if(type.getText().equals("Database")) {
+				if(type.getText().equals("Openings Database")) {
 					resource = new OpeningsDatabase(uri.getText(), name.getText(), Integer.parseInt(trust.getText()));
+				} else if(type.getText().equals("Endings Database")) {
+					resource = new EndingsDatabase(uri.getText(), name.getText(), Integer.parseInt(trust.getText()));
 				} else {
 					resource = new Bot(uri.getText(), name.getText(), Integer.parseInt(trust.getText()));
 				}
@@ -451,9 +460,16 @@ public class GUI {
 		Label typeLabel = new Label(shell, SWT.NONE);
 		typeLabel.setText("Type: ");
 		final Combo type = new Combo(shell, SWT.READ_ONLY);
-		type.add("Database");
+		type.add("Openings Database");
+		type.add("Endings Database");
 		type.add("Bot");
-		type.setText(resource.getClass().equals(OpeningsDatabase.class)? "Database" : "Bot");
+		String typeText = "Bot";
+		if(resource.getClass()==OpeningsDatabase.class) {
+			typeText = "Openings Database";
+		} else if(resource.getClass()==EndingsDatabase.class) {
+			typeText = "Endings Database";
+		}
+		type.setText(typeText);
 		type.setLayoutData(new GridData(100, 13));
 		
 		Label nameLabel = new Label(shell, SWT.NONE);
@@ -483,8 +499,10 @@ public class GUI {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Resource newResource = null;
-				if(type.getText().equals("Database")) {
+				if(type.getText().equals("Openings Database")) {
 					newResource = new OpeningsDatabase(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()));
+				} else if(type.getText().equals("Endings Database")) {
+					newResource = new EndingsDatabase(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()));
 				} else {
 					newResource = new Bot(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()));
 				}
