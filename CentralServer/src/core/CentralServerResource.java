@@ -3,6 +3,7 @@ package core;
 import java.io.UnsupportedEncodingException;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -31,10 +32,8 @@ public class CentralServerResource {
 	}
 	
 	@Path("/resource/rest/{gameId: [0-9]+}")
-	@POST
-	@Consumes("application/x-www-form-urlencoded")
-	public void endOfGame(@PathParam("gameId")int gameId, @DefaultValue("true")@FormParam("san")boolean san) {
-		// TODO Add a parameter san to the games.
+	@DELETE
+	public void endOfGame(@PathParam("gameId")int gameId) {
 		GamesManager.removeGame(gameId);
 		// TODO Update the statistics.
 	}
@@ -55,8 +54,10 @@ public class CentralServerResource {
 	
 	@Path("/resource/rest/")
 	@POST
+	@Consumes("application/x-www-form-urlencoded")
 	@Produces("text/plain")
-	public String startGame() {
+	public String startGame(@DefaultValue("true")@FormParam("san")boolean san) {
+		// TODO Add a parameter san to the games.
 		int gameId = GamesManager.addNewGame();
 		return String.valueOf(gameId);
 	}
