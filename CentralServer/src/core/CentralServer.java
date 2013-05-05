@@ -67,7 +67,7 @@ public class CentralServer {
 	 * @param fen The FEN.
 	 * @return The best move or null if no suggestion.
 	 */
-	public String getBestMove(String fen) {
+	public String getBestMove(String fen, int game_id) {
 		this.updateResources(fen);
 		// This map contains all the moves and the scores associated except the ending moves.
 		Map<String, Double> scores = new HashMap<String, Double>();
@@ -86,7 +86,16 @@ public class CentralServer {
 				}
 			}
 		}
-		return this.bestMove(scores, ends);
+		
+		String bestMove = this.bestMove(scores, ends);
+		
+		if(game_id>0){
+			GamesManager.addMove(game_id, getMoveResourcesId(bestMove), GamesManager.getNumberOfMoves(game_id)+1);
+		}
+		
+		StatsManager.updateStatistics(getOpeningSuggestions());
+		
+		return bestMove;
 	}
 
 	/**
@@ -119,6 +128,34 @@ public class CentralServer {
 			}
 		}
 		return move;
+	}
+	
+	/**
+	 * Return all the resources proposing the move move
+	 * @param move the move that is proposed
+	 * @return resources
+	 */
+	private Set<Integer> getMoveResourcesId(String move){
+		HashSet<Integer> moveResources = new HashSet<Integer>();
+		for(Resource r : resources){
+			for(MoveSuggestion moveSug : r.getMoveSuggestions()){
+				if(moveSug.getMove().equals(move)){
+					moveResources.add(r.getId());
+				}
+			}
+		}
+		return moveResources;
+	}
+	
+	private Set<OpeningSuggestion> getOpeningSuggestions(){
+		HashSet<OpeningSuggestion> moveOpenings = new HashSet<OpeningSuggestion>();
+		for(Resource r : resources){
+			for(MoveSuggestion moveSug : r.getMoveSuggestions()){
+				if(moveSug.getClass() == OpeningSuggestion.class)
+					moveOpenings.add((OpeningSuggestion) moveSug);
+			}
+		}
+		return moveOpenings;
 	}
 
 	/**
