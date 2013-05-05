@@ -7,8 +7,8 @@ public class OpeningSuggestion extends MoveSuggestion {
 	private int nbPlay;
 	private double probaWin;
 	private double probaDraw;
-	private static final int WEIGHT_NB_PLAY = 1;
-	private static final int WEIGHT_PROBA_WIN = 1;
+	private static final double WEIGHT_NB_PLAY = 0.8;
+	private static final double WEIGHT_PROBA_WIN = 0.2;
 	
 	/**
 	 * Constructor
@@ -22,7 +22,16 @@ public class OpeningSuggestion extends MoveSuggestion {
 		this.nbPlay = nbPlay;
 		this.probaWin = probaWin;
 		this.probaDraw = probaDraw;
-		this.score = WEIGHT_NB_PLAY*this.nbPlay+WEIGHT_PROBA_WIN*this.probaWin;
+		this.score = WEIGHT_NB_PLAY*computeScoreNbPlay()+WEIGHT_PROBA_WIN*computeScoreProbaWin();
+	}
+	
+	public double computeScoreNbPlay(){
+		return (nbPlay-Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.MEAN)))
+				/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.VARIANCE))));
+	}
+	
+	public double computeScoreProbaWin(){
+		return (probaWin - 0.5)/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.VARIANCE))));
 	}
 
 	/**
