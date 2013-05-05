@@ -206,17 +206,17 @@ public class StatsManager {
 	 */
 	private static void init() {
 		conf = new Properties();
-		setProperty(STATS_NB_PLAY, Statistic.MEAN, "1000");
-		setProperty(STATS_NB_PLAY, Statistic.VARIANCE, "50");
-		setProperty(STATS_NB_PLAY, Statistic.WEIGHT, "2");
+		setProperty(STATS_NB_PLAY, Statistic.MEAN, "0");
+		setProperty(STATS_NB_PLAY, Statistic.VARIANCE, "0");
+		setProperty(STATS_NB_PLAY, Statistic.WEIGHT, "0");
 		
-		setProperty(STATS_PROBAD, Statistic.MEAN, "0.2");
-		setProperty(STATS_PROBAD, Statistic.VARIANCE, "0.1");
-		setProperty(STATS_PROBAD, Statistic.WEIGHT, "2");
+		setProperty(STATS_PROBAD, Statistic.MEAN, "0");
+		setProperty(STATS_PROBAD, Statistic.VARIANCE, "0");
+		setProperty(STATS_PROBAD, Statistic.WEIGHT, "0");
 		
-		setProperty(STATS_PROBAW, Statistic.MEAN, "0.5");
-		setProperty(STATS_PROBAW, Statistic.VARIANCE, "0.05");
-		setProperty(STATS_PROBAW, Statistic.WEIGHT, "2");
+		setProperty(STATS_PROBAW, Statistic.MEAN, "0");
+		setProperty(STATS_PROBAW, Statistic.VARIANCE, "0");
+		setProperty(STATS_PROBAW, Statistic.WEIGHT, "0");
 		saveProperties();
 	}
 	
