@@ -13,6 +13,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import parser.ChessParser;
+
 /**
  * This class will handle the call from the client to the central server and will send the answer.
  */
@@ -52,6 +54,9 @@ public class CentralServerResource {
 		if(move==null) {
 			move = NO_RESULT;
 		}
+		// TODO Check if a conversion is necessary.
+		ChessParser parser = new ChessParser(fen);
+		move = parser.convertSANToLAN(move);
 		ResponseBuilder builder = Response.ok(move);
 		builder.header("Access-Control-Allow-Origin", "*");
 		return builder.build();
