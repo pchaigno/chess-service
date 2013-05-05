@@ -23,7 +23,7 @@ public class CentralServerResource {
 	@GET
 	@Produces("text/plain")
 	public String getBestMove(@PathParam("fen")String fen) throws UnsupportedEncodingException {
-		String move = this.server.getBestMove(fen);
+		String move = this.server.getBestMove(fen, -1);
 		if(move==null) {
 			return NO_RESULT;
 		} else {
@@ -35,15 +35,14 @@ public class CentralServerResource {
 	@DELETE
 	public void endOfGame(@PathParam("gameId")int gameId) {
 		GamesManager.removeGame(gameId);
-		// TODO Update the statistics.
+		// TODO Reward resources.
 	}
 	
 	@Path("/resource/rest/{gameId: [0-9]+}/{fen}")
 	@GET
 	@Produces("text/plain")
 	public String getBestMove(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
-		// TODO Update the moves table.
-		String move = this.server.getBestMove(fen);
+		String move = this.server.getBestMove(fen, gameId);
 		GamesManager.updateGame(gameId, fen);
 		if(move==null) {
 			return NO_RESULT;
