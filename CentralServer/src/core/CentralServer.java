@@ -84,6 +84,9 @@ public class CentralServer {
 						double newScore = scores.get(move) + resource.getTrust()*move.getScore();
 						scores.put(move.getMove(), newScore);
 					}
+					else{
+						scores.put(move.getMove(), resource.getTrust()*move.getScore());
+					}
 				}
 			}
 		}

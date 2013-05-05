@@ -22,6 +22,8 @@ public class OpeningSuggestion extends MoveSuggestion {
 		this.nbPlay = nbPlay;
 		this.probaWin = probaWin;
 		this.probaDraw = probaDraw;
+		System.out.println(computeScoreNbPlay());
+		System.out.println(computeScoreProbaWin());
 		this.score = WEIGHT_NB_PLAY*computeScoreNbPlay()+WEIGHT_PROBA_WIN*computeScoreProbaWin();
 	}
 	

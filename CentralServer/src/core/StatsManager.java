@@ -118,6 +118,11 @@ public class StatsManager {
 			stats[RANGE_PROBAD+NB_PARAMS]+=Math.pow(move.getProbaDraw(),2);
 			stats[RANGE_PROBAW+NB_PARAMS]+=Math.pow(move.computeScoreProbaWin(),2);
 		}
+		if(moves.size() >0){
+			for(int i=0; i<NB_PARAMS; i++){
+				stats[i]/=moves.size();
+			}
+		}
 		for(int i=0; i<3; i++)
 			stats[NB_PARAMS+i]-=Math.pow(stats[i], 2);
 		

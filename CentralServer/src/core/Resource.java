@@ -1,8 +1,11 @@
 package core;
 
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
+
+import org.eclipse.core.runtime.URIUtil;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -76,11 +79,17 @@ public abstract class Resource {
 	 */
 	public void query(String fen) {
 		this.clearSuggestions();
-		
+		String fenUri=fen;
+		try {
+			fenUri = URIUtil.fromString(fen).toASCIIString();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// We call the client
 		Client c = Client.create();
 		// TODO handle the last slash
-		WebResource r = c.resource(this.uri+fen);
+		WebResource r = c.resource(this.uri+fenUri);
 		c.setConnectTimeout(CONNECT_TIMEOUT);
 		c.setReadTimeout(READ_TIMEOUT);
 		String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
