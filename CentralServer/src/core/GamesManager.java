@@ -12,7 +12,7 @@ import java.util.Set;
 import org.sqlite.SQLiteConfig;
 
 /**
- * Handle all the accesses to the game SQLite database.
+ * Handle all the accesses to the game SQLite table.
  */
 public class GamesManager {
 	private static final String FIRST_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -";

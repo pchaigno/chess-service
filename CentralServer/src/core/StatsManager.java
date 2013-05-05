@@ -112,6 +112,7 @@ public class StatsManager {
 		Arrays.fill(stats, 0);
 		
 		for(OpeningSuggestion move : moves){
+			//TODO voir si ici, il fait appeler les fonctions des parametres (le f dans a*f(x1)/A)
 			stats[RANGE_NB_PLAY]+=move.getNbPlay();
 			stats[RANGE_PROBAD]+=move.getProbaDraw();
 			stats[RANGE_PROBAW]+=move.getProbaWin();
