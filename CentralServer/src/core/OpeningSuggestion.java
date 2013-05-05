@@ -26,12 +26,18 @@ public class OpeningSuggestion extends MoveSuggestion {
 	}
 	
 	public double computeScoreNbPlay(){
-		return (nbPlay-Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.MEAN)))
+		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.VARIANCE))!=0)
+			return (nbPlay-Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.MEAN)))
 				/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.VARIANCE))));
+		else
+			return (nbPlay-Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.MEAN)));
 	}
 	
 	public double computeScoreProbaWin(){
-		return (probaWin - 0.5)/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.VARIANCE))));
+		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.VARIANCE))!=0)
+			return (probaWin - 0.5)/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.VARIANCE))));
+		else
+			return (probaWin - 0.5);
 	}
 
 	/**

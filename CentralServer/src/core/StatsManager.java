@@ -168,12 +168,16 @@ public class StatsManager {
 		double currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.MEAN));
 		double currentVariance = Double.parseDouble(getProperty(propertyEntity, Statistic.VARIANCE));
 		
-		double newVariance = (Math.pow(currentWeight,2)*currentVariance
-				+currentWeight*weight*(currentVariance+variance+Math.pow(currentMean, 2)+Math.pow(mean, 2))
-				+Math.pow(weight, 2)*variance
-				-2*currentWeight*weight*currentMean*mean)/(Math.pow(currentWeight+weight, 2));
+		if((weight+currentWeight)>0){
+			double newVariance = (Math.pow(currentWeight,2)*currentVariance
+					+currentWeight*weight*(currentVariance+variance+Math.pow(currentMean, 2)+Math.pow(mean, 2))
+					+Math.pow(weight, 2)*variance
+					-2*currentWeight*weight*currentMean*mean)/(Math.pow(currentWeight+weight, 2));
+
+			return newVariance;
+		}
 		
-		return newVariance;
+		return 0;
 	}
 
 	/**
@@ -186,8 +190,10 @@ public class StatsManager {
 	private static double computeMean(String propertyEntity, double mean, int weight) {
 		int currentWeight = Integer.parseInt(getProperty(propertyEntity, Statistic.WEIGHT));
 		double currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.MEAN));
-		
-		return (currentMean*currentWeight+mean*weight)/(currentMean+weight);
+		if((weight+currentWeight)>0)
+			return (currentMean*currentWeight+mean*weight)/(currentMean+weight);
+		else
+			return 0;
 	}
 	
 	/**
