@@ -108,12 +108,15 @@ public abstract class Resource {
 		return this.name;
 	}
 
+	/**
+	 * @return True if the resource send SAN moves.
+	 */
 	public boolean isSAN() {
 		return this.san;
 	}
 
 	/**
-	 * @return The version
+	 * @return The version.
 	 */
 	public String getVersion() {
 		return this.version;
@@ -127,23 +130,21 @@ public abstract class Resource {
 	}
 
 	/**
-	 * @return Connected
+	 * @return True if the resource if connected.
 	 */
 	public boolean isConnected() {
 		return connected;
 	}
 	
 	/**
-	 * 
-	 * @return The resource id
+	 * @return The resource id.
 	 */
 	public int getId() {
 		return id;
 	}
 	
 	/**
-	 * 
-	 * @param id the new id
+	 * @param id The new id.
 	 */
 	public void setId(int id) {
 		this.id = id;
@@ -163,7 +164,7 @@ public abstract class Resource {
 		int status = clientresponse.getStatus();
 		if(status == 408) {
 			connected = false;
-		}else{
+		} else {
 			connected = true;
 			String response = clientresponse.getEntity(String.class);
 			this.san = ('s' == response.charAt(response.length()-1));
@@ -180,7 +181,7 @@ public abstract class Resource {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((uri == null) ? 0 : uri.hashCode());
+		result = prime * result + ((uri == null)? 0 : uri.hashCode());
 		return result;
 	}
 

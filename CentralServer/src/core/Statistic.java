@@ -1,9 +1,7 @@
 package core;
 
 /**
- * Contain the statistics used by StatsManager
- * @author clemgaut
- *
+ * Enumeration of the statistics used by StatsManager.
  */
 public enum Statistic {
 	MEAN,

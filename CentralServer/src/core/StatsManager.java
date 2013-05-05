@@ -9,9 +9,7 @@ import java.util.Properties;
 import java.util.Set;
 
 /**
- * Handle the statistics about every parameters used for score computation (for openings mainly)
- * @author clemgaut
- *
+ * Handle the statistics about every parameters used for score computation (for openings mainly).
  */
 public class StatsManager {
 	private static Properties conf = null;
@@ -49,20 +47,20 @@ public class StatsManager {
 	}
 	
 	/**
-	 * Return the stat about the property entity
-	 * @param propertyEntity the entity to acces the stat about
-	 * @param stat The stat asked
-	 * @return
+	 * Return the stat about the property entity.
+	 * @param propertyEntity The entity to acces the stat about.
+	 * @param stat The stat asked.
+	 * @return TODO
 	 */
 	public static String getProperty(String propertyEntity, Statistic stat) {
 		return getConfiguration().getProperty(propertyEntity+"."+stat);
 	}
 	
 	/**
-	 * Change the entity's stat to the value propertyValue
-	 * @param propertyEntity propertyEntity the entity to change the stat about
-	 * @param stat The stat asked @see Statistic
-	 * @param propertyValue the new value
+	 * Change the entity's stat to the value propertyValue.
+	 * @param propertyEntity The entity to change the stat about.
+	 * @param stat The stat asked @see Statistic.
+	 * @param propertyValue The new value.
 	 */
 	public static void setProperty(String propertyEntity, Statistic stat, String propertyValue){
 		getConfiguration().setProperty(propertyEntity+"."+stat, propertyValue);
@@ -88,8 +86,8 @@ public class StatsManager {
 
 	/**
 	 * Update the statistics using the moves
-	 * @param moves the moves that will be played
-	 * @return true if stats are updated, false otherwise
+	 * @param moves The moves that will be played.
+	 * @return True if stats are updated, false otherwise.
 	 */
 	public static boolean updateStatistics(Set<OpeningSuggestion> moves){
 		double[] movesStats = computeStats(moves);
@@ -102,9 +100,9 @@ public class StatsManager {
 	}
 	
 	/**
-	 * Return a table containing statistics about the moves
-	 * @param moves the moves to compute the stats about
-	 * @return a table of size 2*NB_PARAMS. The NB_PARAMS firsts elements contain the mean, the NB_PARAMS last the variance 
+	 * Return a table containing statistics about the moves.
+	 * @param moves The moves to compute the stats about.
+	 * @return A table of size 2*NB_PARAMS. The NB_PARAMS firsts elements contain the mean, the NB_PARAMS last the variance 
 	 * and the 2 "subtables" are ordered by RANGE_...
 	 */
 	private static double[] computeStats(Set<OpeningSuggestion> moves){
@@ -126,11 +124,11 @@ public class StatsManager {
 	}
 	/**
 	 * Compute and save the new statistics about all values : the old one stored and the new in parameters
-	 * @param propertyEntity the entity to compute the stats about
-	 * @param mean the mean of the new data
-	 * @param variance the variance of the new data
-	 * @param weight the weight (size) of the new data
-	 * @return true if entity is updated, false otherwise
+	 * @param propertyEntity The entity to compute the stats about.
+	 * @param mean The mean of the new data.
+	 * @param variance The variance of the new data.
+	 * @param weight The weight (size) of the new data.
+	 * @return True if entity is updated, false otherwise.
 	 */
 	private static boolean updateEntity(String propertyEntity, double mean, double variance, int weight){
 		double newMean = computeMean(propertyEntity, mean, weight);
@@ -144,11 +142,26 @@ public class StatsManager {
 		return saveProperties();
 	}
 
+	/**
+	 * Compute the weight.
+	 * Add the new one to the old one.
+	 * @param propertyEntity The properties.
+	 * @param weight The old weight.
+	 * @return The new weight.
+	 */
 	private static int computeWeight(String propertyEntity, int weight) {
 		int currentWeight = Integer.parseInt(getProperty(propertyEntity, Statistic.WEIGHT));
 		return currentWeight+weight;		
 	}
 
+	/**
+	 * Compute the variance.
+	 * @param propertyEntity The properties.
+	 * @param mean TODO
+	 * @param variance The old variance.
+	 * @param weight TODO
+	 * @return The new variance.
+	 */
 	private static double computeVariance(String propertyEntity, double mean, double variance, int weight) {
 		int currentWeight = Integer.parseInt(getProperty(propertyEntity, Statistic.WEIGHT));
 		double currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.MEAN));
@@ -162,6 +175,13 @@ public class StatsManager {
 		return newVariance;
 	}
 
+	/**
+	 * Compute the mean.
+	 * @param propertyEntity The properties.
+	 * @param mean The old mean.
+	 * @param weight TODO
+	 * @return The new mean.
+	 */
 	private static double computeMean(String propertyEntity, double mean, int weight) {
 		int currentWeight = Integer.parseInt(getProperty(propertyEntity, Statistic.WEIGHT));
 		double currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.MEAN));
@@ -169,19 +189,22 @@ public class StatsManager {
 		return (currentMean*currentWeight+mean*weight)/(currentMean+weight);
 	}
 	
+	/**
+	 * Initialize the properties with default values.
+	 */
 	private static void init() {
 		conf = new Properties();
-		setProperty(STATS_NB_PLAY,Statistic.MEAN, "1000");
-		setProperty(STATS_NB_PLAY,Statistic.VARIANCE, "50");
-		setProperty(STATS_NB_PLAY,Statistic.WEIGHT, "2");
+		setProperty(STATS_NB_PLAY, Statistic.MEAN, "1000");
+		setProperty(STATS_NB_PLAY, Statistic.VARIANCE, "50");
+		setProperty(STATS_NB_PLAY, Statistic.WEIGHT, "2");
 		
-		setProperty(STATS_PROBAD,Statistic.MEAN, "0.2");
-		setProperty(STATS_PROBAD,Statistic.VARIANCE, "0.1");
-		setProperty(STATS_PROBAD,Statistic.WEIGHT, "2");
+		setProperty(STATS_PROBAD, Statistic.MEAN, "0.2");
+		setProperty(STATS_PROBAD, Statistic.VARIANCE, "0.1");
+		setProperty(STATS_PROBAD, Statistic.WEIGHT, "2");
 		
-		setProperty(STATS_PROBAW,Statistic.MEAN, "0.5");
-		setProperty(STATS_PROBAW,Statistic.VARIANCE, "0.05");
-		setProperty(STATS_PROBAW,Statistic.WEIGHT, "2");
+		setProperty(STATS_PROBAW, Statistic.MEAN, "0.5");
+		setProperty(STATS_PROBAW, Statistic.VARIANCE, "0.05");
+		setProperty(STATS_PROBAW, Statistic.WEIGHT, "2");
 		saveProperties();
 	}
 	
@@ -192,5 +215,4 @@ public class StatsManager {
 	public static void main(String[] args) {
 		init();
 	}
-	
 }

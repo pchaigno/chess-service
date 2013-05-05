@@ -63,10 +63,10 @@ public class PropertiesManager {
 		try {
 			getConfiguration().store(new FileOutputStream(CONFIG_FILE), "Properties for central server");
 			return true;
-		} catch (FileNotFoundException e) {
+		} catch(FileNotFoundException e) {
 			// TODO Generate the file.
 			System.err.println("Config file ("+CONFIG_FILE+") not found.");
-		} catch (IOException e) {
+		} catch(IOException e) {
 			System.err.println("Unable to load the config file.");
 			System.err.println(e.getMessage());
 		}

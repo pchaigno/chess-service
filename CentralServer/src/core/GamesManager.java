@@ -46,7 +46,7 @@ public class GamesManager {
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(queryGames);
 			statement.setInt(1, game_id);
-			if(statement.executeUpdate()!=1){
+			if(statement.executeUpdate()!=1) {
 				dbConnect.close();
 				return false;
 			}
@@ -70,7 +70,7 @@ public class GamesManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, id);
 			statement.setString(2, FIRST_FEN);
-			if(statement.executeUpdate()!=1){
+			if(statement.executeUpdate()!=1) {
 				dbConnect.close();
 				return -1;
 			}
@@ -96,7 +96,7 @@ public class GamesManager {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
 				statement.setString(1, fen);
 				statement.setInt(2, game_id);
-				if(statement.executeUpdate()!=1){
+				if(statement.executeUpdate()!=1) {
 					dbConnect.close();
 					return false;
 				}
@@ -181,15 +181,15 @@ public class GamesManager {
 			String query = "INSERT INTO "+MOVES+" ("+MOVE_GAME+", "+MOVE_RESOURCE+", "+MOVE_NUMBER+") VALUES(?, ?, ?)";
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
-				for(Integer resource_id : resources_id){
+				for(Integer resource_id: resources_id) {
 					statement.setInt(1, id_game);
 					statement.setInt(2, resource_id);
 					statement.setInt(3, move_number);
 					statement.addBatch();
 				}
 				int[] results = statement.executeBatch();
-				for(int i=0; i<results.length; i++){
-					if(results[i]!=1){
+				for(int i=0 ; i<results.length ; i++) {
+					if(results[i]!=1) {
 						dbConnect.close();
 						return false;
 					}
@@ -251,10 +251,10 @@ public class GamesManager {
 			SQLiteConfig config = new SQLiteConfig();
 	        config.enforceForeignKeys(true);
 			dbConnect = DriverManager.getConnection("jdbc:sqlite:"+ResourcesManager.DATABASE_FILE, config.toProperties());
-		} catch (SQLException e) {
+		} catch(SQLException e) {
 			System.err.println("Impossible to connect to the database "+ResourcesManager.DATABASE_FILE+".");
 			System.err.println(e.getMessage());
-		} catch (ClassNotFoundException e) {
+		} catch(ClassNotFoundException e) {
 			System.err.println("Driver missing for SQLite JDBC.");
 		}
 		return dbConnect;

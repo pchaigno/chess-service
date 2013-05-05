@@ -50,7 +50,7 @@ public class CentralServer {
 
 		// TODO Save incompatible resources.
 
-		for(Resource resource : incompatibleResources) {
+		for(Resource resource: incompatibleResources) {
 			this.resources.remove(resource);
 		}
 	}
@@ -80,7 +80,7 @@ public class CentralServer {
 					ends.put(move.getMove(), move.getScore());	
 				} else {
 					if(scores.containsKey(move.getMove())) {
-						double newScore = scores.get(move)+resource.getTrust()*move.getScore();
+						double newScore = scores.get(move) + resource.getTrust()*move.getScore();
 						scores.put(move.getMove(), newScore);
 					}
 				}
@@ -105,7 +105,7 @@ public class CentralServer {
 					move = entry.getKey();
 				}
 			}
-			if(min>0) {
+			if(min > 0) {
 				// Use an end suggestion only if we'll win.
 				return move;
 			}

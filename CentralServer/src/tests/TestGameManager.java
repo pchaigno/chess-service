@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import core.GamesManager;
-import core.ResourcesManager;
 
 import junit.framework.TestCase;
 
