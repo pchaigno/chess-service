@@ -1,7 +1,7 @@
 package parser;
 
 /**
- * TODO
+ * Represent a board square.
  */
 public class BoardSquare {
 	char x;
@@ -9,9 +9,9 @@ public class BoardSquare {
 	BoardPiece piece;
 	
 	/**
-	 * TODO
-	 * @param x TODO
-	 * @param y TODO
+	 * Constructor
+	 * @param x The abscissa.
+	 * @param y The ordinate.
 	 */
 	public BoardSquare(char x, int y) {
 		this.x = x;
