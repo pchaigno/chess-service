@@ -2,7 +2,6 @@ package core;
 
 import java.io.UnsupportedEncodingException;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -11,6 +10,8 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 /**
  * This class will handle the call from the client to the central server and will send the answer.
@@ -23,13 +24,14 @@ public class CentralServerResource {
 	@Path("/rest/{fen}")
 	@GET
 	@Produces("text/plain")
-	public String getBestMove(@PathParam("fen")String fen) throws UnsupportedEncodingException {
+	public Response getBestMove(@PathParam("fen")String fen) throws UnsupportedEncodingException {
 		String move = this.server.getBestMove(fen, -1);
 		if(move==null) {
-			return NO_RESULT;
-		} else {
-			return move;
+			move = NO_RESULT;
 		}
+		ResponseBuilder builder = Response.ok(move);
+		builder.header("Access-Control-Allow-Origin", "*");
+		return builder.build();
 	}
 	
 	@Path("/rest/{gameId: [0-9]+}")
@@ -43,23 +45,26 @@ public class CentralServerResource {
 	@Path("/rest/{gameId: [0-9]+}/{fen}")
 	@GET
 	@Produces("text/plain")
-	public String getBestMove(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
+	public Response getBestMove(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
+		// TODO Check that this game id exists.
 		String move = this.server.getBestMove(fen, gameId);
 		GamesManager.updateGame(gameId, fen);
 		if(move==null) {
-			return NO_RESULT;
-		} else {
-			return move;
+			move = NO_RESULT;
 		}
+		ResponseBuilder builder = Response.ok(move);
+		builder.header("Access-Control-Allow-Origin", "*");
+		return builder.build();
 	}
 	
-	@Path("/rest/")
+	@Path("/rest")
 	@POST
-	@Consumes("application/x-www-form-urlencoded")
 	@Produces("text/plain")
-	public String startGame(@DefaultValue("true")@FormParam("san")boolean san) {
+	public Response startGame(@DefaultValue("true")@FormParam("san")boolean san) {
 		// TODO Add a parameter san to the games.
 		int gameId = GamesManager.addNewGame();
-		return String.valueOf(gameId);
+		ResponseBuilder builder = Response.ok(String.valueOf(gameId));
+		builder.header("Access-Control-Allow-Origin", "*");
+		return builder.build();
 	}
 }

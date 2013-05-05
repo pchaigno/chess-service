@@ -51,8 +51,10 @@ public class ResourcesManager {
 			ResultSet results = statement.executeQuery();
 			while(results.next()) {
 				Resource resource;
-				if(results.getInt("type")==Resource.DATABASE) {
+				if(results.getInt("type")==Resource.OPENINGS_DATABASE) {
 					resource = new OpeningsDatabase(results.getString("uri"), results.getString("name"), results.getInt("trust"));
+				} else if(results.getInt("type")==Resource.ENDINGS_DATABASE) {
+					resource = new EndingsDatabase(results.getString("uri"), results.getString("name"), results.getInt("trust"));
 				} else {
 					resource = new Bot(results.getString("uri"), results.getString("name"), results.getInt("trust"));
 				}
@@ -77,7 +79,12 @@ public class ResourcesManager {
 		String query = "INSERT INTO "+RESOURCES+"("+RESOURCE_TYPE+", "+RESOURCE_NAME+", "+RESOURCE_URI+", "+RESOURCE_TRUST+") VALUES(?, ?, ?, ?)";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
-			int type = resource.getClass()==OpeningsDatabase.class? Resource.DATABASE : Resource.BOT;
+			int type = Resource.BOT;
+			if(resource.getClass()==OpeningsDatabase.class) {
+				type = Resource.OPENINGS_DATABASE;
+			} else if(resource.getClass()==EndingsDatabase.class) {
+				type = Resource.ENDINGS_DATABASE;
+			}
 			statement.setInt(1, type);
 			statement.setString(2, resource.getName());
 			statement.setString(3, resource.getURI());
@@ -165,7 +172,12 @@ public class ResourcesManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setString(1, resource.getName());
 			statement.setInt(2, resource.getTrust());
-			int type = resource.getClass()==OpeningsDatabase.class? Resource.DATABASE : Resource.BOT; 
+			int type = Resource.BOT;
+			if(resource.getClass()==OpeningsDatabase.class) {
+				type = Resource.OPENINGS_DATABASE;
+			} else if(resource.getClass()==EndingsDatabase.class) {
+				type = Resource.ENDINGS_DATABASE;
+			}
 			statement.setInt(3, type);
 			statement.setInt(4, resource.getId());
 			if(statement.executeUpdate()!=1) {

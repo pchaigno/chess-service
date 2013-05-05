@@ -15,8 +15,9 @@ import com.sun.jersey.api.client.WebResource;
  * The model for all resources (databases and bots).
  */
 public abstract class Resource {
-	public final static int DATABASE = 0;
+	public final static int OPENINGS_DATABASE = 0;
 	public final static int BOT = 1;
+	public final static int ENDINGS_DATABASE = 2;
 	protected final static int CONNECT_TIMEOUT = Integer.parseInt(PropertiesManager.getProperty(PropertiesManager.PROPERTY_CONNECT_TIMEOUT));
 	protected final static int READ_TIMEOUT = Integer.parseInt(PropertiesManager.getProperty(PropertiesManager.PROPERTY_READ_TIMEOUT));
 	protected Integer id;
