@@ -11,6 +11,7 @@ import java.util.Set;
 public class CentralServer {
 	private Set<Resource> resources;
 	private static final String version = "1.0";
+	private static final int REWARD_VALUE = 20;
 
 	/**
 	 * Constructor
@@ -147,6 +148,10 @@ public class CentralServer {
 		return moveResources;
 	}
 	
+	/**
+	 * Return all the OpenningsSuggestions made by the resources
+	 * @return the openingSuggestions
+	 */
 	private Set<OpeningSuggestion> getOpeningSuggestions(){
 		HashSet<OpeningSuggestion> moveOpenings = new HashSet<OpeningSuggestion>();
 		for(Resource r : resources){
@@ -156,6 +161,32 @@ public class CentralServer {
 			}
 		}
 		return moveOpenings;
+	}
+	
+	public void rewardResources(int game_id, int game_result){
+		int rewardValue=REWARD_VALUE;
+		if(game_result == EndingSuggestion.LOOSE_RESULT)
+			rewardValue*=-1;
+
+		if(game_result!=EndingSuggestion.DRAW_RESULT){
+			Map<Integer, Double> resourcesStats = GamesManager.getResourcesStats(game_id);
+
+			for(Map.Entry<Integer, Double> entry : resourcesStats.entrySet()){
+				Resource r = getResource(entry.getKey());
+				if(r!=null){
+					r.setTrust(r.getTrust()+(int)(rewardValue*entry.getValue()));
+				}
+			}
+			ResourcesManager.updateResourcesTrust(resources);
+		}
+	}
+	
+	private Resource getResource(int id){
+		for(Resource r : resources){
+			if(r.getId()==id)
+				return r;
+		}
+		return null;
 	}
 
 	/**

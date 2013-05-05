@@ -34,8 +34,9 @@ public class CentralServerResource {
 	@Path("/resource/rest/{gameId: [0-9]+}")
 	@DELETE
 	public void endOfGame(@PathParam("gameId")int gameId) {
+		//TODO get the real result (i set 0 for now)
+		server.rewardResources(gameId, 0);
 		GamesManager.removeGame(gameId);
-		// TODO Reward resources.
 	}
 	
 	@Path("/resource/rest/{gameId: [0-9]+}/{fen}")
