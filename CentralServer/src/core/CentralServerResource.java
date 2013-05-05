@@ -15,11 +15,12 @@ import javax.ws.rs.Produces;
 /**
  * This class will handle the call from the client to the central server and will send the answer.
  */
+@Path("/resource")
 public class CentralServerResource {
 	protected static final String NO_RESULT = "NULL";
 	protected CentralServer server = new CentralServer();
 	
-	@Path("/resource/rest/{fen}")
+	@Path("/rest/{fen}")
 	@GET
 	@Produces("text/plain")
 	public String getBestMove(@PathParam("fen")String fen) throws UnsupportedEncodingException {
@@ -31,7 +32,7 @@ public class CentralServerResource {
 		}
 	}
 	
-	@Path("/resource/rest/{gameId: [0-9]+}")
+	@Path("/rest/{gameId: [0-9]+}")
 	@DELETE
 	public void endOfGame(@PathParam("gameId")int gameId) {
 		//TODO get the real result (i set 0 for now)
@@ -39,7 +40,7 @@ public class CentralServerResource {
 		GamesManager.removeGame(gameId);
 	}
 	
-	@Path("/resource/rest/{gameId: [0-9]+}/{fen}")
+	@Path("/rest/{gameId: [0-9]+}/{fen}")
 	@GET
 	@Produces("text/plain")
 	public String getBestMove(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
@@ -52,7 +53,7 @@ public class CentralServerResource {
 		}
 	}
 	
-	@Path("/resource/rest/")
+	@Path("/rest/")
 	@POST
 	@Consumes("application/x-www-form-urlencoded")
 	@Produces("text/plain")

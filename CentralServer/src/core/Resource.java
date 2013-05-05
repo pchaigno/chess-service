@@ -33,6 +33,8 @@ public abstract class Resource {
 	 * @param trust The trust in the resource.
 	 */
 	public Resource(String uri, String name, int trust) {
+		if(!uri.endsWith("/"))
+			uri+="/";
 		this.uri = uri;
 		this.name = name;
 		this.changed = false;
@@ -156,7 +158,7 @@ public abstract class Resource {
 	public void checkVersion() {
 		Client client = Client.create();
 		String tmp_uri = this.uri.substring(0,this.uri.lastIndexOf("/"));
-		tmp_uri = tmp_uri.substring(0,tmp_uri.lastIndexOf("/")) + "/version";
+		tmp_uri += "/version";
 		WebResource webresource = client.resource(tmp_uri);
 		client.setConnectTimeout(CONNECT_TIMEOUT);
 		client.setReadTimeout(READ_TIMEOUT);
