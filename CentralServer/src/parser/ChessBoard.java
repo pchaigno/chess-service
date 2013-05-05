@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import parser.BoardPiece.*;
+
 /**
  * Represent the chess board.
  */
@@ -16,7 +18,7 @@ public class ChessBoard {
 	
 	// Variables used to load/save FEN:
 	// The piece to move now.
-	String currentMove;
+	PieceColor currentMove;
 	// State of castling
 	String castling;
 	// If there's enpassant pawn
@@ -68,12 +70,12 @@ public class ChessBoard {
 	
 	/**
 	 * Create piece objects and place a reference to them for square they're in.
-	 * @param name TODO
-	 * @param color TODO
-	 * @param x TODO
-	 * @param y TODO
+	 * @param name The type of the piece.
+	 * @param color The color of the piece.
+	 * @param x The abscissa of the piece.
+	 * @param y The ordinate of the piece.
 	 */
-	public void addPiece(String name, String color, char x, int y) {
+	public void addPiece(PieceType name, PieceColor color, char x, int y) {
 		BoardPiece newPiece = new BoardPiece(name, color);
 		newPiece.square = this.squares.get(x)[y];
 		this.pieces.add(newPiece);
@@ -82,17 +84,17 @@ public class ChessBoard {
 
 	/**
 	 * Search for pieces by name, color and either (or both) of coordinates.
-	 * @param name TODO
-	 * @param color TODO
-	 * @param x TODO
-	 * @param y TODO
+	 * @param type The type of the piece.
+	 * @param color The color of the piece.
+	 * @param x The abscissa of the piece.
+	 * @param y The ordinate of the piece.
 	 * @return An array of matches - corresponding indexes of pieces array.
 	 */
-	public List<Integer> getPiece(String name, String color, char x, int y) {
+	public List<Integer> getPiece(PieceType type, PieceColor color, char x, int y) {
 		List<Integer> result = new LinkedList<Integer>();
 		for(int i=0 ; i<this.pieces.size() ; i++) {
-			if(this.pieces.get(i).name == name && this.pieces.get(i).color == color 
-					&& this.pieces.get(i).square != null 
+			if(this.pieces.get(i).type==type && this.pieces.get(i).color==color 
+					&& this.pieces.get(i).square!=null 
 					&& ((x!=0 && this.pieces.get(i).square.x==x) || x==0) 
 					&& ((y!=-1 && this.pieces.get(i).square.y==y) || y==-1)) {
 				result.add(i);
@@ -105,10 +107,10 @@ public class ChessBoard {
 	 * Switches the current move
 	 */
 	public void switchMove() {
-		if(this.currentMove.equals("white")) {
-			this.currentMove = "black";
+		if(this.currentMove==PieceColor.WHITE) {
+			this.currentMove = PieceColor.BLACK;
 		} else {
-			this.currentMove = "white";
+			this.currentMove = PieceColor.WHITE;
 		}
 	}
 	
@@ -131,7 +133,7 @@ public class ChessBoard {
 	}
 	
 	/**
-	 * @param reduced TODO
+	 * @param reduced True if the FEN need to be reduced.
 	 * @return The current FEN.
 	 */
 	public String currentFEN(boolean reduced) {
@@ -144,20 +146,20 @@ public class ChessBoard {
 						FEN += emptyCounter;
 						emptyCounter = 0;
 					}
-					String pieceName = this.squares.get(keyVar)[num].piece.name;
-					String pieceColor = this.squares.get(keyVar)[num].piece.color;
+					PieceType pieceName = this.squares.get(keyVar)[num].piece.type;
+					PieceColor pieceColor = this.squares.get(keyVar)[num].piece.color;
 					char name = 0;
-					if(pieceName.equals("rook")) {
+					if(pieceName==PieceType.ROOK) {
 						name = 'r';
-					} else if(pieceName.equals("bishop")) {
+					} else if(pieceName==PieceType.BISHOP) {
 						name = 'b';
-					} else if(pieceName.equals("queen")) {
+					} else if(pieceName==PieceType.QUEEN) {
 						name = 'q';
-					} else if(pieceName.equals("king")) {
+					} else if(pieceName==PieceType.KING) {
 						name = 'k';
-					} else if(pieceName.equals("pawn")) {
+					} else if(pieceName==PieceType.PAWN) {
 						name = 'p';
-					} else if(pieceName.equals("knight")) {
+					} else if(pieceName==PieceType.KNIGHT) {
 						name = 'n';
 					}
 					if(pieceColor.equals("white")) {
@@ -177,7 +179,7 @@ public class ChessBoard {
 				FEN += "/";
 			}
 		}
-		FEN += " "+this.currentMove.substring(0, 1);
+		FEN += PieceColor.getLetter(this.currentMove);
 		FEN += " "+this.castling;
 		FEN += " "+this.enPassant;
 		if(!reduced) {
@@ -189,7 +191,7 @@ public class ChessBoard {
 
 	/**
 	 * Prototype function used to load FEN into board.
-	 * @param fen TODO
+	 * @param fen The FEN.
 	 */
 	public void loadFEN(String fen) {
 		for(char keyVar: this.squares.keySet()) {
@@ -206,37 +208,32 @@ public class ChessBoard {
 			int colsY = 1;
 			for(int cols=1 ; cols<=line.length() ; cols++) {
 				char letter = line.charAt(cols-1);
-				String color;
+				PieceColor color;
 				if ((""+letter).matches("[rbqkpn]")) {
-					color = "black";
+					color = PieceColor.BLACK;
 				} else if ((""+letter).matches("[RBQKPN]")) {
-					color = "white";
+					color = PieceColor.WHITE;
 				} else {
 					colsY = colsY + Integer.parseInt(""+letter);
 					continue;
 				}
-				String name;
+				PieceType name = PieceType.PAWN;
 				switch(Character.toLowerCase(letter)) {
 					case 'r':
-						name = "rook";
+						name = PieceType.ROOK;
 						break;
 					case 'b':
-						name = "bishop";
+						name = PieceType.BISHOP;
 						break;
 					case 'q':
-						name = "queen";
+						name = PieceType.QUEEN;
 						break;
 					case 'k':
-						name = "king";
-						break;
-					case 'p':
-						name = "pawn";
+						name = PieceType.KING;
 						break;
 					case 'n':
-						name = "knight";
+						name = PieceType.KNIGHT;
 						break;
-					default:
-						throw new IllegalArgumentException("loadFEN: No piece corresponding.");
 				}
 				char x = this.letters[colsY];
 				int y = this.numbers[lines];
@@ -245,9 +242,9 @@ public class ChessBoard {
 			}
 		}
 		if(fenArray[1].equals("b")) {
-			this.currentMove = "black";
+			this.currentMove = PieceColor.BLACK;
 		} else {
-			this.currentMove = "white";
+			this.currentMove = PieceColor.WHITE;
 		}
 		this.castling = fenArray[2];
 		this.enPassant = fenArray[3];

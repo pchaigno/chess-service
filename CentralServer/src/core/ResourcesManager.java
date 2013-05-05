@@ -14,7 +14,6 @@ import org.sqlite.SQLiteConfig;
 
 /**
  * Handle all the accesses to the SQLite database for the resources.
- * 
  */
 public class ResourcesManager {
 	public static String DATABASE_FILE = PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE);
@@ -30,7 +29,7 @@ public class ResourcesManager {
 	 * @param newDatabase The new database used.
 	 */
 	public static void changeDatabase(String newDatabase){
-		DATABASE_FILE= newDatabase;
+		DATABASE_FILE = newDatabase;
 	}
 	
 	/**
@@ -61,7 +60,7 @@ public class ResourcesManager {
 				resources.add(resource);
 			}
 			dbConnect.close();
-		} catch (SQLException e) {
+		} catch(SQLException e) {
 			System.err.println("getResources: "+e.getMessage());
 		}
 		
@@ -83,11 +82,10 @@ public class ResourcesManager {
 			statement.setString(2, resource.getName());
 			statement.setString(3, resource.getURI());
 			statement.setInt(4, resource.getTrust());
-			if(statement.executeUpdate()!=1){
+			if(statement.executeUpdate()!=1) {
 				dbConnect.close();
 				return false;
-			}
-			else{
+			} else {
 				String queryLastId = "SELECT last_insert_rowid() AS last_id";
 				statement = dbConnect.prepareStatement(queryLastId);
 				ResultSet res = statement.executeQuery();
@@ -95,7 +93,7 @@ public class ResourcesManager {
 				resource.setId(res.getInt("last_id"));
 				return true;
 			}
-		} catch (SQLException e) {
+		} catch(SQLException e) {
 			System.err.println("addResource: "+e.getMessage());
 		}
 		return false;
@@ -112,13 +110,13 @@ public class ResourcesManager {
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, resource.getId());
-			if(statement.executeUpdate()!=1){
+			if(statement.executeUpdate()!=1) {
 				dbConnect.close();
 				return false;
 			}
 			dbConnect.close();
 			return true;
-		} catch (SQLException e) {
+		} catch(SQLException e) {
 			System.err.println("removeResource: "+e.getMessage());
 		}
 		return false;
@@ -148,7 +146,7 @@ public class ResourcesManager {
 				}
 			}
 			dbConnect.close();
-		} catch (SQLException e) {
+		} catch(SQLException e) {
 			System.err.println("removeResources: "+e.getMessage());
 		}
 		return notRemoved;
@@ -170,13 +168,13 @@ public class ResourcesManager {
 			int type = resource.getClass()==OpeningsDatabase.class? Resource.DATABASE : Resource.BOT; 
 			statement.setInt(3, type);
 			statement.setInt(4, resource.getId());
-			if(statement.executeUpdate()!=1){
+			if(statement.executeUpdate()!=1) {
 				dbConnect.close();
 				return false;
 			}
 			dbConnect.close();
 			return true;
-		} catch (SQLException e) {
+		} catch(SQLException e) {
 			System.err.println("updateResource: "+e.getMessage());
 		}
 		return false;
@@ -204,7 +202,7 @@ public class ResourcesManager {
 					statement.addBatch();
 				}
 			}
-			if(changed){
+			if(changed) {
 				int[] results = statement.executeBatch();
 				for(int i=0 ; i<results.length ; i++) {
 					if(results[i]==0) {
@@ -213,7 +211,7 @@ public class ResourcesManager {
 				}
 				dbConnect.close();
 			}
-		} catch (SQLException e) {
+		} catch(SQLException e) {
 			System.err.println("updateResourcesTrust: "+e.getMessage());
 		}
 		return notUpdated;
@@ -231,10 +229,10 @@ public class ResourcesManager {
 			SQLiteConfig config = new SQLiteConfig();
 	        config.enforceForeignKeys(true);
 			dbConnect = DriverManager.getConnection("jdbc:sqlite:"+DATABASE_FILE, config.toProperties());
-		} catch (SQLException e) {
+		} catch(SQLException e) {
 			System.err.println("Impossible to connect to the database "+DATABASE_FILE+".");
 			System.err.println(e.getMessage());
-		} catch (ClassNotFoundException e) {
+		} catch(ClassNotFoundException e) {
 			System.err.println("Driver missing for SQLite JDBC.");
 		}
 		return dbConnect;

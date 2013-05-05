@@ -3,6 +3,7 @@ package core;
 import java.io.UnsupportedEncodingException;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -10,19 +11,48 @@ import javax.ws.rs.Produces;
 /**
  * This class will handle the call from the client to the central server and will send the answer.
  */
-@Path("/resource/rest/{fenNotation}")
 public class CentralServerResource {
 	protected static final String NO_RESULT = "NULL";
 	protected CentralServer server = new CentralServer();
 	
+	@Path("/resource/rest/{fen}")
 	@GET
 	@Produces("text/plain")
-	public String getBestMove(@PathParam("fenNotation")String fen) throws UnsupportedEncodingException {
+	public String getBestMove(@PathParam("fen")String fen) throws UnsupportedEncodingException {
 		String move = this.server.getBestMove(fen);
 		if(move==null) {
 			return NO_RESULT;
 		} else {
 			return move;
 		}
+	}
+	
+	@Path("/resource/rest/{gameId: [0-9]+}")
+	@POST
+	public void endOfGame(@PathParam("gameId")int gameId) {
+		GamesManager.removeGame(gameId);
+		// TODO Update the statistics.
+	}
+	
+	@Path("/resource/rest/{gameId: [0-9]+}/{fen}")
+	@GET
+	@Produces("text/plain")
+	public String getBestMove(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
+		// TODO Update the moves table.
+		String move = this.server.getBestMove(fen);
+		GamesManager.updateGame(gameId, fen);
+		if(move==null) {
+			return NO_RESULT;
+		} else {
+			return move;
+		}
+	}
+	
+	@Path("/resource/rest/")
+	@POST
+	@Produces("text/plain")
+	public String startGame() {
+		int gameId = GamesManager.addNewGame();
+		return String.valueOf(gameId);
 	}
 }

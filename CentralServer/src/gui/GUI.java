@@ -106,11 +106,10 @@ public class GUI {
 		optionStart.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if(CentralServerResourceDeployer.start()){
+				if(CentralServerResourceDeployer.start()) {
 					optionStop.setEnabled(true);
 					optionStart.setEnabled(false);
-				}
-				else{
+				} else {
 					MessageDialog.openError(shell, "Server error", "Unable to start the server");
 				}
 			}
@@ -288,7 +287,7 @@ public class GUI {
 	private static void addResourceItem(Resource resource) {
 		TableItem resourceItem = new TableItem(resourcesTable, SWT.NONE);
 		String type = resource.getClass().equals(OpeningsDatabase.class)? "Database" : "Bot";
-		String trust = resource.getTrust()+"";
+		String trust = String.valueOf(resource.getTrust());
 		resourceItem.setText(new String[] {type, resource.getName(), resource.getURI(), trust});
 		resourceItem.setData(resource);
 	}

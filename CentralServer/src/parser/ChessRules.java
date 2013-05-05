@@ -5,8 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import parser.BoardPiece.*;
+
 /**
- * TODO
+ * Regroups the chess rules for each pieces and special moves.
  */
 public class ChessRules {
 	Map<Character, Integer> letter;
@@ -28,16 +30,17 @@ public class ChessRules {
 	}
 	
 	/**
-	 * TODO
-	 * @param board TODO
-	 * @param fromX TODO
-	 * @param fromY TODO
-	 * @param toX TODO
-	 * @param toY TODO
-	 * @param capture TODO
-	 * @return TODO
+	 * Found the piece and complete the informations about it.
+	 * @param piece The piece type.
+	 * @param board The chess board.
+	 * @param fromX The original abscissa.
+	 * @param fromY The original ordinate.
+	 * @param toX The destination abscissa.
+	 * @param toY The destination ordinate.
+	 * @param capture True if there is a capture.
+	 * @return The board square.
 	 */
-	public BoardSquare pawn(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private BoardSquare pawn(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		List<BoardPiece> legalPawns = new LinkedList<BoardPiece>();
 		BoardSquare result = null;
 		int toXnum = letter.get(toX);
@@ -53,7 +56,7 @@ public class ChessRules {
 			mod = -1;
 		}
 		// Get possible pawns given the color and x coordinate
-		List<Integer> pawns = board.getPiece("pawn", board.currentMove, fromX, -1);
+		List<Integer> pawns = board.getPiece(PieceType.PAWN, board.currentMove, fromX, -1);
 		for(int i=0 ; i<pawns.size() ; i++) {
 			pawn = board.pieces.get(pawns.get(i));
 			pawnX = letter.get(pawn.square.x);
@@ -75,22 +78,23 @@ public class ChessRules {
 	}
 
 	/**
-	 * TODO
-	 * @param board TODO
-	 * @param fromX TODO
-	 * @param fromY TODO
-	 * @param toX TODO
-	 * @param toY TODO
-	 * @param capture TODO
-	 * @return TODO
+	 * Found the piece and complete the informations about it.
+	 * @param piece The piece type.
+	 * @param board The chess board.
+	 * @param fromX The original abscissa.
+	 * @param fromY The original ordinate.
+	 * @param toX The destination abscissa.
+	 * @param toY The destination ordinate.
+	 * @param capture True if there is a capture.
+	 * @return The board square.
 	 */
-	public BoardSquare knight(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private BoardSquare knight(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		List<BoardPiece> legalKnights = new LinkedList<BoardPiece>();
 		BoardPiece knight;
 		int knightX;
 		int knightY;
 		int toXnum = letter.get(toX);
-		List<Integer> knights = board.getPiece("knight", board.currentMove, fromX, fromY);
+		List<Integer> knights = board.getPiece(PieceType.KNIGHT, board.currentMove, fromX, fromY);
 
 		for(int i=0 ; i<knights.size() ; i++) {
 			knight = board.pieces.get(knights.get(i));
@@ -105,16 +109,17 @@ public class ChessRules {
 	}
 
 	/**
-	 * TODO
-	 * @param board TODO
-	 * @param fromX TODO
-	 * @param fromY TODO
-	 * @param toX TODO
-	 * @param toY TODO
-	 * @param capture TODO
-	 * @return TODO
+	 * Found the piece and complete the informations about it.
+	 * @param piece The piece type.
+	 * @param board The chess board.
+	 * @param fromX The original abscissa.
+	 * @param fromY The original ordinate.
+	 * @param toX The destination abscissa.
+	 * @param toY The destination ordinate.
+	 * @param capture True if there is a capture.
+	 * @return The board square.
 	 */
-	public BoardSquare bishop(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private BoardSquare bishop(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		List<BoardPiece> legalBishops = new LinkedList<BoardPiece>();
 		int bishopX;
 		int bishopY;
@@ -126,7 +131,7 @@ public class ChessRules {
 		BoardPiece bishop;
 
 		int toXnum = letter.get(toX);
-		List<Integer> bishops = board.getPiece("bishop", board.currentMove, fromX, fromY);
+		List<Integer> bishops = board.getPiece(PieceType.BISHOP, board.currentMove, fromX, fromY);
 		for(int i=0 ; i<bishops.size() ; i++) {
 			bishop = board.pieces.get(bishops.get(i));
 			bishopX = letter.get(bishop.square.x);
@@ -160,16 +165,17 @@ public class ChessRules {
 	}
 
 	/**
-	 * TODO
-	 * @param board TODO
-	 * @param fromX TODO
-	 * @param fromY TODO
-	 * @param toX TODO
-	 * @param toY TODO
-	 * @param capture TODO
-	 * @return TODO
+	 * Found the piece and complete the informations about it.
+	 * @param piece The piece type.
+	 * @param board The chess board.
+	 * @param fromX The original abscissa.
+	 * @param fromY The original ordinate.
+	 * @param toX The destination abscissa.
+	 * @param toY The destination ordinate.
+	 * @param capture True if there is a capture.
+	 * @return The board square.
 	 */
-	public BoardSquare rook(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private BoardSquare rook(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		List<BoardPiece> legalRooks = new LinkedList<BoardPiece>();
 		int rookX;
 		int rookY;
@@ -180,7 +186,7 @@ public class ChessRules {
 		BoardPiece rook;
 
 		int toXnum = letter.get(toX);
-		List<Integer> rooks = board.getPiece("rook", board.currentMove, fromX, fromY);
+		List<Integer> rooks = board.getPiece(PieceType.ROOK, board.currentMove, fromX, fromY);
 		for(int i=0 ; i<rooks.size() ; i++) {
 			rook = board.pieces.get(rooks.get(i));
 			rookX = letter.get(rook.square.x);
@@ -217,16 +223,17 @@ public class ChessRules {
 	}
 
 	/**
-	 * TODO
-	 * @param board TODO
-	 * @param fromX TODO
-	 * @param fromY TODO
-	 * @param toX TODO
-	 * @param toY TODO
-	 * @param capture TODO
-	 * @return TODO
+	 * Found the piece and complete the informations about it.
+	 * @param piece The piece type.
+	 * @param board The chess board.
+	 * @param fromX The original abscissa.
+	 * @param fromY The original ordinate.
+	 * @param toX The destination abscissa.
+	 * @param toY The destination ordinate.
+	 * @param capture True if there is a capture.
+	 * @return The board square.
 	 */
-	public BoardSquare queen(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private BoardSquare queen(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		List<BoardPiece> legalQueens = new LinkedList<BoardPiece>();
 		int queenX;
 		int queenY;
@@ -241,7 +248,7 @@ public class ChessRules {
 		BoardPiece queen;
 
 		int toXnum = letter.get(toX);
-		List<Integer> queens = board.getPiece("queen", board.currentMove, fromX, fromY);
+		List<Integer> queens = board.getPiece(PieceType.QUEEN, board.currentMove, fromX, fromY);
 		for(int i=0 ; i<queens.size() ; i++) {
 			queen = board.pieces.get(queens.get(i));
 			queenX = letter.get(queen.square.x);
@@ -304,19 +311,20 @@ public class ChessRules {
 	}
 
 	/**
-	 * Gets the king position.
-	 * @param board TODO
-	 * @param fromX TODO
-	 * @param fromY TODO
-	 * @param toX TODO
-	 * @param toY TODO
-	 * @param capture TODO
-	 * @return TODO
+	 * Found the piece and complete the informations about it.
+	 * @param piece The piece type.
+	 * @param board The chess board.
+	 * @param fromX The original abscissa.
+	 * @param fromY The original ordinate.
+	 * @param toX The destination abscissa.
+	 * @param toY The destination ordinate.
+	 * @param capture True if there is a capture.
+	 * @return The board square.
 	 */
-	public BoardSquare king(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private BoardSquare king(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		BoardPiece king;
 		BoardSquare result = null;
-		List<Integer> pieces = board.getPiece("king", board.currentMove, (char)0, -1);
+		List<Integer> pieces = board.getPiece(PieceType.KING, board.currentMove, (char)0, -1);
 		if(pieces.size()==1) {
 			king = board.pieces.get(pieces.get(0));
 			result = new BoardSquare(king.square.x, king.square.y);
@@ -326,15 +334,15 @@ public class ChessRules {
 	}
 
 	/**
-	 * TODO
-	 * @param board TODO
-	 * @param legalPieces TODO
-	 * @param toX TODO
-	 * @param toY TODO
-	 * @param capture TODO
-	 * @return TODO
+	 * Check if the king would be under check.
+	 * @param board The chess board.
+	 * @param legalPieces The legal pieces.
+	 * @param toX The destination abscissa.
+	 * @param toY The destination ordinate.
+	 * @param capture True if there is a capture.
+	 * @return The board square.
 	 */
-	public BoardSquare executeCheck(ChessBoard board, List<BoardPiece> legalPieces, char toX, int toY, boolean capture) {
+	private BoardSquare executeCheck(ChessBoard board, List<BoardPiece> legalPieces, char toX, int toY, boolean capture) {
 		BoardSquare result = null;
 		if(legalPieces.size() > 1) {
 			for(int i=0 ; i<legalPieces.size() ; i++) {
@@ -360,24 +368,24 @@ public class ChessRules {
 
 	/**
 	 * Sees if board is in check state for the current player.
-	 * @param board TODO
-	 * @return TODO
+	 * @param board The chess board.
+	 * @return True if the board is in check state.
 	 */
-	public boolean check(ChessBoard board) {
+	private boolean check(ChessBoard board) {
 		BoardSquare attackArray;
-		String kingColor;
+		PieceColor kingColor;
 		BoardPiece king;
 		char kingX;
 		int kingY;
 		char fromX;
 		int fromY;
 		
-		if(board.currentMove.equals("white")) {
-			kingColor = "black";
+		if(board.currentMove==PieceColor.WHITE) {
+			kingColor = PieceColor.BLACK;
 		} else {
-			kingColor = "white";
+			kingColor = PieceColor.WHITE;
 		}
-		List<Integer> pieces = board.getPiece("king", kingColor, (char)0, -1);
+		List<Integer> pieces = board.getPiece(PieceType.KING, kingColor, (char)0, -1);
 		if(pieces.size()==1) {
 			king = board.pieces.get(pieces.get(0));
 			kingX = king.square.x;
@@ -387,7 +395,7 @@ public class ChessRules {
 					fromX = board.pieces.get(i).square.x;
 					fromY = board.pieces.get(i).square.y;
 					// We simply check if any of the pieces can "capture" enemy king, if so, its check
-					attackArray = this.eval(board.pieces.get(i).name, board, fromX, fromY, kingX, kingY, true);
+					attackArray = this.eval(board.pieces.get(i).type, board, fromX, fromY, kingX, kingY, true);
 					if(attackArray != null) {
 						return true;
 					}
@@ -399,36 +407,34 @@ public class ChessRules {
 	}
 	
 	/**
-	 * TODO
+	 * Found the piece and complete the informations about it.
+	 * Call the right method depending on the piece type.
 	 * Note: Added to convert eval method from JavaScript.
-	 * @param piece TODO
-	 * @param board TODO
-	 * @param fromX TODO
-	 * @param fromY TODO
-	 * @param toX TODO
-	 * @param toY TODO
-	 * @param capture TODO
-	 * @return TODO
+	 * @param piece The piece type.
+	 * @param board The chess board.
+	 * @param fromX The original abscissa.
+	 * @param fromY The original ordinate.
+	 * @param toX The destination abscissa.
+	 * @param toY The destination ordinate.
+	 * @param capture True if there is a capture.
+	 * @return The board square.
 	 */
-	private BoardSquare eval(String piece, ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
-		if(piece.equals("pawn")) {
+	public BoardSquare eval(PieceType piece, ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+		if(piece==PieceType.PAWN) {
 			return this.pawn(board, fromX, fromY, toX, toY, capture);
 		}
-		if(piece.equals("knight")) {
+		if(piece==PieceType.KNIGHT) {
 			return this.knight(board, fromX, fromY, toX, toY, capture);
 		}
-		if(piece.equals("bishop")) {
+		if(piece==PieceType.BISHOP) {
 			return this.bishop(board, fromX, fromY, toX, toY, capture);
 		}
-		if(piece.equals("rook")) {
+		if(piece==PieceType.ROOK) {
 			return this.rook(board, fromX, fromY, toX, toY, capture);
 		}
-		if(piece.equals("queen")) {
+		if(piece==PieceType.QUEEN) {
 			return this.queen(board, fromX, fromY, toX, toY, capture);
 		}
-		if(piece.equals("king")) {
-			return this.king(board, fromX, fromY, toX, toY, capture);
-		}
-		throw new IllegalArgumentException("evalRules: method not found!");
+		return this.king(board, fromX, fromY, toX, toY, capture);
 	}
 }

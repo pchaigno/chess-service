@@ -50,6 +50,11 @@ public class OpeningsDatabase extends Resource {
 			this.moves.add(suggestion);
 		}
 	}
+
+	@Override
+	protected void clearSuggestions() {
+		this.moves.clear();
+	}
 	
 	/**
 	 * For testing (maybe another class after)
@@ -59,9 +64,4 @@ public class OpeningsDatabase extends Resource {
 		OpeningsDatabase db1 = new OpeningsDatabase("http://localhost/1.0/rest/openings/", "Db1", 1);
 		db1.query("rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR%20w%20KQkq%20-%200%20");
     }
-
-	@Override
-	protected void clearSuggestions() {
-		this.moves.clear();
-	}
 }
