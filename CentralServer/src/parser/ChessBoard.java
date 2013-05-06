@@ -137,46 +137,47 @@ public class ChessBoard {
 	 * @return The current FEN.
 	 */
 	public String currentFEN(boolean reduced) {
-		String FEN = "";
+		String fen = "";
 		for(int num=8 ; num>=1 ; num--) {
 			int emptyCounter = 0;
-			for(char keyVar: this.squares.keySet()) {
+			char[] keys = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+			for(char keyVar: keys) {
 				if(this.squares.get(keyVar)[num].piece != null) {
 					if(emptyCounter != 0) {
-						FEN += emptyCounter;
+						fen += emptyCounter;
 						emptyCounter = 0;
 					}
 					PieceType pieceType = this.squares.get(keyVar)[num].piece.type;
 					PieceColor pieceColor = this.squares.get(keyVar)[num].piece.color;
 					String name = PieceType.getLetter(pieceType, false);
 					if(pieceColor==PieceColor.WHITE) {
-						FEN += name;
-					} else if(name!=null) { 
-						FEN += name;
+						fen += name;
+					} else if(name!=null) {
+						fen += name.toLowerCase();
 					}
 				} else {
 					emptyCounter++;
 				}
 			}
 			if(emptyCounter != 0) {
-				FEN += emptyCounter;
+				fen += emptyCounter;
 			}
 			if(num != 1) {
-				FEN += "/";
+				fen += "/";
 			}
 		}
-		FEN += " "+ PieceColor.getLetter(this.currentMove);
-		FEN += " "+this.castling;
-		FEN += " "+this.enPassant;
+		fen += " "+ PieceColor.getLetter(this.currentMove);
+		fen += " "+this.castling;
+		fen += " "+this.enPassant;
 		if(!reduced) {
 			if(this.halfMoves!=-1) {
-				FEN += " "+this.halfMoves;
+				fen += " "+this.halfMoves;
 			}
 			if(this.fullMoves!=-1) {
-				FEN += " "+this.fullMoves;
+				fen += " "+this.fullMoves;
 			}
 		}
-		return FEN;
+		return fen;
 	}
 
 	/**
