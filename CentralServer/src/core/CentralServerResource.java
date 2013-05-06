@@ -13,8 +13,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import parser.ChessParser;
-
 /**
  * This class will handle the call from the client to the central server and will send the answer.
  */
@@ -31,9 +29,7 @@ public class CentralServerResource {
 		if(move==null) {
 			move = NO_RESULT;
 		}
-		ResponseBuilder builder = Response.ok(move);
-		builder.header("Access-Control-Allow-Origin", "*");
-		return builder.build();
+		return respond(move);
 	}
 	
 	@Path("/rest/{gameId: [0-9]+}")
@@ -49,17 +45,15 @@ public class CentralServerResource {
 	@Produces("text/plain")
 	public Response getBestMove(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
 		// TODO Check that this game id exists.
+		
+		fen = fen.replaceAll("\\$", "/");
+		
 		String move = this.server.getBestMove(fen, gameId);
 		GamesManager.updateGame(gameId, fen);
 		if(move==null) {
 			move = NO_RESULT;
 		}
-		// TODO Check if a conversion is necessary.
-		ChessParser parser = new ChessParser(fen);
-		move = parser.convertSANToLAN(move);
-		ResponseBuilder builder = Response.ok(move);
-		builder.header("Access-Control-Allow-Origin", "*");
-		return builder.build();
+		return respond(move);
 	}
 	
 	@Path("/rest")
@@ -68,7 +62,11 @@ public class CentralServerResource {
 	public Response startGame(@DefaultValue("true")@FormParam("san")boolean san) {
 		// TODO Add a parameter san to the games.
 		int gameId = GamesManager.addNewGame();
-		ResponseBuilder builder = Response.ok(String.valueOf(gameId));
+		return respond(String.valueOf(gameId));
+	}
+	
+	private static Response respond(String response) {
+		ResponseBuilder builder = Response.ok(response);
 		builder.header("Access-Control-Allow-Origin", "*");
 		return builder.build();
 	}

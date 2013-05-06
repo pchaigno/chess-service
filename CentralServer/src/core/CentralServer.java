@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import parser.ChessParser;
+
 /**
  * Manage the list of resources.
  */
@@ -83,8 +85,7 @@ public class CentralServer {
 					if(scores.containsKey(move.getMove())) {
 						double newScore = scores.get(move) + resource.getTrust()*move.getScore();
 						scores.put(move.getMove(), newScore);
-					}
-					else{
+					} else {
 						scores.put(move.getMove(), resource.getTrust()*move.getScore());
 					}
 				}
@@ -93,13 +94,17 @@ public class CentralServer {
 		
 		String bestMove = this.bestMove(scores, ends);
 		
-		if(game_id>0){
+		if(game_id>0) {
 			GamesManager.addMove(game_id, getMoveResourcesId(bestMove), GamesManager.getNumberOfMoves(game_id)+1);
 		}
 		
 		StatsManager.updateStatistics(getOpeningSuggestions());
-		
-		return bestMove;
+
+		if(bestMove==null) {
+			return null;
+		}
+		ChessParser parser = new ChessParser(fen);
+		return parser.convertSANToLAN(bestMove);
 	}
 
 	/**

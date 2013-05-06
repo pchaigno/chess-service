@@ -80,7 +80,10 @@ public abstract class Resource {
 	 */
 	public void query(String fen) {
 		this.clearSuggestions();
-		String fenUri=fen;
+		
+		fen = fen.replaceAll("/", "\\$");
+		
+		String fenUri = "";
 		try {
 			fenUri = URIUtil.fromString(fen).toASCIIString();
 		} catch (URISyntaxException e) {
