@@ -2,6 +2,8 @@ package core;
 
 import java.util.List;
 
+import org.json.JSONObject;
+
 /**
  * Represent a bot.
  * @author Paul Chaignon
@@ -31,6 +33,9 @@ public class Bot extends Resource {
 
 	@Override
 	protected void parseJSONMove(String response, String fen) {
-		// TODO and to rename?
+		JSONObject json = new JSONObject(response);
+		String move = json.getString(JSON_MOVE);
+		BotSuggestion suggestion = new BotSuggestion(move);
+		this.moves.add(suggestion);
 	}
 }
