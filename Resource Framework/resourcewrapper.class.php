@@ -158,7 +158,7 @@ class ResourceWrapper {
 					}
 				}
 			} else {
-				redirectionErreur404();
+				error404Redirection();
 			}
 		} elseif(count($chars)==2) {
 			if($chars[1]=='version') {
@@ -175,9 +175,11 @@ class ResourceWrapper {
 				// Display the result as a JSON document:
 				header("Content-Type: application/json");
 				echo $result;
+			} else {
+				error404Redirection();
 			}
 		} else {
-			redirectionErreur404();
+			error404Redirection();
 		}
 	}
 
