@@ -3,6 +3,9 @@ package tests;
 import parser.ChessParser;
 import junit.framework.TestCase;
 
+/**
+ * Unit test for ChessParser.
+ */
 public class TestParser extends TestCase {
 
 	/**
@@ -52,6 +55,6 @@ public class TestParser extends TestCase {
 	 */
 	private void testFEN(String fen) {
 		ChessParser parser = new ChessParser(fen);
-		assertEquals(fen, parser.getFen(false));
+		assertEquals(fen, parser.getFEN(false));
 	}
 }
