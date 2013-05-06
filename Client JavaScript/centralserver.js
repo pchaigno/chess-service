@@ -41,7 +41,6 @@ function getFirstMoveFromCentralServer(p4d, fen) {
 		if(xmlreq.readyState == 4) {
 			if(xmlreq.status == 200) {
 				game_id = xmlreq.responseText;
-				alert(game_id);
 				getMoveFromCentralServer(p4d, fen);
 			} else {
 				alert('Error create: '+xmlreq.status);
@@ -63,7 +62,6 @@ function getMoveFromCentralServer(p4d, fen) {
 		if(xmlreq.readyState == 4) {
 			if(xmlreq.status == 200) {
 				move = convertToDigits(xmlreq.responseText);
-				alert(move[0]+' - '+move[1]);
 				p4d.move(move[0], move[1]);
 			} else {
 				alert('Error get: '+xmlreq.status);
