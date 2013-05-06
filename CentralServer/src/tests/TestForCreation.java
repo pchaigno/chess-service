@@ -7,6 +7,10 @@ import java.sql.SQLException;
 
 import junit.framework.TestCase;
 
+/**
+ * Unit test to create the database.
+ * @author Paul Chaignon
+ */
 public class TestForCreation extends TestCase {
 
 	public void testCreateResources() {

@@ -8,6 +8,10 @@ import core.OpeningSuggestion;
 
 import junit.framework.TestCase;
 
+/**
+ * Few tests of JSON parsing.
+ * @author Paul Chaignon
+ */
 public class TestJSONParser extends TestCase {
 
 	public void test() {

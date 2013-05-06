@@ -10,6 +10,7 @@ import java.util.Set;
 
 /**
  * Handle the statistics about every parameters used for score computation (for openings mainly).
+ * @author Clement Gautrais
  */
 public class StatsManager {
 	private static Properties conf = null;
@@ -109,22 +110,22 @@ public class StatsManager {
 		double[] stats = new double[2*NB_PARAMS];
 		Arrays.fill(stats, 0);
 		
-		for(OpeningSuggestion move : moves){
+		for(OpeningSuggestion move: moves) {
 			//TODO voir si ici, il fait appeler les fonctions des parametres (le f dans a*f(x1)/A)
-			stats[RANGE_NB_PLAY]+=move.computeScoreNbPlay();
-			stats[RANGE_PROBAD]+=move.getProbaDraw();
-			stats[RANGE_PROBAW]+=move.computeScoreProbaWin();
-			stats[RANGE_NB_PLAY+NB_PARAMS]+=Math.pow(move.computeScoreNbPlay(),2);
-			stats[RANGE_PROBAD+NB_PARAMS]+=Math.pow(move.getProbaDraw(),2);
-			stats[RANGE_PROBAW+NB_PARAMS]+=Math.pow(move.computeScoreProbaWin(),2);
+			stats[RANGE_NB_PLAY] += move.computeScoreNbPlay();
+			stats[RANGE_PROBAD] += move.getProbaDraw();
+			stats[RANGE_PROBAW] += move.computeScoreProbaWin();
+			stats[RANGE_NB_PLAY+NB_PARAMS] += Math.pow(move.computeScoreNbPlay(), 2);
+			stats[RANGE_PROBAD+NB_PARAMS] += Math.pow(move.getProbaDraw(), 2);
+			stats[RANGE_PROBAW+NB_PARAMS] += Math.pow(move.computeScoreProbaWin(), 2);
 		}
-		if(moves.size() >0){
-			for(int i=0; i<NB_PARAMS; i++){
-				stats[i]/=moves.size();
+		if(moves.size()>0) {
+			for(int i=0 ; i<NB_PARAMS ; i++) {
+				stats[i] /= moves.size();
 			}
 		}
-		for(int i=0; i<3; i++)
-			stats[NB_PARAMS+i]-=Math.pow(stats[i], 2);
+		for(int i=0 ; i<3 ; i++)
+			stats[NB_PARAMS+i] -= Math.pow(stats[i], 2);
 		
 		return stats;
 	}
@@ -173,13 +174,11 @@ public class StatsManager {
 		double currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.MEAN));
 		double currentVariance = Double.parseDouble(getProperty(propertyEntity, Statistic.VARIANCE));
 		
-		if((weight+currentWeight)>0){
-			double newVariance = (Math.pow(currentWeight,2)*currentVariance
+		if((weight+currentWeight)>0) {
+			return (Math.pow(currentWeight,2)*currentVariance
 					+currentWeight*weight*(currentVariance+variance+Math.pow(currentMean, 2)+Math.pow(mean, 2))
 					+Math.pow(weight, 2)*variance
 					-2*currentWeight*weight*currentMean*mean)/(Math.pow(currentWeight+weight, 2));
-
-			return newVariance;
 		}
 		
 		return 0;
@@ -195,10 +194,11 @@ public class StatsManager {
 	private static double computeMean(String propertyEntity, double mean, int weight) {
 		int currentWeight = Integer.parseInt(getProperty(propertyEntity, Statistic.WEIGHT));
 		double currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.MEAN));
-		if((weight+currentWeight)>0)
+		if(weight+currentWeight > 0) {
 			return (currentMean*currentWeight+mean*weight)/(currentMean+weight);
-		else
+		} else {
 			return 0;
+		}
 	}
 	
 	/**

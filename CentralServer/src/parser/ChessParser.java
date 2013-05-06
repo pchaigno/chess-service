@@ -10,9 +10,21 @@ import parser.BoardPiece.PieceType;
 
 /**
  * Regroups all the methods to parse notations.
+ * @author Clement Gautrais
+ * @author Paul Chaignon
  */
 public class ChessParser {
-	private static Map<Character, Integer> letter;
+	@SuppressWarnings("serial")
+	private static Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
+		this.put('a', 1);
+		this.put('b', 2);
+		this.put('c', 3);
+		this.put('d', 4);
+		this.put('e', 5);
+		this.put('f', 6);
+		this.put('g', 7);
+		this.put('h', 8);
+	}};
 	private ChessRules rules;
 	private ChessBoard board;
 	private String fen;
@@ -23,16 +35,6 @@ public class ChessParser {
 	 */
 	public ChessParser(String fen) {
 		this.fen = fen;
-		
-		letter = new HashMap<Character, Integer>();
-		letter.put('a', 1);
-		letter.put('b', 2);
-		letter.put('c', 3);
-		letter.put('d', 4);
-		letter.put('e', 5);
-		letter.put('f', 6);
-		letter.put('g', 7);
-		letter.put('h', 8);
 	
 		this.rules = new ChessRules();
 		
@@ -66,9 +68,9 @@ public class ChessParser {
 	 */
 	private String UCItoPGN(String ucimove, ChessBoard board) {
 		char fromX = ucimove.charAt(0);
-		int fromY = Integer.parseInt(""+ucimove.charAt(1));
+		int fromY = Integer.parseInt(String.valueOf(ucimove.charAt(1)));
 		char toX = ucimove.charAt(2);
-		int toY = Integer.parseInt(""+ucimove.charAt(3));
+		int toY = Integer.parseInt(String.valueOf(ucimove.charAt(3)));
 		PieceType piece = board.squares.get(fromX)[fromY].piece.type;
 		boolean capture = false;
 
@@ -93,29 +95,29 @@ public class ChessParser {
 			pgnfromX = "";
 			pgnfromY = "";
 		} else if(this.rules.eval(piece, board, fromX, -1, toX, toY, capture).x!=0) {
-			pgnfromX = ""+fromX;
+			pgnfromX = String.valueOf(fromX);
 			pgnfromY = "";
 		} else if(this.rules.eval(piece, board, (char)0, fromY, toX, toY, capture).x!=0) {
 			pgnfromX = "";
-			pgnfromY = ""+fromY;
+			pgnfromY = String.valueOf(fromY);
 		} else if(this.rules.eval(piece, board, fromX, fromY, toX, toY, capture).x!=0) {
-			pgnfromX = ""+fromX;
-			pgnfromY = ""+fromY;
+			pgnfromX = String.valueOf(fromX);
+			pgnfromY = String.valueOf(fromY);
 		}
 
 		String pgnpiece = PieceType.getLetter(piece, true);
 
 		// En passant capture
-		if((""+toX+toY).equals(board.enPassant) && piece==PieceType.PAWN) {
+		if(board.enPassant.equals(String.valueOf(toX)+toY) && piece==PieceType.PAWN) {
 			capture = true;
 		}
 
 		String pgncapture = "";
-		if (capture) {
+		if(capture) {
 			pgncapture = "x";
 		}
-		if (capture && piece==PieceType.PAWN) {
-			pgnfromX = ""+fromX;
+		if(capture && piece==PieceType.PAWN) {
+			pgnfromX = String.valueOf(fromX);
 		}
 
 		return pgnpiece + pgnfromX + pgnfromY + pgncapture + toX + toY;
@@ -151,7 +153,7 @@ public class ChessParser {
 		}
 		int fromY = -1;
 		if(moveArray[2]!=0) {
-			fromY = Integer.parseInt(""+moveArray[2]);
+			fromY = Integer.parseInt(String.valueOf(moveArray[2]));
 		}
 
 		boolean capture;
@@ -162,20 +164,20 @@ public class ChessParser {
 		}
 
 		char toX = moveArray[4];
-		int toY = Integer.parseInt(""+moveArray[5]);
+		int toY = Integer.parseInt(String.valueOf(moveArray[5]));
 
 		// Determine the location of the piece to move using chess rules and incomplete information about it
 		BoardSquare pieceXY = this.rules.eval(piece, board, fromX, fromY, toX, toY, capture);
 		
-		return ""+pieceXY.x+pieceXY.y+toX+toY;
+		return String.valueOf(pieceXY.x)+pieceXY.y+toX+toY;
 	}
 	
 	/**
-	 * Set enPassant parameter at - in fen if no pawn can play enPassant
+	 * Set enPassant parameter at - in fen if no pawn can play enPassant.
 	 */
-	public void verifyEnPassant() {
+	public void checkEnPassant() {
 		boolean needEnPassant = false;
-		if(!this.board.enPassant.equals("-")){
+		if(!this.board.enPassant.equals("-")) {
 			int mod;
 			if(board.currentMove==PieceColor.WHITE) {
 				mod = 1;
@@ -185,46 +187,53 @@ public class ChessParser {
 			char enPassantX = this.board.enPassant.charAt(0);
 			int enPassantY = Integer.parseInt(""+this.board.enPassant.charAt(1));
 			char enPassantGauche = enPassantX;
-			enPassantGauche-=1;
+			enPassantGauche -= 1;
 			char enPassantDroite = enPassantX;
-			enPassantDroite+=1;
+			enPassantDroite += 1;
 
-			if(enPassantX=='a'){
-				if(this.board.squares.get(enPassantDroite)[enPassantY-mod]!=null){
-					if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece!=null){
-						if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN)
+			if(enPassantX=='a') {
+				if(this.board.squares.get(enPassantDroite)[enPassantY-mod]!=null) {
+					if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece!=null) {
+						if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN) {
 							needEnPassant = true;
+						}
 					}
 				}
-			}
-			else if(enPassantX=='h'){
-				if(this.board.squares.get(enPassantGauche)[enPassantY-mod]!=null){
-					if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece!=null){
-						if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN)
+			} else if(enPassantX=='h') {
+				if(this.board.squares.get(enPassantGauche)[enPassantY-mod]!=null) {
+					if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece!=null) {
+						if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN) {
 							needEnPassant = true;
+						}
 					}
 				}
-			}
-			else{
-				if(this.board.squares.get(enPassantGauche)[enPassantY-mod]!=null){
-					if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece!=null){
-						if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN)
+			} else {
+				if(this.board.squares.get(enPassantGauche)[enPassantY-mod]!=null) {
+					if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece!=null) {
+						if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN) {
 							needEnPassant=true;
+						}
 					}
 				}
-				if(this.board.squares.get(enPassantDroite)[enPassantY-mod]!=null){
-					if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece!=null){
-						if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN)
+				if(!needEnPassant && this.board.squares.get(enPassantDroite)[enPassantY-mod]!=null) {
+					if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece!=null) {
+						if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN) {
 							needEnPassant=true;
+						}
 					}
 				}
 			}
 		}
-		if(!needEnPassant)
+		if(!needEnPassant) {
 			this.board.enPassant = "-";
+		}
 	}
 	
-	public String getFen(boolean reduced){
+	/**
+	 * @param reduced True if the FEN need to be reduced.
+	 * @return The FEN.
+	 */
+	public String getFEN(boolean reduced) {
 		return board.currentFEN(reduced);
 	}
 }

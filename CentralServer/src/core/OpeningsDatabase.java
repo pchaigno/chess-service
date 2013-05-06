@@ -9,7 +9,9 @@ import org.json.JSONObject;
 import parser.ChessParser;
 
 /**
- * Represent a database.
+ * Represent a database of openings.
+ * @author Paul Chaignon
+ * @author Clement Gautrais
  */
 public class OpeningsDatabase extends Resource {
 	private List<OpeningSuggestion> moves;

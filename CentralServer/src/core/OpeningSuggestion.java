@@ -2,6 +2,7 @@ package core;
 
 /**
  * Represent the suggestion of opening move made by a databases.
+ * @author Clement Gautrais
  */
 public class OpeningSuggestion extends MoveSuggestion {
 	private int nbPlay;

@@ -13,6 +13,9 @@ import com.sun.jersey.api.client.WebResource;
 
 /**
  * The model for all resources (databases and bots).
+ * @author Paul Chaignon
+ * @author Clement Gautrais
+ * @author Benoit Travers
  */
 public abstract class Resource {
 	public final static int OPENINGS_DATABASE = 0;

@@ -9,12 +9,23 @@ import parser.BoardPiece.*;
 
 /**
  * Represent the chess board.
+ * @author Paul Chaignon
  */
 public class ChessBoard {
 	// Board square notation:
 	final int[] numbers = {0, 8, 7, 6, 5, 4, 3, 2, 1};
 	final char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-	Map<Character, Integer> letter;
+	@SuppressWarnings("serial")
+	Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
+		this.put('a', 1);
+		this.put('b', 2);
+		this.put('c', 3);
+		this.put('d', 4);
+		this.put('e', 5);
+		this.put('f', 6);
+		this.put('g', 7);
+		this.put('h', 8);
+	}};
 	
 	// Variables used to load/save FEN:
 	// The piece to move now.
@@ -41,16 +52,6 @@ public class ChessBoard {
 	 */
 	public ChessBoard() {
 		this.pieces = new LinkedList<BoardPiece>();
-		
-		this.letter = new HashMap<Character, Integer>();
-		this.letter.put('a', 1);
-		this.letter.put('b', 2);
-		this.letter.put('c', 3);
-		this.letter.put('d', 4);
-		this.letter.put('e', 5);
-		this.letter.put('f', 6);
-		this.letter.put('g', 7);
-		this.letter.put('h', 8);
 		
 		this.squares = new HashMap<Character, BoardSquare[]>();
 		this.squares.put('a', new BoardSquare[9]);
@@ -166,7 +167,7 @@ public class ChessBoard {
 				fen += "/";
 			}
 		}
-		fen += " "+ PieceColor.getLetter(this.currentMove);
+		fen += " "+PieceColor.getLetter(this.currentMove);
 		fen += " "+this.castling;
 		fen += " "+this.enPassant;
 		if(!reduced) {
@@ -197,15 +198,15 @@ public class ChessBoard {
 		for(int lines=1 ; lines<=8 ; lines++) {
 			String line = boardArray[lines-1];
 			int colsY = 1;
-			for(int cols=1 ; cols<=line.length() ; cols++) {
-				char letter = line.charAt(cols-1);
+			for(int cols=0 ; cols<line.length() ; cols++) {
+				char letter = line.charAt(cols);
 				PieceColor color;
-				if ((""+letter).matches("[rbqkpn]")) {
+				if(String.valueOf(letter).matches("[rbqkpn]")) {
 					color = PieceColor.BLACK;
-				} else if ((""+letter).matches("[RBQKPN]")) {
+				} else if(String.valueOf(letter).matches("[RBQKPN]")) {
 					color = PieceColor.WHITE;
 				} else {
-					colsY = colsY + Integer.parseInt(""+letter);
+					colsY = colsY + Integer.parseInt(String.valueOf(letter));
 					continue;
 				}
 				PieceType name = PieceType.getType(letter);

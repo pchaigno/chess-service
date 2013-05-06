@@ -3,6 +3,7 @@ package core;
 /**
  * The model for all suggestion of move (from databases or bots).
  * This class was abstract but I(clement) changed it.
+ * @author Paul Chaignon
  */
 public abstract class MoveSuggestion {
 	protected String move;

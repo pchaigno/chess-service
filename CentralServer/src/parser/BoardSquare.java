@@ -2,6 +2,7 @@ package parser;
 
 /**
  * Represent a board square.
+ * @author Paul Chaignon
  */
 public class BoardSquare {
 	char x;

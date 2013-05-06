@@ -13,6 +13,7 @@ import org.sqlite.SQLiteConfig;
 
 /**
  * Handle all the accesses to the game SQLite table.
+ * @author Clement Gautrais
  */
 public class GamesManager {
 	private static final String FIRST_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -";

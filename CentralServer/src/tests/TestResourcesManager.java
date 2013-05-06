@@ -9,6 +9,10 @@ import core.Resource;
 import core.ResourcesManager;
 import junit.framework.TestCase;
 
+/**
+ * Unit tests for ResourcesManager.
+ * @author Paul Chaignon
+ */
 public class TestResourcesManager extends TestCase {
 
 	/**

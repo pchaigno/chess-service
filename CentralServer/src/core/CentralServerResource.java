@@ -13,11 +13,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
-import parser.ChessBoard;
 import parser.ChessParser;
 
 /**
  * This class will handle the call from the client to the central server and will send the answer.
+ * @author Clement Gautrais
+ * @author Paul Chaignon
  */
 @Path("/resource")
 public class CentralServerResource {
@@ -29,10 +30,10 @@ public class CentralServerResource {
 	@Produces("text/plain")
 	public Response getBestMove(@PathParam("fen")String fen) throws UnsupportedEncodingException {
 		fen = fen.replaceAll("\\$", "/");
-		if(!fen.endsWith("-")){
-			ChessBoard board = new ChessBoard();
-			board.loadFEN(fen);
-			System.out.println(board.currentFEN(true));
+		if(!fen.endsWith("-")) {
+			ChessParser parser = new ChessParser(fen);
+			parser.checkEnPassant();
+			System.out.println(parser.getFEN(true));
 			
 		}
 		String move = null;// this.server.getBestMove(fen, -1);
@@ -58,10 +59,10 @@ public class CentralServerResource {
 		
 		fen = fen.replaceAll("\\$", "/");
 		
-		if(!fen.endsWith("-")){
+		if(!fen.endsWith("-")) {
 			ChessParser parser = new ChessParser(fen);
-			parser.verifyEnPassant();
-			fen = parser.getFen(true);
+			parser.checkEnPassant();
+			fen = parser.getFEN(true);
 		}
 		String move = this.server.getBestMove(fen, gameId);
 		GamesManager.updateGame(gameId, fen);
@@ -80,6 +81,12 @@ public class CentralServerResource {
 		return respond(String.valueOf(gameId));
 	}
 	
+	/**
+	 * Build the response from a string.
+	 * Allow us to put the right headers.
+	 * @param response The string response.
+	 * @return The response with headers.
+	 */
 	private static Response respond(String response) {
 		ResponseBuilder builder = Response.ok(response);
 		builder.header("Access-Control-Allow-Origin", "*");
