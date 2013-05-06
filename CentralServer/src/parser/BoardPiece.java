@@ -39,9 +39,10 @@ public class BoardPiece {
 		
 		/**
 		 * @param type The piece type.
+		 * @param pawn If set to true, the pawns will return an empty string.
 		 * @return The letter associated to this piece type.
 		 */
-		public static String getLetter(PieceType type) {
+		public static String getLetter(PieceType type, boolean pawn) {
 			if(type==PieceType.KNIGHT) {
 				return "N";
 			}
@@ -57,7 +58,13 @@ public class BoardPiece {
 			if(type==PieceType.BISHOP) {
 				return "B";
 			}
-			return "";
+			if(type==PieceType.PAWN) {
+				if(pawn) {
+					return "";
+				}
+				return "P";
+			}
+			return null;
 		}
 	}
 	
