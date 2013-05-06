@@ -41,6 +41,7 @@ public class OpeningsDatabase extends Resource {
 			String move = json.getString(JSON_MOVE);
 			if(!this.san) {
 				ChessParser parser = new ChessParser(fen);
+				System.out.println("Move : "+move);
 				move = parser.convertLANToSAN(move);
 			}
 			double probaWin = json.getDouble(JSON_PROBA_WIN);

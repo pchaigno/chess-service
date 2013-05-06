@@ -13,6 +13,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import parser.ChessBoard;
+import parser.ChessParser;
+
 /**
  * This class will handle the call from the client to the central server and will send the answer.
  */
@@ -25,7 +28,14 @@ public class CentralServerResource {
 	@GET
 	@Produces("text/plain")
 	public Response getBestMove(@PathParam("fen")String fen) throws UnsupportedEncodingException {
-		String move = this.server.getBestMove(fen, -1);
+		fen = fen.replaceAll("\\$", "/");
+		if(!fen.endsWith("-")){
+			ChessBoard board = new ChessBoard();
+			board.loadFEN(fen);
+			System.out.println(board.currentFEN(true));
+			
+		}
+		String move = null;// this.server.getBestMove(fen, -1);
 		if(move==null) {
 			move = NO_RESULT;
 		}
@@ -48,6 +58,14 @@ public class CentralServerResource {
 		
 		fen = fen.replaceAll("\\$", "/");
 		
+		System.out.println("fen : " +fen);
+		
+		//if(!fen.endsWith("-")){
+			ChessParser parser = new ChessParser(fen);
+			parser.verifyEnPassant();
+			fen = parser.getFen(true);
+			System.out.println("new fen" +fen);
+		//}
 		String move = this.server.getBestMove(fen, gameId);
 		GamesManager.updateGame(gameId, fen);
 		if(move==null) {

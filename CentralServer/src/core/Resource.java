@@ -98,6 +98,7 @@ public abstract class Resource {
 		c.setReadTimeout(READ_TIMEOUT);
 		String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
 		
+		fen = fen.replaceAll("\\$", "/");
 		this.parseJSONMove(response, fen);
 	}
 

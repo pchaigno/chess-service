@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import parser.BoardPiece.PieceColor;
 import parser.BoardPiece.PieceType;
 
 /**
@@ -167,5 +168,59 @@ public class ChessParser {
 		BoardSquare pieceXY = this.rules.eval(piece, board, fromX, fromY, toX, toY, capture);
 		
 		return ""+pieceXY.x+pieceXY.y+toX+toY;
+	}
+	
+	/**
+	 * Set enPassant parameter at - in fen if no pawn can play enPassant
+	 */
+	public void verifyEnPassant(){
+		boolean needEnPassant = false;
+		if(!this.board.enPassant.equals("-")){
+			int mod;
+			if(board.currentMove==PieceColor.WHITE) {
+				mod = 1;
+			} else {
+				mod = -1;
+			}
+			char enPassantX = this.board.enPassant.charAt(0);
+			int enPassantY = Integer.parseInt(""+this.board.enPassant.charAt(1));
+
+			if(enPassantX==1){
+				if(this.board.squares.get(enPassantX+1)[enPassantY-mod]!=null){
+					if(this.board.squares.get(enPassantX+1)[enPassantY-mod].piece!=null){
+						if(this.board.squares.get(enPassantX+1)[enPassantY-mod].piece.type==PieceType.PAWN)
+							needEnPassant = true;
+					}
+				}
+			}
+			else if(enPassantX==8){
+				if(this.board.squares.get(enPassantX-1)[enPassantY-mod]!=null){
+					if(this.board.squares.get(enPassantX-1)[enPassantY-mod].piece!=null){
+						if(this.board.squares.get(enPassantX-1)[enPassantY-mod].piece.type==PieceType.PAWN)
+							needEnPassant = true;
+					}
+				}
+			}
+			else{
+				if(this.board.squares.get(enPassantX-1)[enPassantY-mod]!=null){
+					if(this.board.squares.get(enPassantX-1)[enPassantY-mod].piece!=null){
+						if(this.board.squares.get(enPassantX-1)[enPassantY-mod].piece.type==PieceType.PAWN)
+							needEnPassant=true;
+					}
+				}
+				if(this.board.squares.get(enPassantX+1)[enPassantY-mod]!=null){
+					if(this.board.squares.get(enPassantX+1)[enPassantY-mod].piece!=null){
+						if(this.board.squares.get(enPassantX+1)[enPassantY-mod].piece.type==PieceType.PAWN)
+							needEnPassant=true;
+					}
+				}
+			}
+		}
+		if(!needEnPassant)
+			this.board.enPassant = "-";
+	}
+	
+	public String getFen(boolean reduced){
+		return board.currentFEN(reduced);
 	}
 }

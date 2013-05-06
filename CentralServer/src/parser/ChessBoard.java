@@ -179,7 +179,7 @@ public class ChessBoard {
 				FEN += "/";
 			}
 		}
-		FEN += PieceColor.getLetter(this.currentMove);
+		FEN += " "+ PieceColor.getLetter(this.currentMove);
 		FEN += " "+this.castling;
 		FEN += " "+this.enPassant;
 		if(!reduced) {
