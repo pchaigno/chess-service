@@ -23,22 +23,23 @@ public class OpeningSuggestion extends MoveSuggestion {
 		this.nbPlay = nbPlay;
 		this.probaWin = probaWin;
 		this.probaDraw = probaDraw;
-		this.score = WEIGHT_NB_PLAY*computeScoreNbPlay()+WEIGHT_PROBA_WIN*computeScoreProbaWin();
+		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.VARIANCE))!=0)
+			this.score = WEIGHT_NB_PLAY*computeScoreNbPlay()/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.VARIANCE))));
+		else
+			this.score = WEIGHT_NB_PLAY*computeScoreNbPlay();
+		
+		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.VARIANCE))!=0)
+			this.score+=WEIGHT_PROBA_WIN*computeScoreProbaWin()/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.VARIANCE))));
+		else
+			this.score+=WEIGHT_PROBA_WIN*computeScoreProbaWin();
 	}
 	
 	public double computeScoreNbPlay(){
-		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.VARIANCE))!=0)
-			return (nbPlay-Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.MEAN)))
-				/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.VARIANCE))));
-		else
-			return (nbPlay-Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.MEAN)));
+		return (nbPlay-Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.MEAN)));
 	}
 	
 	public double computeScoreProbaWin(){
-		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.VARIANCE))!=0)
-			return (probaWin - 0.5)/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.VARIANCE))));
-		else
-			return (probaWin - 0.5);
+		return (probaWin - 0.5);
 	}
 
 	/**
