@@ -202,7 +202,11 @@ class ResourceWrapper {
 	// Make an HTTP POST request using cURL.
 	private function curlPost($url, $fen) {
 		if(!$this->complete_fen) {
-			$fen = substr($fen, 0, strpos($fen, '-')+1);
+		//On enlève les deux derniers chiffres du fen
+			preg_match("#^(.+)((\s[0-9]+){2})$#", $fen, $matches);
+			if(count($matches)>0){
+				$fen = $matches[1];
+			}
 		}
 		$query = 'fen='.rawurlencode($fen);
 
