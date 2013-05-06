@@ -162,7 +162,7 @@ public class ChessBoard {
 					} else if(pieceName==PieceType.KNIGHT) {
 						name = 'n';
 					}
-					if(pieceColor.equals("white")) {
+					if(pieceColor==PieceColor.WHITE) {
 						name = Character.toUpperCase(name);
 						FEN += name;
 					} else if(name!=0) { 
