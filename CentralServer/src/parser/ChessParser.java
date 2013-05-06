@@ -184,33 +184,37 @@ public class ChessParser {
 			}
 			char enPassantX = this.board.enPassant.charAt(0);
 			int enPassantY = Integer.parseInt(""+this.board.enPassant.charAt(1));
+			char enPassantGauche = enPassantX;
+			enPassantGauche-=1;
+			char enPassantDroite = enPassantX;
+			enPassantDroite+=1;
 
-			if(enPassantX==1){
-				if(this.board.squares.get(enPassantX+1)[enPassantY-mod]!=null){
-					if(this.board.squares.get(enPassantX+1)[enPassantY-mod].piece!=null){
-						if(this.board.squares.get(enPassantX+1)[enPassantY-mod].piece.type==PieceType.PAWN)
+			if(enPassantX=='a'){
+				if(this.board.squares.get(enPassantDroite)[enPassantY-mod]!=null){
+					if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece!=null){
+						if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN)
 							needEnPassant = true;
 					}
 				}
 			}
-			else if(enPassantX==8){
-				if(this.board.squares.get(enPassantX-1)[enPassantY-mod]!=null){
-					if(this.board.squares.get(enPassantX-1)[enPassantY-mod].piece!=null){
-						if(this.board.squares.get(enPassantX-1)[enPassantY-mod].piece.type==PieceType.PAWN)
+			else if(enPassantX=='h'){
+				if(this.board.squares.get(enPassantGauche)[enPassantY-mod]!=null){
+					if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece!=null){
+						if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN)
 							needEnPassant = true;
 					}
 				}
 			}
 			else{
-				if(this.board.squares.get(enPassantX-1)[enPassantY-mod]!=null){
-					if(this.board.squares.get(enPassantX-1)[enPassantY-mod].piece!=null){
-						if(this.board.squares.get(enPassantX-1)[enPassantY-mod].piece.type==PieceType.PAWN)
+				if(this.board.squares.get(enPassantGauche)[enPassantY-mod]!=null){
+					if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece!=null){
+						if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN)
 							needEnPassant=true;
 					}
 				}
-				if(this.board.squares.get(enPassantX+1)[enPassantY-mod]!=null){
-					if(this.board.squares.get(enPassantX+1)[enPassantY-mod].piece!=null){
-						if(this.board.squares.get(enPassantX+1)[enPassantY-mod].piece.type==PieceType.PAWN)
+				if(this.board.squares.get(enPassantDroite)[enPassantY-mod]!=null){
+					if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece!=null){
+						if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN)
 							needEnPassant=true;
 					}
 				}

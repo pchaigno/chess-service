@@ -60,12 +60,12 @@ public class CentralServerResource {
 		
 		System.out.println("fen : " +fen);
 		
-		//if(!fen.endsWith("-")){
+		if(!fen.endsWith("-")){
 			ChessParser parser = new ChessParser(fen);
 			parser.verifyEnPassant();
 			fen = parser.getFen(true);
-			System.out.println("new fen" +fen);
-		//}
+			System.out.println("new fen : " +fen);
+		}
 		String move = this.server.getBestMove(fen, gameId);
 		GamesManager.updateGame(gameId, fen);
 		if(move==null) {
