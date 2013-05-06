@@ -123,12 +123,12 @@ _p4d_proto.next_move = function(){
 
 _p4d_proto.computer_move = function(){
 	var fen;
+    this.auto_play_timeout = undefined;
 	for(fen in this.board_state.position_counts) {}
 	getNextMove(this, fen);
 	return;
 	
 	
-    this.auto_play_timeout = undefined;
     var state = this.board_state;
     var mv;
     var depth = this.computer_level + 1;
