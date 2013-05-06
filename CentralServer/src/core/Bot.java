@@ -1,5 +1,6 @@
 package core;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -19,6 +20,7 @@ public class Bot extends Resource {
 	 */
 	public Bot(String uri, String name, int trust) {
 		super(uri, name, trust);
+		moves = new LinkedList<BotSuggestion>();
 	}
 
 	@Override
