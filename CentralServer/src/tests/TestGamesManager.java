@@ -7,7 +7,11 @@ import core.GamesManager;
 
 import junit.framework.TestCase;
 
-public class TestGameManager extends TestCase {
+/**
+ * Unit tests for GamesManager.
+ * @author Clement Gautrais
+ */
+public class TestGamesManager extends TestCase {
 
 	public void test() {
 		ArrayList<Integer> games = new ArrayList<Integer>();
@@ -44,6 +48,6 @@ public class TestGameManager extends TestCase {
 	}
 	
 	public void testForeignKeys() {
-		
+		// TODO Add foreign keys tests.
 	}
 }

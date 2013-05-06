@@ -14,6 +14,7 @@ import org.sqlite.SQLiteConfig;
 
 /**
  * Handle all the accesses to the SQLite database for the resources.
+ * @author Paul Chaignon
  */
 public class ResourcesManager {
 	public static String DATABASE_FILE = PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE);

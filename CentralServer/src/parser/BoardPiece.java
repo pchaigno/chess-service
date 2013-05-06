@@ -2,6 +2,7 @@ package parser;
 
 /**
  * Represent a piece on the board.
+ * @author Paul Chaignon
  */
 public class BoardPiece {
 	PieceType type;

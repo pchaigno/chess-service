@@ -9,6 +9,7 @@ import parser.BoardPiece.*;
 
 /**
  * Represent the chess board.
+ * @author Paul Chaignon
  */
 public class ChessBoard {
 	// Board square notation:

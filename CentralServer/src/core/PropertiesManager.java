@@ -8,6 +8,7 @@ import java.util.Properties;
 
 /**
  * Handle the properties of the software such as the listening port or the timeouts.
+ * @author Clement Gautrais
  */
 public class PropertiesManager {
 	private static Properties conf = null;

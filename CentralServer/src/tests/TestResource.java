@@ -6,7 +6,8 @@ import core.OpeningsDatabase;
 import core.Resource;
 
 /**
- * Test Resource.
+ * Unit tests for Resource.
+ * @author Paul Chaignon
  */
 public class TestResource extends TestCase {
 

@@ -2,6 +2,7 @@ package core;
 
 /**
  * Represent the suggestion of ending move made by a databases.
+ * @author Paul Chaignon
  */
 public class EndingSuggestion extends MoveSuggestion {
 	private int nbMoves;

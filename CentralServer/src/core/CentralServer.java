@@ -9,6 +9,9 @@ import parser.ChessParser;
 
 /**
  * Manage the list of resources.
+ * @author Benoit Travers
+ * @author Paul Chaignon
+ * @author Clement Gautrais
  */
 public class CentralServer {
 	private Set<Resource> resources;

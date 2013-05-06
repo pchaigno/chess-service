@@ -41,6 +41,8 @@ import core.ResourcesManager;
 
 /**
  * The graphical user interface to manage resources and control the server.
+ * @author Clement Gautrais
+ * @author Paul Chaignon
  */
 public class GUI {
 	private static Display display;

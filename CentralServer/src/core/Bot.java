@@ -4,6 +4,7 @@ import java.util.List;
 
 /**
  * Represent a bot.
+ * @author Paul Chaignon
  */
 public class Bot extends Resource {
 	private List<BotSuggestion> moves;

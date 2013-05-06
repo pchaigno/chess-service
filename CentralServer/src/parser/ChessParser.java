@@ -10,6 +10,8 @@ import parser.BoardPiece.PieceType;
 
 /**
  * Regroups all the methods to parse notations.
+ * @author Clement Gautrais
+ * @author Paul Chaignon
  */
 public class ChessParser {
 	@SuppressWarnings("serial")

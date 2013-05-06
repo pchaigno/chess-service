@@ -9,6 +9,7 @@ import parser.BoardPiece.*;
 
 /**
  * Regroups the chess rules for each pieces and special moves.
+ * @author Paul Chaignon
  */
 public class ChessRules {
 	@SuppressWarnings("serial")

@@ -8,6 +8,10 @@ import org.json.JSONObject;
 
 import parser.ChessParser;
 
+/**
+ * Represent a database of endings.
+ * @author Paul Chaignon
+ */
 public class EndingsDatabase extends Resource {
 	private List<EndingSuggestion> moves;
 	private static final String JSON_RESULT = "result";

@@ -17,6 +17,8 @@ import parser.ChessParser;
 
 /**
  * This class will handle the call from the client to the central server and will send the answer.
+ * @author Clement Gautrais
+ * @author Paul Chaignon
  */
 @Path("/resource")
 public class CentralServerResource {

@@ -5,6 +5,8 @@ import junit.framework.TestCase;
 
 /**
  * Unit test for ChessParser.
+ * @author Clement Gautrais
+ * @author Paul Chaignon
  */
 public class TestParser extends TestCase {
 

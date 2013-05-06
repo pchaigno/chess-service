@@ -2,6 +2,7 @@ package core;
 
 /**
  * Represent the suggestion of move made by the bots.
+ * @author Paul Chaignon
  */
 public class BotSuggestion extends MoveSuggestion {
 

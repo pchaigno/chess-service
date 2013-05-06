@@ -10,6 +10,7 @@ import java.util.Set;
 
 /**
  * Handle the statistics about every parameters used for score computation (for openings mainly).
+ * @author Clement Gautrais
  */
 public class StatsManager {
 	private static Properties conf = null;
