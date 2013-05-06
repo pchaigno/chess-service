@@ -183,8 +183,12 @@ public class ChessBoard {
 		FEN += " "+this.castling;
 		FEN += " "+this.enPassant;
 		if(!reduced) {
-			FEN += " "+this.halfMoves;
-			FEN += " "+this.fullMoves;
+			if(this.halfMoves!=-1) {
+				FEN += " "+this.halfMoves;
+			}
+			if(this.fullMoves!=-1) {
+				FEN += " "+this.fullMoves;
+			}
 		}
 		return FEN;
 	}
@@ -241,14 +245,21 @@ public class ChessBoard {
 				colsY++;
 			}
 		}
+		
 		if(fenArray[1].equals("b")) {
 			this.currentMove = PieceColor.BLACK;
 		} else {
 			this.currentMove = PieceColor.WHITE;
 		}
+		
 		this.castling = fenArray[2];
 		this.enPassant = fenArray[3];
-		this.halfMoves = Integer.parseInt(fenArray[4]);
-		this.fullMoves = Integer.parseInt(fenArray[5]);
+		if(fenArray.length==6) {
+			this.halfMoves = Integer.parseInt(fenArray[4]);
+			this.fullMoves = Integer.parseInt(fenArray[5]);
+		} else {
+			this.halfMoves = -1;
+			this.fullMoves = -1;
+		}
 	}
 }

@@ -168,19 +168,4 @@ public class ChessParser {
 		
 		return ""+pieceXY.x+pieceXY.y+toX+toY;
 	}
-	
-	/**
-	 * Main method. Just for tests.
-	 */
-	public static void main(String[] args) {
-		String fen = "rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2";
-		// LAN from 127.0.0.1/rest/openings/rnbqkbnr$pppp1ppp$4p3$8$4P3$8$PPPP1PPP$RNBQKBNR w KQkq - 0 2
-		String lan = "b1c3";
-		String san;
-		ChessParser parser = new ChessParser(fen);
-		san = parser.convertLANToSAN(lan);
-		System.out.println(san);
-		
-		System.out.println(parser.convertSANToLAN(san));
-	}
 }

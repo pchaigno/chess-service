@@ -82,4 +82,9 @@ public class BoardPiece {
 		this.type = type;
 		this.color = color;
 	}
+
+	@Override
+	public String toString() {
+		return this.color+" "+this.type+" "+this.square;
+	}
 }
