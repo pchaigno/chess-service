@@ -146,26 +146,12 @@ public class ChessBoard {
 						FEN += emptyCounter;
 						emptyCounter = 0;
 					}
-					PieceType pieceName = this.squares.get(keyVar)[num].piece.type;
+					PieceType pieceType = this.squares.get(keyVar)[num].piece.type;
 					PieceColor pieceColor = this.squares.get(keyVar)[num].piece.color;
-					char name = 0;
-					if(pieceName==PieceType.ROOK) {
-						name = 'r';
-					} else if(pieceName==PieceType.BISHOP) {
-						name = 'b';
-					} else if(pieceName==PieceType.QUEEN) {
-						name = 'q';
-					} else if(pieceName==PieceType.KING) {
-						name = 'k';
-					} else if(pieceName==PieceType.PAWN) {
-						name = 'p';
-					} else if(pieceName==PieceType.KNIGHT) {
-						name = 'n';
-					}
+					String name = PieceType.getLetter(pieceType, false);
 					if(pieceColor==PieceColor.WHITE) {
-						name = Character.toUpperCase(name);
 						FEN += name;
-					} else if(name!=0) { 
+					} else if(name!=null) { 
 						FEN += name;
 					}
 				} else {
@@ -221,24 +207,7 @@ public class ChessBoard {
 					colsY = colsY + Integer.parseInt(""+letter);
 					continue;
 				}
-				PieceType name = PieceType.PAWN;
-				switch(Character.toLowerCase(letter)) {
-					case 'r':
-						name = PieceType.ROOK;
-						break;
-					case 'b':
-						name = PieceType.BISHOP;
-						break;
-					case 'q':
-						name = PieceType.QUEEN;
-						break;
-					case 'k':
-						name = PieceType.KING;
-						break;
-					case 'n':
-						name = PieceType.KNIGHT;
-						break;
-				}
+				PieceType name = PieceType.getType(letter);
 				char x = this.letters[colsY];
 				int y = this.numbers[lines];
 				this.addPiece(name, color, x, y);

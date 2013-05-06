@@ -103,7 +103,7 @@ public class ChessParser {
 			pgnfromY = ""+fromY;
 		}
 
-		String pgnpiece = PieceType.getLetter(piece);
+		String pgnpiece = PieceType.getLetter(piece, true);
 
 		// En passant capture
 		if((""+toX+toY).equals(board.enPassant) && piece==PieceType.PAWN) {
@@ -173,7 +173,7 @@ public class ChessParser {
 	/**
 	 * Set enPassant parameter at - in fen if no pawn can play enPassant
 	 */
-	public void verifyEnPassant(){
+	public void verifyEnPassant() {
 		boolean needEnPassant = false;
 		if(!this.board.enPassant.equals("-")){
 			int mod;
