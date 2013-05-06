@@ -107,6 +107,7 @@ public class CentralServer {
 			return null;
 		}
 		ChessParser parser = new ChessParser(fen);
+		System.out.println(bestMove); // Call listener instead.
 		return parser.convertSANToLAN(bestMove);
 	}
 

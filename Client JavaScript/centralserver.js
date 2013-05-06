@@ -76,8 +76,19 @@ function getMoveFromCentralServer(p4d, fen) {
 
 /** Convert the LAN to a 4 digits number for p4d **/
 function convertToDigits(lan) {
-	var letters = {'a':1, 'b':2, 'c':3, 'd':4, 'e':5, 'f':6, 'g':7, 'h':8};
 	var move = new Array();
+	if(lan=='O-O') {
+		move[0] = 95;
+		move[1] = 97;
+		return move;
+	}
+	if(lan=='O-O-O') {
+		move[0] = 95;
+		move[1] = 93;
+		return move;
+	}
+
+	var letters = {'a':1, 'b':2, 'c':3, 'd':4, 'e':5, 'f':6, 'g':7, 'h':8};
 	move[0] = (parseInt(lan[1])+1)+''+letters[lan[0]];
 	move[1] = (parseInt(lan[3])+1)+''+letters[lan[2]];
 	return move;
