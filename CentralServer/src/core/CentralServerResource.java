@@ -12,6 +12,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response.Status;
 
 import parser.ChessParser;
 
@@ -20,12 +21,12 @@ import parser.ChessParser;
  * @author Clement Gautrais
  * @author Paul Chaignon
  */
-@Path("/resource")
+@Path("/rest")
 public class CentralServerResource {
 	protected static final String NO_RESULT = "NULL";
 	protected CentralServer server = new CentralServer();
 	
-	@Path("/rest/{fen}")
+	@Path("/{fen}")
 	@GET
 	@Produces("text/plain")
 	public Response getBestMove(@PathParam("fen")String fen) throws UnsupportedEncodingException {
@@ -34,16 +35,15 @@ public class CentralServerResource {
 			ChessParser parser = new ChessParser(fen);
 			parser.checkEnPassant();
 			System.out.println(parser.getFEN(true));
-			
 		}
-		String move = null;// this.server.getBestMove(fen, -1);
+		String move = this.server.getBestMove(fen, -1);
 		if(move==null) {
 			move = NO_RESULT;
 		}
 		return respond(move);
 	}
 	
-	@Path("/rest/{gameId: [0-9]+}")
+	@Path("/{gameId: [0-9]+}")
 	@DELETE
 	public void endOfGame(@PathParam("gameId")int gameId) {
 		//TODO get the real result (i set 0 for now)
@@ -51,39 +51,41 @@ public class CentralServerResource {
 		GamesManager.removeGame(gameId);
 	}
 	
-	@Path("/rest/{gameId: [0-9]+}/{fen}")
+	@Path("/{gameId: [0-9]+}/{fen}")
 	@GET
 	@Produces("text/plain")
 	public Response getBestMove(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
-		// TODO Check that this game id exists.
-		
-		fen = fen.replaceAll("\\$", "/");
-		
-		if(!fen.endsWith("-")) {
-			ChessParser parser = new ChessParser(fen);
-			parser.checkEnPassant();
-			fen = parser.getFEN(true);
-		}
-		String move = this.server.getBestMove(fen, gameId);
-		GamesManager.updateGame(gameId, fen);
-		if(move==null) {
-			move = NO_RESULT;
-		} else {
-			Boolean san = GamesManager.isSAN(gameId);
-			if(san!=null && !san) {
+		if(GamesManager.exist(gameId)) {
+			fen = fen.replaceAll("\\$", "/");
+			
+			if(!fen.endsWith("-")) {
 				ChessParser parser = new ChessParser(fen);
-				move = parser.convertSANToLAN(move);
+				parser.checkEnPassant();
+				fen = parser.getFEN(true);
 			}
+			String move = this.server.getBestMove(fen, gameId);
+			GamesManager.updateGame(gameId, fen);
+			if(move==null) {
+				move = NO_RESULT;
+			} else {
+				Boolean san = GamesManager.isSAN(gameId);
+				if(san!=null && !san) {
+					ChessParser parser = new ChessParser(fen);
+					move = parser.convertSANToLAN(move);
+				}
+			}
+			
+			return respond(move);
 		}
 		
-		return respond(move);
+		ResponseBuilder builder = Response.status(Status.NOT_FOUND);
+		builder.header("Access-Control-Allow-Origin", "*");
+		return builder.build();
 	}
 	
-	@Path("/rest")
 	@POST
 	@Produces("text/plain")
 	public Response startGame(@DefaultValue("true")@FormParam("san")boolean san) {
-		// TODO Add a parameter san to the games.
 		int gameId = GamesManager.addNewGame(san);
 		return respond(String.valueOf(gameId));
 	}

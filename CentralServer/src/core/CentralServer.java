@@ -105,7 +105,6 @@ public class CentralServer {
 		if(bestMove==null) {
 			return null;
 		}
-		
 		System.out.println(bestMove); // Call listener instead.
 		return bestMove;
 	}

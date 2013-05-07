@@ -156,7 +156,7 @@ public class GamesManager {
 	 * @param gameId The game id.
 	 * @return True if the game exists.
 	 */
-	private static boolean exist(int gameId) {
+	public static boolean exist(int gameId) {
 		Connection dbConnect = getConnection();
 		String query = "SELECT "+GAME_ID+" FROM "+GAMES+" WHERE "+GAME_ID+"= ?";
 		try {
