@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.sqlite.SQLiteConfig;
@@ -25,6 +26,7 @@ public class GamesManager {
 	private static final String MOVE_GAME = "id_game";
 	private static final String MOVE_RESOURCE = "id_resource";
 	private static final String MOVE_NUMBER = "num_move"; // The number of the move in the game
+	private static final String MOVE_TRUST = "move_trust";
 	
 	/**
 	 * Remove all traces of the game id_game.
@@ -171,15 +173,16 @@ public class GamesManager {
 	 * @param moveNumber The move number.
 	 * @return True if added, false otherwise.
 	 */
-	public static boolean addMove(int gameId, Set<Integer> resourcesId, int moveNumber) {
+	public static boolean addMoves(int gameId, Map<Integer, Double> resourcesConfidence, int moveNumber) {
 		Connection dbConnect = getConnection();
-		String query = "INSERT INTO "+MOVES+" ("+MOVE_GAME+", "+MOVE_RESOURCE+", "+MOVE_NUMBER+") VALUES(?, ?, ?)";
+		String query = "INSERT INTO "+MOVES+" ("+MOVE_GAME+", "+MOVE_RESOURCE+", "+MOVE_NUMBER+", "+MOVE_TRUST+") VALUES(?, ?, ?, ?)";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
-			for(Integer resource_id: resourcesId) {
+			for(Entry<Integer, Double> resourceConfidence : resourcesConfidence.entrySet()) {
 				statement.setInt(1, gameId);
-				statement.setInt(2, resource_id);
+				statement.setInt(2, resourceConfidence.getKey());
 				statement.setInt(3, moveNumber);
+				statement.setDouble(4, resourceConfidence.getValue());
 				statement.addBatch();
 			}
 			int[] results = statement.executeBatch();
@@ -212,13 +215,13 @@ public class GamesManager {
 		}
 		if(exist(gameId)) {
 			Connection dbConnect = getConnection();
-			String query = "SELECT COUNT(DISTINCT "+MOVE_NUMBER+") AS moveNumber, "+MOVE_RESOURCE+" FROM "+MOVES+" WHERE "+MOVE_GAME+"= ? GROUP BY "+MOVE_RESOURCE;
+			String query = "SELECT TOTAL("+MOVE_TRUST+") AS totalTrust, "+MOVE_RESOURCE+" FROM "+MOVES+" WHERE "+MOVE_GAME+"= ? GROUP BY "+MOVE_RESOURCE;
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
 				statement.setInt(1, gameId);
 				ResultSet set = statement.executeQuery();
 				while(set.next()) {
-					stats.put(set.getInt(MOVE_RESOURCE), (Double)set.getDouble("moveNumber")/nbTotalMoves);
+					stats.put(set.getInt(MOVE_RESOURCE), set.getDouble("totalTrust"));
 				}
 				dbConnect.close();
 				return stats;

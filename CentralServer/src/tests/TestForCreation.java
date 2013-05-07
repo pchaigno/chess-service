@@ -18,7 +18,7 @@ public class TestForCreation extends TestCase {
 		Connection dbConnect = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			dbConnect = DriverManager.getConnection("jdbc:sqlite:resources.db");
+			dbConnect = DriverManager.getConnection("jdbc:sqlite:databases/resources/resources.db");
 		} catch (SQLException e) {
 			System.err.println("Impossible to connect to the database resources.db.");
 		} catch (ClassNotFoundException e) {
@@ -40,7 +40,7 @@ public class TestForCreation extends TestCase {
 		} catch (SQLException e) {
 			System.err.println("SQLException: "+e.getMessage());
 		}
-		query = "CREATE TABLE moves(id_resource INTEGER REFERENCES resources(id), id_game INTEGER REFERENCES games(id), num_move INTEGER, PRIMARY KEY(id_resource, id_game, num_move))";
+		query = "CREATE TABLE moves(id_resource INTEGER REFERENCES resources(id), id_game INTEGER REFERENCES games(id), num_move INTEGER, move_trust DOUBLE, PRIMARY KEY(id_resource, id_game, num_move))";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.executeUpdate();

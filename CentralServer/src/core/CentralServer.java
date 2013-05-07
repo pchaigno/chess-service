@@ -98,7 +98,7 @@ public class CentralServer {
 		String bestMove = this.bestMove(scores, ends);
 		
 		if(gameId>0) {
-			GamesManager.addMove(gameId, getMoveResourcesId(bestMove), GamesManager.getNumberOfMoves(gameId)+1);
+			GamesManager.addMoves(gameId, getMoveResourcesConfidence(bestMove), GamesManager.getNumberOfMoves(gameId)+1);
 		}
 		
 		StatsManager.updateStatistics(getOpeningSuggestions());
@@ -147,16 +147,34 @@ public class CentralServer {
 	 * @param move the move that is proposed
 	 * @return resources
 	 */
-	private Set<Integer> getMoveResourcesId(String move){
-		HashSet<Integer> moveResources = new HashSet<Integer>();
+	private Map<Integer, Double> getMoveResourcesConfidence(String move){
+		Set<Resource> moveResources = new HashSet<Resource>();
+		Map<Integer, Double> resourcesConfidence = new HashMap<Integer, Double>();
+		double scoreMax = Double.MIN_VALUE;
 		for(Resource r : resources){
 			for(MoveSuggestion moveSug : r.getMoveSuggestions()){
 				if(moveSug.getMove().equals(move)){
-					moveResources.add(r.getId());
+					if(moveSug.getScore() > scoreMax)
+						scoreMax = moveSug.getScore();
+					moveResources.add(r);
 				}
 			}
 		}
-		return moveResources;
+		
+		for(Resource r : moveResources){
+			for(MoveSuggestion moveSug : r.getMoveSuggestions()){
+				if(moveSug.getMove().equals(move)){
+					if(scoreMax>0)
+						resourcesConfidence.put(r.getId(), moveSug.getScore()/scoreMax);
+					else if(scoreMax<0)
+						resourcesConfidence.put(r.getId(), scoreMax/moveSug.getScore());
+					else
+						resourcesConfidence.put(r.getId(), (double)0);
+				}
+			}
+		}
+		
+		return resourcesConfidence;
 	}
 	
 	/**
