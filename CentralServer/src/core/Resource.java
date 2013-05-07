@@ -88,9 +88,9 @@ public abstract class Resource {
 	 */
 	public void query(String fen) {
 		this.clearSuggestions();
-		
+
 		fen = fen.replaceAll("/", "\\$");
-		
+
 		String fenUri = "";
 		try {
 			fenUri = URIUtil.fromString(fen).toASCIIString();
@@ -105,10 +105,14 @@ public abstract class Resource {
 		WebResource r = c.resource(this.uri+fenUri);
 		c.setConnectTimeout(CONNECT_TIMEOUT);
 		c.setReadTimeout(READ_TIMEOUT);
-		String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class); //TODO checkversion
-		
-		fen = fen.replaceAll("\\$", "/");
-		this.parseJSONMove(response, fen);
+		try{
+			String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class); //TODO checkversion
+
+			fen = fen.replaceAll("\\$", "/");
+			this.parseJSONMove(response, fen);
+		}catch(ClientHandlerException e){
+			
+		}
 	}
 
 	/**
