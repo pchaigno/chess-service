@@ -101,7 +101,7 @@ public class CentralServer {
 			GamesManager.addMoves(gameId, getMoveResourcesConfidence(bestMove), GamesManager.getNumberOfMoves(gameId)+1);
 		}
 		
-		StatsManager.updateStatistics(getOpeningSuggestions());
+		StatsManager.updateStatistics(getSuggestions());
 
 		if(bestMove==null) {
 			return null;
@@ -178,18 +178,17 @@ public class CentralServer {
 	}
 	
 	/**
-	 * Return all the OpenningsSuggestions made by the resources
-	 * @return the openingSuggestions
+	 * Return all the Suggestions made by the resources
+	 * @return the Suggestions
 	 */
-	private Set<OpeningSuggestion> getOpeningSuggestions(){
-		HashSet<OpeningSuggestion> moveOpenings = new HashSet<OpeningSuggestion>();
+	private Set<? extends MoveSuggestion> getSuggestions(){
+		HashSet<MoveSuggestion> moves = new HashSet<>();
 		for(Resource r : resources){
 			for(MoveSuggestion moveSug : r.getMoveSuggestions()){
-				if(moveSug.getClass() == OpeningSuggestion.class)
-					moveOpenings.add((OpeningSuggestion) moveSug);
+				moves.add(moveSug);
 			}
 		}
-		return moveOpenings;
+		return moves;
 	}
 	
 	public void rewardResources(int game_id, int game_result){
