@@ -1,9 +1,12 @@
 package tests;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import core.GamesManager;
+import core.ResourcesManager;
 
 import junit.framework.TestCase;
 
@@ -18,31 +21,31 @@ public class TestGamesManager extends TestCase {
 		
 		games.add(GamesManager.addNewGame(true));
 		assertTrue(games.get(0)>0);
-		
+	
 		//TODO load 3 resources (id 1, 2, 3)
-		HashSet<Integer> resourcesMove1 = new HashSet<Integer>();
-		resourcesMove1.add(1);
-		resourcesMove1.add(2);
+		Map<Integer, Double> resourcesMove1 = new HashMap<Integer, Double>();
+		resourcesMove1.put(1, (double)1);
 		
-		HashSet<Integer> resourcesMove2 = new HashSet<Integer>();
-		resourcesMove2.add(1);
+		Map<Integer, Double> resourcesMove2 = new HashMap<Integer, Double>();
+		resourcesMove2.put(1, (double)1);
 		
-		HashSet<Integer> resourcesMove3 = new HashSet<Integer>();
-		resourcesMove3.add(1);
-		resourcesMove3.add(2);
+		Map<Integer, Double> resourcesMove3 = new HashMap<Integer, Double>();
+		resourcesMove3.put(2, (double)1);
+		resourcesMove3.put(3, 0.7);
 		
-		HashSet<Integer> resourcesMove4 = new HashSet<Integer>();
-		resourcesMove4.add(3);
+		Map<Integer, Double> resourcesMove4 = new HashMap<Integer, Double>();
+		resourcesMove4.put(1, (double)1);
+		resourcesMove4.put(3, 0.4);
 		
-		/*assertTrue(GamesManager.addMove(games.get(0), resourcesMove1, 1));
-		assertTrue(GamesManager.addMove(games.get(0), resourcesMove2, 2));
-		assertTrue(GamesManager.addMove(games.get(0), resourcesMove3, 3));
-		assertTrue(GamesManager.addMove(games.get(0), resourcesMove4, 4));*/
+		assertTrue(GamesManager.addMoves(games.get(0), resourcesMove1, 1));
+		assertTrue(GamesManager.addMoves(games.get(0), resourcesMove2, 2));
+		assertTrue(GamesManager.addMoves(games.get(0), resourcesMove3, 3));
+		assertTrue(GamesManager.addMoves(games.get(0), resourcesMove4, 4));
 		
 		assertTrue(GamesManager.updateGame(games.get(0), "fen3coups"));
 		
-		assertTrue(GamesManager.getResourcesStats(games.get(0)).get(1)==0.75);
-		assertTrue(GamesManager.getResourcesStats(games.get(0)).get(2)==0.5);
+		assertTrue(GamesManager.getResourcesStats(games.get(0)).get(1)==3);
+		assertTrue(GamesManager.getResourcesStats(games.get(0)).get(3)==1.1);
 		
 		assertTrue(GamesManager.removeGame(games.get(0)));
 	}
