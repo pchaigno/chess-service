@@ -17,9 +17,10 @@ public class Bot extends Resource {
 	 * @param uri The URI.
 	 * @param name The name.
 	 * @param trust The trust in this bot.
+	 * @param active True if the resource is active.
 	 */
-	public Bot(String uri, String name, int trust) {
-		super(uri, name, trust);
+	public Bot(String uri, String name, int trust, boolean active) {
+		super(uri, name, trust, active);
 		this.moves = new LinkedList<BotSuggestion>();
 	}
 

@@ -83,7 +83,7 @@ public class GUI {
 					ResourcesManager.changeDatabase(dialogDatabase.getValue());
 					shell.setText("Central Server (working db:"+ResourcesManager.getDatabaseFile()+")");
 					resourcesTable.removeAll();
-					Set<Resource> resources = ResourcesManager.getResources();
+					Set<Resource> resources = ResourcesManager.getResources(false);
 					for(Resource resource: resources) {
 						addResourceItem(resource);
 					}
@@ -255,6 +255,9 @@ public class GUI {
 		TableColumn columnTrust = new TableColumn(resourcesTable, SWT.LEFT);
 		columnTrust.setText("Trust");
 		columnTrust.setWidth(50);
+		TableColumn columnActive = new TableColumn(resourcesTable, SWT.LEFT);
+		columnActive.setText("Active");
+		columnActive.setWidth(50);
 		resourcesTable.setHeaderVisible(true);
 		resourcesTable.setLinesVisible(true);
 		
@@ -277,7 +280,7 @@ public class GUI {
 			}
 		});
 		
-		Set<Resource> resources = ResourcesManager.getResources();
+		Set<Resource> resources = ResourcesManager.getResources(false);
 		for(Resource resource: resources) {
 			addResourceItem(resource);
 		}
@@ -296,7 +299,8 @@ public class GUI {
 			type = "Endings Database";
 		}
 		String trust = String.valueOf(resource.getTrust());
-		resourceItem.setText(new String[] {type, resource.getName(), resource.getURI(), trust});
+		String active = resource.isActive()? "enabled" : "disabled";
+		resourceItem.setText(new String[] {type, resource.getName(), resource.getURI(), trust, active});
 		resourceItem.setData(resource);
 	}
 	
@@ -320,6 +324,22 @@ public class GUI {
 	private static void buildContextMenu() {
 		Menu contextMenu = new Menu(resourcesTable);
 		
+		MenuItem optionEnable = new MenuItem(contextMenu, SWT.PUSH);
+		optionEnable.setText("Enable");
+		optionEnable.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				enableResources();
+			}
+		});
+		MenuItem optionDisable = new MenuItem(contextMenu, SWT.PUSH);
+		optionDisable.setText("Disable");
+		optionDisable.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				disableResources();
+			}
+		});
 		MenuItem optionAdd = new MenuItem(contextMenu, SWT.PUSH);
 		optionAdd.setText("Add");
 		optionAdd.addSelectionListener(new SelectionAdapter() {
@@ -351,6 +371,38 @@ public class GUI {
 		});
 		
 		resourcesTable.setMenu(contextMenu);
+	}
+	
+	/**
+	 * Enable the resources selected.
+	 * Update the resources table.
+	 */
+	private static void enableResources() {
+		TableItem[] resourceItems = resourcesTable.getSelection();
+		Set<Resource> resources = new HashSet<Resource>();
+		for(TableItem resourceItem: resourceItems) {
+			Resource resource = (Resource)resourceItem.getData();
+			resourceItem.setText(4, "enabled");
+			resource.enable();
+			resources.add(resource);
+		}
+		ResourcesManager.updateResourcesActive(resources);
+	}
+	
+	/**
+	 * Disable the resources selected.
+	 * Update the resources table.
+	 */
+	private static void disableResources() {
+		TableItem[] resourceItems = resourcesTable.getSelection();
+		Set<Resource> resources = new HashSet<Resource>();
+		for(TableItem resourceItem: resourceItems) {
+			Resource resource = (Resource)resourceItem.getData();
+			resourceItem.setText(4, "disabled");
+			resource.disable();
+			resources.add(resource);
+		}
+		ResourcesManager.updateResourcesActive(resources);
 	}
 	
 	/**
@@ -425,11 +477,11 @@ public class GUI {
 			public void widgetSelected(SelectionEvent e) {
 				Resource resource = null;
 				if(type.getText().equals("Openings Database")) {
-					resource = new OpeningsDatabase(uri.getText(), name.getText(), Integer.parseInt(trust.getText()));
+					resource = new OpeningsDatabase(uri.getText(), name.getText(), Integer.parseInt(trust.getText()), true);
 				} else if(type.getText().equals("Endings Database")) {
-					resource = new EndingsDatabase(uri.getText(), name.getText(), Integer.parseInt(trust.getText()));
+					resource = new EndingsDatabase(uri.getText(), name.getText(), Integer.parseInt(trust.getText()), true);
 				} else {
-					resource = new Bot(uri.getText(), name.getText(), Integer.parseInt(trust.getText()));
+					resource = new Bot(uri.getText(), name.getText(), Integer.parseInt(trust.getText()), true);
 				}
 				if(ResourcesManager.addResource(resource)) {
 					addResourceItem(resource);
@@ -502,11 +554,11 @@ public class GUI {
 			public void widgetSelected(SelectionEvent e) {
 				Resource newResource = null;
 				if(type.getText().equals("Openings Database")) {
-					newResource = new OpeningsDatabase(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()));
+					newResource = new OpeningsDatabase(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()), true);
 				} else if(type.getText().equals("Endings Database")) {
-					newResource = new EndingsDatabase(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()));
+					newResource = new EndingsDatabase(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()), true);
 				} else {
-					newResource = new Bot(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()));
+					newResource = new Bot(resource.getURI(), name.getText(), Integer.parseInt(trust.getText()), true);
 				}
 				if(ResourcesManager.updateResource(newResource)) {
 					removeResourceItem(resource);

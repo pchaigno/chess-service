@@ -24,6 +24,7 @@ public class ResourcesManager {
 	private static final String RESOURCE_NAME = "name";
 	private static final String RESOURCE_TRUST = "trust";
 	private static final String RESOURCE_TYPE = "type";
+	private static final String RESOURCE_ACTIVE = "active";
 
 	/**
 	 * Change the current database.
@@ -41,23 +42,27 @@ public class ResourcesManager {
 	}
 	
 	/**
+	 * @param active If true then this method will only return the active resources.
 	 * @return All resources from the database.
 	 */
-	public static Set<Resource> getResources() {
+	public static Set<Resource> getResources(boolean active) {
 		Set<Resource> resources = new HashSet<Resource>();
 		Connection dbConnect = getConnection();
 		String query = "SELECT * FROM "+RESOURCES;
+		if(active) {
+			query += " WHERE active = 1";
+		}
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			ResultSet results = statement.executeQuery();
 			while(results.next()) {
 				Resource resource;
-				if(results.getInt("type")==Resource.OPENINGS_DATABASE) {
-					resource = new OpeningsDatabase(results.getString("uri"), results.getString("name"), results.getInt("trust"));
-				} else if(results.getInt("type")==Resource.ENDINGS_DATABASE) {
-					resource = new EndingsDatabase(results.getString("uri"), results.getString("name"), results.getInt("trust"));
+				if(results.getInt(RESOURCE_TYPE)==Resource.OPENINGS_DATABASE) {
+					resource = new OpeningsDatabase(results.getString(RESOURCE_URI), results.getString(RESOURCE_NAME), results.getInt(RESOURCE_TRUST), results.getBoolean(RESOURCE_ACTIVE));
+				} else if(results.getInt(RESOURCE_TYPE)==Resource.ENDINGS_DATABASE) {
+					resource = new EndingsDatabase(results.getString(RESOURCE_URI), results.getString(RESOURCE_NAME), results.getInt(RESOURCE_TRUST), results.getBoolean(RESOURCE_ACTIVE));
 				} else {
-					resource = new Bot(results.getString("uri"), results.getString("name"), results.getInt("trust"));
+					resource = new Bot(results.getString(RESOURCE_URI), results.getString(RESOURCE_NAME), results.getInt(RESOURCE_TRUST), results.getBoolean(RESOURCE_ACTIVE));
 				}
 				resource.setId(results.getInt(RESOURCE_ID));
 				resources.add(resource);
@@ -77,7 +82,7 @@ public class ResourcesManager {
 	 */
 	public static boolean addResource(Resource resource) {
 		Connection dbConnect = getConnection();
-		String query = "INSERT INTO "+RESOURCES+"("+RESOURCE_TYPE+", "+RESOURCE_NAME+", "+RESOURCE_URI+", "+RESOURCE_TRUST+") VALUES(?, ?, ?, ?)";
+		String query = "INSERT INTO "+RESOURCES+"("+RESOURCE_TYPE+", "+RESOURCE_NAME+", "+RESOURCE_URI+", "+RESOURCE_TRUST+", "+RESOURCE_ACTIVE+") VALUES(?, ?, ?, ?, 1)";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			int type = Resource.BOT;
@@ -168,7 +173,7 @@ public class ResourcesManager {
 	 */
 	public static boolean updateResource(Resource resource) {
 		Connection dbConnect = getConnection();
-		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_NAME+" = ?, "+RESOURCE_TRUST+" = ?, "+RESOURCE_TYPE+" = ? WHERE "+RESOURCE_ID+" = ?";
+		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_NAME+" = ?, "+RESOURCE_TRUST+" = ?, "+RESOURCE_TYPE+" = ?, "+RESOURCE_ACTIVE+" = ? WHERE "+RESOURCE_ID+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setString(1, resource.getName());
@@ -180,7 +185,8 @@ public class ResourcesManager {
 				type = Resource.ENDINGS_DATABASE;
 			}
 			statement.setInt(3, type);
-			statement.setInt(4, resource.getId());
+			statement.setBoolean(4, resource.isActive());
+			statement.setInt(5, resource.getId());
 			if(statement.executeUpdate()!=1) {
 				dbConnect.close();
 				return false;
@@ -195,7 +201,7 @@ public class ResourcesManager {
 	
 	/**
 	 * Update the trust parameter of resources.
-	 * @param resources The resources whose trust is to update.
+	 * @param resources All the resources, even the one that don't need an update.
 	 * @return The resources that weren't updated.
 	 */
 	public static Set<Resource> updateResourcesTrust(Set<Resource> resources) {
@@ -209,7 +215,7 @@ public class ResourcesManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			for(Resource resource: resourcesToUpdate) {
 				if(resource.isChanged()) {
-					changed=true;
+					changed = true;
 					statement.setInt(1, resource.getTrust());
 					statement.setInt(2, resource.getId());
 					statement.addBatch();
@@ -226,6 +232,37 @@ public class ResourcesManager {
 			}
 		} catch(SQLException e) {
 			System.err.println("updateResourcesTrust: "+e.getMessage());
+		}
+		return notUpdated;
+	}
+	
+	/**
+	 * Update the active parameter of resources.
+	 * @param resources The resources whose active parameter is to update.
+	 * @return The resources that weren't updated.
+	 */
+	public static Set<Resource> updateResourcesActive(Set<Resource> resources) {
+		Set<Resource> notUpdated = new HashSet<Resource>();
+		List<Resource> resourcesToUpdate = new ArrayList<Resource>();
+		resourcesToUpdate.addAll(resources);
+		Connection dbConnect = getConnection();
+		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_ACTIVE+" = ? WHERE "+RESOURCE_ID+" = ?";
+		try {
+			PreparedStatement statement = dbConnect.prepareStatement(query);
+			for(Resource resource: resourcesToUpdate) {
+				statement.setBoolean(1, resource.isActive());
+				statement.setInt(2, resource.getId());
+				statement.addBatch();
+			}
+			int[] results = statement.executeBatch();
+			for(int i=0 ; i<results.length ; i++) {
+				if(results[i]==0) {
+					notUpdated.add(resourcesToUpdate.get(i));
+				}
+			}
+			dbConnect.close();
+		} catch(SQLException e) {
+			System.err.println("updateResourcesActive: "+e.getMessage());
 		}
 		return notUpdated;
 	}
