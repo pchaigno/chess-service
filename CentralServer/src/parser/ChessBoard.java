@@ -13,19 +13,8 @@ import parser.BoardPiece.*;
  */
 public class ChessBoard {
 	// Board square notation:
-	final int[] numbers = {0, 8, 7, 6, 5, 4, 3, 2, 1};
-	final char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-	@SuppressWarnings("serial")
-	Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
-		this.put('a', 1);
-		this.put('b', 2);
-		this.put('c', 3);
-		this.put('d', 4);
-		this.put('e', 5);
-		this.put('f', 6);
-		this.put('g', 7);
-		this.put('h', 8);
-	}};
+	private static final int[] numbers = {0, 8, 7, 6, 5, 4, 3, 2, 1};
+	private static final char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 	
 	// Variables used to load/save FEN:
 	// The piece to move now.
@@ -50,7 +39,7 @@ public class ChessBoard {
 	/**
 	 * Constructor
 	 */
-	public ChessBoard() {
+	ChessBoard() {
 		this.pieces = new LinkedList<BoardPiece>();
 		
 		this.squares = new HashMap<Character, BoardSquare[]>();
@@ -76,7 +65,7 @@ public class ChessBoard {
 	 * @param x The abscissa of the piece.
 	 * @param y The ordinate of the piece.
 	 */
-	public void addPiece(PieceType name, PieceColor color, char x, int y) {
+	private void addPiece(PieceType name, PieceColor color, char x, int y) {
 		BoardPiece newPiece = new BoardPiece(name, color);
 		newPiece.square = this.squares.get(x)[y];
 		this.pieces.add(newPiece);
@@ -91,7 +80,7 @@ public class ChessBoard {
 	 * @param y The ordinate of the piece.
 	 * @return An array of matches - corresponding indexes of pieces array.
 	 */
-	public List<Integer> getPiece(PieceType type, PieceColor color, char x, int y) {
+	List<Integer> getPiece(PieceType type, PieceColor color, char x, int y) {
 		List<Integer> result = new LinkedList<Integer>();
 		for(int i=0 ; i<this.pieces.size() ; i++) {
 			if(this.pieces.get(i).type==type && this.pieces.get(i).color==color 
@@ -107,7 +96,7 @@ public class ChessBoard {
 	/**
 	 * Switches the current move
 	 */
-	public void switchMove() {
+	void switchMove() {
 		if(this.currentMove==PieceColor.WHITE) {
 			this.currentMove = PieceColor.BLACK;
 		} else {
@@ -123,7 +112,7 @@ public class ChessBoard {
 	 * @param toY 
 	 * @param capture 
 	 */
-	public void makeMove(char fromX, int fromY, char toX, int toY, boolean capture) {
+	void makeMove(char fromX, int fromY, char toX, int toY, boolean capture) {
 		BoardPiece previousPiece = this.squares.get(fromX)[fromY].piece;
 		previousPiece.square = this.squares.get(toX)[toY];
 		if(capture && this.squares.get(toX)[toY].piece != null) {
@@ -137,7 +126,7 @@ public class ChessBoard {
 	 * @param reduced True if the FEN need to be reduced.
 	 * @return The current FEN.
 	 */
-	public String currentFEN(boolean reduced) {
+	String currentFEN(boolean reduced) {
 		String fen = "";
 		for(int num=8 ; num>=1 ; num--) {
 			int emptyCounter = 0;
@@ -185,7 +174,7 @@ public class ChessBoard {
 	 * Prototype function used to load FEN into board.
 	 * @param fen The FEN.
 	 */
-	public void loadFEN(String fen) {
+	void loadFEN(String fen) {
 		for(char keyVar: this.squares.keySet()) {
 			for(int j=1 ; j<=8 ; j++) {
 				this.squares.get(keyVar)[j].piece = null;
@@ -210,8 +199,8 @@ public class ChessBoard {
 					continue;
 				}
 				PieceType name = PieceType.getType(letter);
-				char x = this.letters[colsY];
-				int y = this.numbers[lines];
+				char x = letters[colsY];
+				int y = numbers[lines];
 				this.addPiece(name, color, x, y);
 				colsY++;
 			}

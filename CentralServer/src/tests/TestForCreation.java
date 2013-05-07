@@ -32,7 +32,7 @@ public class TestForCreation extends TestCase {
 		} catch (SQLException e) {
 			System.err.println("SQLException: "+e.getMessage());
 		}
-		query = "CREATE TABLE games(id INTEGER PRIMARY KEY, fen TEXT);";
+		query = "CREATE TABLE games(id INTEGER PRIMARY KEY, fen TEXT, san INTEGER);";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.executeUpdate();

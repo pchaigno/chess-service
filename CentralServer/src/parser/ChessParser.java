@@ -15,7 +15,7 @@ import parser.BoardPiece.PieceType;
  */
 public class ChessParser {
 	@SuppressWarnings("serial")
-	private static Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
+	private static final Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
 		this.put('a', 1);
 		this.put('b', 2);
 		this.put('c', 3);
@@ -57,7 +57,15 @@ public class ChessParser {
 	 * @return The Long Algebraic Notation.
 	 */
 	public String convertSANToLAN(String san) {
-		return this.parseMove(this.board, san);
+		// Regular move
+		if(san.matches("[RBQKPN]?[a-h]?[1-8]?[x]?[a-h][1-8][=]?[QNRB]?[+#]?")) {
+			return this.parseMove(this.board, san);
+		// Castling
+		}
+		if(san.matches("(O-O-O|O-O)\\+?")) {
+			return san;
+		}
+		throw new IllegalArgumentException("Illegal SAN: "+san);
 	}
 	
 	/**

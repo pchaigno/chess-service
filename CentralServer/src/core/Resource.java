@@ -96,6 +96,7 @@ public abstract class Resource {
 		// We call the client
 		Client c = Client.create();
 		// TODO handle the last slash
+		System.out.println(this.uri+fenUri); // TODO Call listener instead.
 		WebResource r = c.resource(this.uri+fenUri);
 		c.setConnectTimeout(CONNECT_TIMEOUT);
 		c.setReadTimeout(READ_TIMEOUT);

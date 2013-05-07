@@ -13,7 +13,7 @@ import parser.BoardPiece.*;
  */
 public class ChessRules {
 	@SuppressWarnings("serial")
-	Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
+	private static final Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
 		this.put('a', 1);
 		this.put('b', 2);
 		this.put('c', 3);
@@ -23,7 +23,7 @@ public class ChessRules {
 		this.put('g', 7);
 		this.put('h', 8);
 	}};
-	char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+	private static final char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 
 	/**
 	 * Found the piece and complete the informations about it.
@@ -428,7 +428,7 @@ public class ChessRules {
 	 * @param capture True if there is a capture.
 	 * @return The board square.
 	 */
-	public BoardSquare eval(PieceType piece, ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	BoardSquare eval(PieceType piece, ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		switch(piece) {
 			case PAWN:
 				return this.pawn(board, fromX, fromY, toX, toY, capture);

@@ -96,4 +96,46 @@ public class TestResourcesManager extends TestCase {
 		assertFalse(ResourcesManager.addResource(new Bot("test123.com", "TestBot", 50)));
 		ResourcesManager.removeResource(new Bot("test123.com", "TestBot", 50));
 	}
+	
+	/**
+	 * Test the concurrency by doing a lot of simultaneous write actions.
+	 * @throws InterruptedException 
+	 */
+	public void testConcurrency() throws InterruptedException {
+		class MyThread extends Thread {
+			private Resource resource;
+			
+			public MyThread(Resource resource) {
+				this.resource = resource;
+			}
+			
+			@Override
+			public void run() {
+				if(ResourcesManager.addResource(this.resource)) {
+					System.out.println(this.resource+" added successfully!");
+				} else {
+					System.out.println(this.resource+" failed to be added.");
+				}
+			}
+		}
+		
+		Set<Resource> resources = new HashSet<Resource>();
+		for(int i=0 ; i<30 ; i++) {
+			resources.add(new Bot("uri"+i+".com", "bot"+i, 1));
+		}
+		
+		Set<MyThread> threads = new HashSet<MyThread>();
+		for(Resource resource: resources) {
+			threads.add(new MyThread(resource));
+		}
+		for(MyThread thread: threads) {
+			thread.start();
+		}
+		for(MyThread thread: threads) {
+			thread.join();
+		}
+		
+		resources = ResourcesManager.removeResources(resources);
+		System.out.println(resources);
+	}
 }
