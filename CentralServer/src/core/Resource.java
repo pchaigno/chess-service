@@ -33,6 +33,7 @@ public abstract class Resource {
 	protected boolean san;
 	protected String version;
 	protected boolean connected;
+	protected boolean active;
 	protected static final String JSON_MOVE = "move";
 
 	/**
@@ -40,8 +41,9 @@ public abstract class Resource {
 	 * @param uri The URI of the resource.
 	 * @param name The name of the resource.
 	 * @param trust The trust in the resource.
+	 * @param active True if the resource is active.
 	 */
-	public Resource(String uri, String name, int trust) {
+	public Resource(String uri, String name, int trust, boolean active) {
 		if(!uri.endsWith("/"))
 			uri+="/";
 		this.uri = uri;
@@ -49,6 +51,7 @@ public abstract class Resource {
 		this.changed = false;
 		this.trust = trust;
 		this.id = -1;
+		this.active = active;
 	}
 
 	/**
@@ -149,6 +152,27 @@ public abstract class Resource {
 	 */
 	public void setVersion(String v) {
 		this.version = v;
+	}
+	
+	/**
+	 * @return True if the resource is active.
+	 */
+	public boolean isActive() {
+		return this.active;
+	}
+	
+	/**
+	 * Enable the resource.
+	 */
+	public void enable() {
+		this.active = true;
+	}
+	
+	/**
+	 * Disable the resource.
+	 */
+	public void disable() {
+		this.active = false;
 	}
 
 	/**

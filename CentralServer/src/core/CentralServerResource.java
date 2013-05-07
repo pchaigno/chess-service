@@ -34,7 +34,6 @@ public class CentralServerResource {
 		if(!fen.endsWith("-")) {
 			ChessParser parser = new ChessParser(fen);
 			parser.checkEnPassant();
-			System.out.println(parser.getFEN(true));
 		}
 		String move = this.server.getBestMove(fen, -1);
 		if(move==null) {

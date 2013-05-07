@@ -20,27 +20,27 @@ public class TestResourcesManager extends TestCase {
 	 */
 	public void test() {
 		// Backup to compare after.
-		Set<Resource> oldResources = ResourcesManager.getResources();
+		Set<Resource> oldResources = ResourcesManager.getResources(false);
 
 		// Add a new bot:
-		Resource bot = new Bot("test123.com", "TestBot", 50);
+		Resource bot = new Bot("test123.com", "TestBot", 50, true);
 		ResourcesManager.addResource(bot);
-		Set<Resource> resources = ResourcesManager.getResources();
+		Set<Resource> resources = ResourcesManager.getResources(false);
 		assertTrue(resources.containsAll(oldResources));
 		assertTrue(resources.contains(bot));
 		
 		// Add a new database:
-		Resource database = new OpeningsDatabase("test321.com", "TestDatabase", 60);
+		Resource database = new OpeningsDatabase("test321.com", "TestDatabase", 60, true);
 		ResourcesManager.addResource(database);
-		resources = ResourcesManager.getResources();
+		resources = ResourcesManager.getResources(false);
 		assertTrue(resources.containsAll(oldResources));
 		assertTrue(resources.contains(bot));
 		assertTrue(resources.contains(database));
 		
 		// Update the bot:
-		bot = new Bot("test123.com", "Test Bot", 10);
+		bot = new Bot("test123.com", "Test Bot", 10, true);
 		ResourcesManager.updateResource(bot);
-		resources = ResourcesManager.getResources();
+		resources = ResourcesManager.getResources(false);
 		assertTrue(resources.contains(bot));
 		boolean found = false;
 		for(Resource resource: resources) {
@@ -52,9 +52,9 @@ public class TestResourcesManager extends TestCase {
 		assertTrue(found);
 		
 		// Update the database:
-		database = new OpeningsDatabase("test321.com", "Test Database", 0);
+		database = new OpeningsDatabase("test321.com", "Test Database", 0, true);
 		ResourcesManager.updateResource(database);
-		resources = ResourcesManager.getResources();
+		resources = ResourcesManager.getResources(false);
 		assertTrue(resources.contains(database));
 		found = false;
 		for(Resource resource: resources) {
@@ -72,7 +72,7 @@ public class TestResourcesManager extends TestCase {
 		newResources.add(bot);
 		newResources.add(database);
 		ResourcesManager.updateResourcesTrust(newResources);
-		resources = ResourcesManager.getResources();
+		resources = ResourcesManager.getResources(false);
 		for(Resource resource: resources) {
 			if(resource.equals(bot)) {
 				assertEquals(bot.getTrust(), resource.getTrust());
@@ -83,7 +83,7 @@ public class TestResourcesManager extends TestCase {
 		
 		// Remove the resources:
 		assertEquals(0, ResourcesManager.removeResources(newResources).size());
-		resources = ResourcesManager.getResources();
+		resources = ResourcesManager.getResources(false);
 		assertEquals(oldResources, resources);
 	}
 	
@@ -91,10 +91,10 @@ public class TestResourcesManager extends TestCase {
 	 * Test the primary key of the database.
 	 */
 	public void testPrimaryKey() {
-		ResourcesManager.addResource(new Bot("test123.com", "TestBot", 50));
-		assertFalse(ResourcesManager.addResource(new OpeningsDatabase("test123.com", "TestDatabase", 50)));
-		assertFalse(ResourcesManager.addResource(new Bot("test123.com", "TestBot", 50)));
-		ResourcesManager.removeResource(new Bot("test123.com", "TestBot", 50));
+		ResourcesManager.addResource(new Bot("test123.com", "TestBot", 50, true));
+		assertFalse(ResourcesManager.addResource(new OpeningsDatabase("test123.com", "TestDatabase", 50, true)));
+		assertFalse(ResourcesManager.addResource(new Bot("test123.com", "TestBot", 50, true)));
+		ResourcesManager.removeResource(new Bot("test123.com", "TestBot", 50, true));
 	}
 	
 	/**
@@ -121,7 +121,7 @@ public class TestResourcesManager extends TestCase {
 		
 		Set<Resource> resources = new HashSet<Resource>();
 		for(int i=0 ; i<30 ; i++) {
-			resources.add(new Bot("uri"+i+".com", "bot"+i, 1));
+			resources.add(new Bot("uri"+i+".com", "bot"+i, 1, true));
 		}
 		
 		Set<MyThread> threads = new HashSet<MyThread>();
