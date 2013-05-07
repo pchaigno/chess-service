@@ -202,7 +202,7 @@ public class ChessParser {
 			if(enPassantX=='a') {
 				if(this.board.squares.get(enPassantDroite)[enPassantY-mod]!=null) {
 					if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece!=null) {
-						if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN) {
+						if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN && this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.color==board.currentMove) {
 							needEnPassant = true;
 						}
 					}
@@ -210,7 +210,7 @@ public class ChessParser {
 			} else if(enPassantX=='h') {
 				if(this.board.squares.get(enPassantGauche)[enPassantY-mod]!=null) {
 					if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece!=null) {
-						if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN) {
+						if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN && this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.color==board.currentMove) {
 							needEnPassant = true;
 						}
 					}
@@ -218,14 +218,14 @@ public class ChessParser {
 			} else {
 				if(this.board.squares.get(enPassantGauche)[enPassantY-mod]!=null) {
 					if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece!=null) {
-						if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN) {
+						if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN && this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.color==board.currentMove) {
 							needEnPassant=true;
 						}
 					}
 				}
 				if(!needEnPassant && this.board.squares.get(enPassantDroite)[enPassantY-mod]!=null) {
 					if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece!=null) {
-						if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN) {
+						if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN && this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.color==board.currentMove) {
 							needEnPassant=true;
 						}
 					}

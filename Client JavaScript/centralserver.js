@@ -2,7 +2,7 @@
 var game_id = -1;
 
 /** Central server's URI **/
-var central_server_uri = "http://127.0.0.1:9998/resource/rest";
+var central_server_uri = "http://127.0.0.1:9998/rest";
 
 /** Get the next move **/
 function getNextMove(p4d, fen) {

@@ -85,6 +85,7 @@ public class ResourcesManager {
 		String query = "INSERT INTO "+RESOURCES+"("+RESOURCE_TYPE+", "+RESOURCE_NAME+", "+RESOURCE_URI+", "+RESOURCE_TRUST+", "+RESOURCE_ACTIVE+") VALUES(?, ?, ?, ?, 1)";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
+			statement.setQueryTimeout(20);
 			int type = Resource.BOT;
 			if(resource.getClass()==OpeningsDatabase.class) {
 				type = Resource.OPENINGS_DATABASE;

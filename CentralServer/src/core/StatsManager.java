@@ -111,7 +111,6 @@ public class StatsManager {
 		Arrays.fill(stats, 0);
 		
 		for(OpeningSuggestion move: moves) {
-			//TODO voir si ici, il fait appeler les fonctions des parametres (le f dans a*f(x1)/A)
 			stats[RANGE_NB_PLAY] += move.getNbPlay();
 			stats[RANGE_PROBAD] += move.getProbaDraw();
 			stats[RANGE_PROBAW] += move.getProbaWin();
@@ -147,10 +146,10 @@ public class StatsManager {
 	 * @return True if entity is updated, false otherwise.
 	 */
 	private static boolean updateEntity(String propertyEntity, double mean, double variance, int weight, double normalizationMean, double normalizationVariance){
-		double newMean = computeMean(propertyEntity, mean, weight);
-		double newVariance = computeVariance(propertyEntity, mean, variance, weight);
-		double newNormalizationMean = computeMean(propertyEntity, normalizationMean, weight);
-		double newNormalizationVariance = computeVariance(propertyEntity, normalizationMean, normalizationVariance, weight);
+		double newMean = computeMean(propertyEntity, mean, weight, false);
+		double newVariance = computeVariance(propertyEntity, mean, variance, weight, false);
+		double newNormalizationMean = computeMean(propertyEntity, normalizationMean, weight, true);
+		double newNormalizationVariance = computeVariance(propertyEntity, normalizationMean, normalizationVariance, weight, true);
 		int newWeight = computeWeight(propertyEntity, weight);
 		
 		setProperty(propertyEntity, Statistic.MEAN, newMean+"");
@@ -182,10 +181,15 @@ public class StatsManager {
 	 * @param weight TODO
 	 * @return The new variance.
 	 */
-	private static double computeVariance(String propertyEntity, double mean, double variance, int weight) {
+	private static double computeVariance(String propertyEntity, double mean, double variance, int weight, boolean normalization) {
 		int currentWeight = Integer.parseInt(getProperty(propertyEntity, Statistic.WEIGHT));
 		double currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.MEAN));
 		double currentVariance = Double.parseDouble(getProperty(propertyEntity, Statistic.VARIANCE));
+		
+		if(normalization){
+			currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.NORMALIZATION_MEAN));
+			currentVariance = Double.parseDouble(getProperty(propertyEntity, Statistic.NORMALIZATION_VARIANCE));
+		}
 		
 		if((weight+currentWeight)>0) {
 			return (Math.pow(currentWeight,2)*currentVariance
@@ -204,11 +208,14 @@ public class StatsManager {
 	 * @param weight TODO
 	 * @return The new mean.
 	 */
-	private static double computeMean(String propertyEntity, double mean, int weight) {
+	private static double computeMean(String propertyEntity, double mean, int weight, boolean normalization) {
 		int currentWeight = Integer.parseInt(getProperty(propertyEntity, Statistic.WEIGHT));
 		double currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.MEAN));
+		if(normalization){
+			currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.NORMALIZATION_MEAN));
+		}
 		if(weight+currentWeight > 0) {
-			return (currentMean*currentWeight+mean*weight)/(currentMean+weight);
+			return (currentMean*currentWeight+mean*weight)/(currentWeight+weight);
 		} else {
 			return 0;
 		}
