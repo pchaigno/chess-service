@@ -41,11 +41,12 @@ public class CentralServer {
 
 		for(Resource resource: this.resources) {
 			resource.checkVersion();
-			String resource_version = resource.getVersion().substring(0, resource.getVersion().indexOf("."));
+
 
 			if(!resource.isConnected()) {
 				incompatibleResources.add(resource);
 			} else {
+				String resource_version = resource.getVersion().substring(0, resource.getVersion().indexOf("."));
 				if(!centralserveur_version.equals(resource_version)) {
 					incompatibleResources.add(resource);
 				}
