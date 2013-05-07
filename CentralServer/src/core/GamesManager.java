@@ -26,7 +26,6 @@ public class GamesManager {
 	private static final String MOVE_RESOURCE = "id_resource";
 	private static final String MOVE_NUMBER = "num_move"; // The number of the move in the game
 	
-	
 	/**
 	 * Remove all traces of the game id_game.
 	 * @param gameId The id of the game to remove.
@@ -92,50 +91,44 @@ public class GamesManager {
 	 * @return True if the update succeed. It can fail if the game doesn't exist in the database.
 	 */
 	public static boolean updateGame(int gameId, String fen) {
-		if(exist(gameId)) {
-			Connection dbConnect = getConnection();
-			String query = "UPDATE "+GAMES+" SET "+GAME_FEN+" = ? WHERE "+GAME_ID+" = ?";
-			try {
-				PreparedStatement statement = dbConnect.prepareStatement(query);
-				statement.setString(1, fen);
-				statement.setInt(2, gameId);
-				if(statement.executeUpdate()!=1) {
-					dbConnect.close();
-					return false;
-				}
+		Connection dbConnect = getConnection();
+		String query = "UPDATE "+GAMES+" SET "+GAME_FEN+" = ? WHERE "+GAME_ID+" = ?";
+		try {
+			PreparedStatement statement = dbConnect.prepareStatement(query);
+			statement.setString(1, fen);
+			statement.setInt(2, gameId);
+			if(statement.executeUpdate()!=1) {
 				dbConnect.close();
-				return true;
-			} catch(SQLException e) {
-				System.err.println("updateGame: "+e.getMessage());
 				return false;
 			}
-		} else {
+			dbConnect.close();
+			return true;
+		} catch(SQLException e) {
+			System.err.println("updateGame: "+e.getMessage());
 			return false;
 		}
 	}
 	
 	/**
-	 * Return the number of moves in the game id_game.
+	 * Return the number of moves in the game gameId.
 	 * @param gameId The id of the game concerned.
 	 * @return The number of moves, -1 if problem encountered.
 	 */
 	public static int getNumberOfMoves(int gameId) {
-		if(exist(gameId)) {
-			Connection dbConnect = getConnection();
-			String query = "SELECT MAX("+MOVE_NUMBER+") AS max FROM "+MOVES+" WHERE "+MOVE_GAME+"= ?";
-			try {
-				PreparedStatement statement = dbConnect.prepareStatement(query);
-				statement.setInt(1, gameId);
-				ResultSet set = statement.executeQuery();
-				set.next();
-				int nbMoves = set.getInt("max");
-				dbConnect.close();
-				return nbMoves;
-			} catch(SQLException e) {
-				System.err.println("getNumberOfMoves: "+e.getMessage());
-				return -1;
+		Connection dbConnect = getConnection();
+		String query = "SELECT MAX("+MOVE_NUMBER+") AS max FROM "+MOVES+" WHERE "+MOVE_GAME+" = ?";
+		try {
+			PreparedStatement statement = dbConnect.prepareStatement(query);
+			statement.setInt(1, gameId);
+			ResultSet set = statement.executeQuery();
+			int nbMoves = -1;
+			if(set.next()) {
+				nbMoves = set.getInt("max");
 			}
-		} else {
+			dbConnect.close();
+			return nbMoves;
+		} catch(SQLException e) {
+			System.err.println("getNumberOfMoves: "+e.getMessage());
 			return -1;
 		}
 	}
@@ -179,31 +172,27 @@ public class GamesManager {
 	 * @return True if added, false otherwise.
 	 */
 	public static boolean addMove(int gameId, Set<Integer> resourcesId, int moveNumber) {
-		if(exist(gameId)) {
-			Connection dbConnect = getConnection();
-			String query = "INSERT INTO "+MOVES+" ("+MOVE_GAME+", "+MOVE_RESOURCE+", "+MOVE_NUMBER+") VALUES(?, ?, ?)";
-			try {
-				PreparedStatement statement = dbConnect.prepareStatement(query);
-				for(Integer resource_id: resourcesId) {
-					statement.setInt(1, gameId);
-					statement.setInt(2, resource_id);
-					statement.setInt(3, moveNumber);
-					statement.addBatch();
-				}
-				int[] results = statement.executeBatch();
-				for(int i=0 ; i<results.length ; i++) {
-					if(results[i]!=1) {
-						dbConnect.close();
-						return false;
-					}
-				}
-				dbConnect.close();
-				return true;
-			} catch(SQLException e) {
-				System.err.println("addMove: "+e.getMessage());
-				return false;
+		Connection dbConnect = getConnection();
+		String query = "INSERT INTO "+MOVES+" ("+MOVE_GAME+", "+MOVE_RESOURCE+", "+MOVE_NUMBER+") VALUES(?, ?, ?)";
+		try {
+			PreparedStatement statement = dbConnect.prepareStatement(query);
+			for(Integer resource_id: resourcesId) {
+				statement.setInt(1, gameId);
+				statement.setInt(2, resource_id);
+				statement.setInt(3, moveNumber);
+				statement.addBatch();
 			}
-		} else {
+			int[] results = statement.executeBatch();
+			for(int i=0 ; i<results.length ; i++) {
+				if(results[i]!=1) {
+					dbConnect.close();
+					return false;
+				}
+			}
+			dbConnect.close();
+			return true;
+		} catch(SQLException e) {
+			System.err.println("addMove: "+e.getMessage());
 			return false;
 		}
 	}
