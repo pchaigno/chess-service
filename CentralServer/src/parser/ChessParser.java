@@ -15,7 +15,7 @@ import parser.BoardPiece.PieceType;
  */
 public class ChessParser {
 	@SuppressWarnings("serial")
-	private static Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
+	private static final Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
 		this.put('a', 1);
 		this.put('b', 2);
 		this.put('c', 3);

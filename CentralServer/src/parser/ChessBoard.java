@@ -13,19 +13,8 @@ import parser.BoardPiece.*;
  */
 public class ChessBoard {
 	// Board square notation:
-	final int[] numbers = {0, 8, 7, 6, 5, 4, 3, 2, 1};
-	final char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
-	@SuppressWarnings("serial")
-	Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
-		this.put('a', 1);
-		this.put('b', 2);
-		this.put('c', 3);
-		this.put('d', 4);
-		this.put('e', 5);
-		this.put('f', 6);
-		this.put('g', 7);
-		this.put('h', 8);
-	}};
+	private static final int[] numbers = {0, 8, 7, 6, 5, 4, 3, 2, 1};
+	private static final char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 	
 	// Variables used to load/save FEN:
 	// The piece to move now.
@@ -210,8 +199,8 @@ public class ChessBoard {
 					continue;
 				}
 				PieceType name = PieceType.getType(letter);
-				char x = this.letters[colsY];
-				int y = this.numbers[lines];
+				char x = letters[colsY];
+				int y = numbers[lines];
 				this.addPiece(name, color, x, y);
 				colsY++;
 			}
