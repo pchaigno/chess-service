@@ -29,7 +29,7 @@ public class CentralServer {
 	 * Restore the list of resources from the database file.
 	 */
 	private void restoreResources() {
-		this.resources = ResourcesManager.getResources();
+		this.resources = ResourcesManager.getResources(true);
 	}
 
 	/**
