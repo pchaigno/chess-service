@@ -21,6 +21,7 @@ public class GamesManager {
 	private static final String MOVES = "moves";
 	private static final String GAME_ID = "id";
 	private static final String GAME_FEN = "fen";
+	private static final String GAME_SAN = "san";
 	private static final String MOVE_GAME = "id_game";
 	private static final String MOVE_RESOURCE = "id_resource";
 	private static final String MOVE_NUMBER = "num_move"; // The number of the move in the game
@@ -28,15 +29,15 @@ public class GamesManager {
 	
 	/**
 	 * Remove all traces of the game id_game.
-	 * @param game_id The id of the game to remove.
+	 * @param gameId The id of the game to remove.
 	 * @return True if the game has been removed, false otherwise.
 	 */
-	public static boolean removeGame(int game_id) {
+	public static boolean removeGame(int gameId) {
 		Connection dbConnect = getConnection();
 		String queryMoves = "DELETE FROM "+MOVES+" WHERE "+MOVE_GAME+"= ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(queryMoves);
-			statement.setInt(1, game_id);
+			statement.setInt(1, gameId);
 			statement.executeUpdate();
 		} catch(SQLException e) {
 			System.err.println("removeGame: "+e.getMessage());
@@ -46,7 +47,7 @@ public class GamesManager {
 		String queryGames = "DELETE FROM "+GAMES+" WHERE "+GAME_ID+"= ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(queryGames);
-			statement.setInt(1, game_id);
+			statement.setInt(1, gameId);
 			if(statement.executeUpdate()!=1) {
 				dbConnect.close();
 				return false;
@@ -63,14 +64,15 @@ public class GamesManager {
 	 * Create a new game and return the id created.
 	 * @return The id of the new game, -1 if an error occurred.
 	 */
-	public static int addNewGame() {
+	public static int addNewGame(boolean san) {
 		int id = generateGameId();
 		try {
 			Connection dbConnect = getConnection();
-			String query = "INSERT INTO "+GAMES+" ("+GAME_ID+", "+GAME_FEN+") VALUES(?, ?)";
+			String query = "INSERT INTO "+GAMES+" ("+GAME_ID+", "+GAME_FEN+", "+GAME_SAN+") VALUES(?, ?, ?)";
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, id);
 			statement.setString(2, FIRST_FEN);
+			statement.setBoolean(3, san);
 			if(statement.executeUpdate()!=1) {
 				dbConnect.close();
 				return -1;
@@ -85,18 +87,18 @@ public class GamesManager {
 	
 	/**
 	 * Update a game.
-	 * @param game_id The id of the game to update.
+	 * @param gameId The id of the game to update.
 	 * @param fen The new fen.
 	 * @return True if the update succeed. It can fail if the game doesn't exist in the database.
 	 */
-	public static boolean updateGame(int game_id, String fen) {
-		if(gameExist(game_id)) {
+	public static boolean updateGame(int gameId, String fen) {
+		if(exist(gameId)) {
 			Connection dbConnect = getConnection();
 			String query = "UPDATE "+GAMES+" SET "+GAME_FEN+" = ? WHERE "+GAME_ID+" = ?";
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
 				statement.setString(1, fen);
-				statement.setInt(2, game_id);
+				statement.setInt(2, gameId);
 				if(statement.executeUpdate()!=1) {
 					dbConnect.close();
 					return false;
@@ -114,16 +116,16 @@ public class GamesManager {
 	
 	/**
 	 * Return the number of moves in the game id_game.
-	 * @param game_id The id of the game concerned.
+	 * @param gameId The id of the game concerned.
 	 * @return The number of moves, -1 if problem encountered.
 	 */
-	public static int getNumberOfMoves(int game_id) {
-		if(gameExist(game_id)) {
+	public static int getNumberOfMoves(int gameId) {
+		if(exist(gameId)) {
 			Connection dbConnect = getConnection();
 			String query = "SELECT MAX("+MOVE_NUMBER+") AS max FROM "+MOVES+" WHERE "+MOVE_GAME+"= ?";
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
-				statement.setInt(1, game_id);
+				statement.setInt(1, gameId);
 				ResultSet set = statement.executeQuery();
 				set.next();
 				int nbMoves = set.getInt("max");
@@ -146,20 +148,20 @@ public class GamesManager {
 		int id;
 		do {
 			id = 1 + (int)(Math.random()*500000);
-		} while(gameExist(id));
+		} while(exist(id));
 		return id;
 	}
 	
 	/**
-	 * @param game_id The game id.
+	 * @param gameId The game id.
 	 * @return True if the game exists.
 	 */
-	private static boolean gameExist(int game_id) {
+	private static boolean exist(int gameId) {
 		Connection dbConnect = getConnection();
 		String query = "SELECT "+GAME_ID+" FROM "+GAMES+" WHERE "+GAME_ID+"= ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
-			statement.setInt(1, game_id);
+			statement.setInt(1, gameId);
 			ResultSet set = statement.executeQuery();
 			dbConnect.close();
 			return set.next();
@@ -171,21 +173,21 @@ public class GamesManager {
 	
 	/**
 	 * Add a new move for reward.
-	 * @param id_game The id of the game.
-	 * @param id_resource The id of the resource.
-	 * @param move_number The move number.
+	 * @param gameId The id of the game.
+	 * @param resourcesId The id of the resource.
+	 * @param moveNumber The move number.
 	 * @return True if added, false otherwise.
 	 */
-	public static boolean addMove(int id_game, Set<Integer> resources_id, int move_number) {
-		if(gameExist(id_game)) {
+	public static boolean addMove(int gameId, Set<Integer> resourcesId, int moveNumber) {
+		if(exist(gameId)) {
 			Connection dbConnect = getConnection();
 			String query = "INSERT INTO "+MOVES+" ("+MOVE_GAME+", "+MOVE_RESOURCE+", "+MOVE_NUMBER+") VALUES(?, ?, ?)";
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
-				for(Integer resource_id: resources_id) {
-					statement.setInt(1, id_game);
+				for(Integer resource_id: resourcesId) {
+					statement.setInt(1, gameId);
 					statement.setInt(2, resource_id);
-					statement.setInt(3, move_number);
+					statement.setInt(3, moveNumber);
 					statement.addBatch();
 				}
 				int[] results = statement.executeBatch();
@@ -209,22 +211,22 @@ public class GamesManager {
 	/**
 	 * Get the ration of played move for each resources in a game.
 	 * Return a map with the resource id as key and the ration of played move as value.
-	 * @param id_game The id of the game to scan.
+	 * @param gameId The id of the game to scan.
 	 * @return The map or null if an error occurred.
 	 */
-	public static Map<Integer,Double> getResourcesStats(int id_game) {
+	public static Map<Integer,Double> getResourcesStats(int gameId) {
 		Map<Integer, Double> stats = new HashMap<Integer, Double>();
 		// TODO Isn't it possible to get that info after?
-		int nbTotalMoves = getNumberOfMoves(id_game);
+		int nbTotalMoves = getNumberOfMoves(gameId);
 		if(nbTotalMoves<=0) {
 			return stats;
 		}
-		if(gameExist(id_game)) {
+		if(exist(gameId)) {
 			Connection dbConnect = getConnection();
 			String query = "SELECT COUNT(DISTINCT "+MOVE_NUMBER+") AS moveNumber, "+MOVE_RESOURCE+" FROM "+MOVES+" WHERE "+MOVE_GAME+"= ? GROUP BY "+MOVE_RESOURCE;
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
-				statement.setInt(1, id_game);
+				statement.setInt(1, gameId);
 				ResultSet set = statement.executeQuery();
 				while(set.next()) {
 					stats.put(set.getInt(MOVE_RESOURCE), (Double)set.getDouble("moveNumber")/nbTotalMoves);
@@ -238,6 +240,29 @@ public class GamesManager {
 		} else {
 			return null;
 		}
+	}
+	
+	/**
+	 * @param gameId The game id.
+	 * @return True if the server must return SAN for this game, null if the game doesn't exist.
+	 */
+	public static Boolean isSAN(int gameId) {
+		Connection dbConnect = getConnection();
+		String query = "SELECT "+GAME_SAN+" FROM "+GAMES+" WHERE "+GAME_ID+" = ?";
+		try {
+			PreparedStatement statement = dbConnect.prepareStatement(query);
+			statement.setInt(1, gameId);
+			ResultSet set = statement.executeQuery();
+			Boolean san = null;
+			if(set.next()) {
+				san = set.getBoolean(GAME_SAN);
+			}
+			dbConnect.close();
+			return san;
+		} catch(SQLException e) {
+			System.err.println("isSAN: "+e.getMessage());
+		}
+		return null;
 	}
 	
 	/**

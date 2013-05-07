@@ -16,7 +16,7 @@ public class TestGamesManager extends TestCase {
 	public void test() {
 		ArrayList<Integer> games = new ArrayList<Integer>();
 		
-		games.add(GamesManager.addNewGame());
+		games.add(GamesManager.addNewGame(true));
 		assertTrue(games.get(0)>0);
 		
 		//TODO load 3 resources (id 1, 2, 3)

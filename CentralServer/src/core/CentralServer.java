@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import parser.ChessParser;
-
 /**
  * Manage the list of resources.
  * @author Benoit Travers
@@ -71,9 +69,10 @@ public class CentralServer {
 	/**
 	 * Get the suggestion of move from the resources and compute the best answer.
 	 * @param fen The FEN.
+	 * @param gameId The game id.
 	 * @return The best move or null if no suggestion.
 	 */
-	public String getBestMove(String fen, int game_id) {
+	public String getBestMove(String fen, int gameId) {
 		this.updateResources(fen);
 		// This map contains all the moves and the scores associated except the ending moves.
 		Map<String, Double> scores = new HashMap<String, Double>();
@@ -97,8 +96,8 @@ public class CentralServer {
 		
 		String bestMove = this.bestMove(scores, ends);
 		
-		if(game_id>0) {
-			GamesManager.addMove(game_id, getMoveResourcesId(bestMove), GamesManager.getNumberOfMoves(game_id)+1);
+		if(gameId>0) {
+			GamesManager.addMove(gameId, getMoveResourcesId(bestMove), GamesManager.getNumberOfMoves(gameId)+1);
 		}
 		
 		StatsManager.updateStatistics(getOpeningSuggestions());
@@ -106,9 +105,9 @@ public class CentralServer {
 		if(bestMove==null) {
 			return null;
 		}
-		ChessParser parser = new ChessParser(fen);
+		
 		System.out.println(bestMove); // Call listener instead.
-		return parser.convertSANToLAN(bestMove);
+		return bestMove;
 	}
 
 	/**

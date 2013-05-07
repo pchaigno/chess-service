@@ -68,7 +68,14 @@ public class CentralServerResource {
 		GamesManager.updateGame(gameId, fen);
 		if(move==null) {
 			move = NO_RESULT;
+		} else {
+			Boolean san = GamesManager.isSAN(gameId);
+			if(san!=null && !san) {
+				ChessParser parser = new ChessParser(fen);
+				move = parser.convertSANToLAN(move);
+			}
 		}
+		
 		return respond(move);
 	}
 	
@@ -77,7 +84,7 @@ public class CentralServerResource {
 	@Produces("text/plain")
 	public Response startGame(@DefaultValue("true")@FormParam("san")boolean san) {
 		// TODO Add a parameter san to the games.
-		int gameId = GamesManager.addNewGame();
+		int gameId = GamesManager.addNewGame(san);
 		return respond(String.valueOf(gameId));
 	}
 	
