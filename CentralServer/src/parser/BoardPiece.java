@@ -16,7 +16,7 @@ public class BoardPiece {
 		 * @param letter The letter.
 		 * @return The piece type associated to this letter.
 		 */
-		public static PieceType getType(char letter) {
+		static PieceType getType(char letter) {
 			PieceType type = PieceType.PAWN;
 			switch(Character.toLowerCase(letter)) {
 				case 'r':
@@ -43,7 +43,7 @@ public class BoardPiece {
 		 * @param pawn If set to true, the pawns will return an empty string.
 		 * @return The letter associated to this piece type.
 		 */
-		public static String getLetter(PieceType type, boolean pawn) {
+		static String getLetter(PieceType type, boolean pawn) {
 			if(type==PieceType.KNIGHT) {
 				return "N";
 			}
@@ -72,7 +72,7 @@ public class BoardPiece {
 	enum PieceColor {
 		WHITE, BLACK;
 		
-		public static String getLetter(PieceColor color) {
+		static String getLetter(PieceColor color) {
 			if(color==PieceColor.BLACK) {
 				return "b";
 			} else {
@@ -86,7 +86,7 @@ public class BoardPiece {
 	 * @param name The type of the piece.
 	 * @param color The color of the piece.
 	 */
-	public BoardPiece(PieceType type, PieceColor color) {
+	BoardPiece(PieceType type, PieceColor color) {
 		this.type = type;
 		this.color = color;
 	}

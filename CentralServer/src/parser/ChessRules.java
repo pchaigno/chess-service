@@ -428,7 +428,7 @@ public class ChessRules {
 	 * @param capture True if there is a capture.
 	 * @return The board square.
 	 */
-	public BoardSquare eval(PieceType piece, ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	BoardSquare eval(PieceType piece, ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		switch(piece) {
 			case PAWN:
 				return this.pawn(board, fromX, fromY, toX, toY, capture);

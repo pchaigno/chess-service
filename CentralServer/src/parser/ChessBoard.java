@@ -50,7 +50,7 @@ public class ChessBoard {
 	/**
 	 * Constructor
 	 */
-	public ChessBoard() {
+	ChessBoard() {
 		this.pieces = new LinkedList<BoardPiece>();
 		
 		this.squares = new HashMap<Character, BoardSquare[]>();
@@ -76,7 +76,7 @@ public class ChessBoard {
 	 * @param x The abscissa of the piece.
 	 * @param y The ordinate of the piece.
 	 */
-	public void addPiece(PieceType name, PieceColor color, char x, int y) {
+	private void addPiece(PieceType name, PieceColor color, char x, int y) {
 		BoardPiece newPiece = new BoardPiece(name, color);
 		newPiece.square = this.squares.get(x)[y];
 		this.pieces.add(newPiece);
@@ -91,7 +91,7 @@ public class ChessBoard {
 	 * @param y The ordinate of the piece.
 	 * @return An array of matches - corresponding indexes of pieces array.
 	 */
-	public List<Integer> getPiece(PieceType type, PieceColor color, char x, int y) {
+	List<Integer> getPiece(PieceType type, PieceColor color, char x, int y) {
 		List<Integer> result = new LinkedList<Integer>();
 		for(int i=0 ; i<this.pieces.size() ; i++) {
 			if(this.pieces.get(i).type==type && this.pieces.get(i).color==color 
@@ -107,7 +107,7 @@ public class ChessBoard {
 	/**
 	 * Switches the current move
 	 */
-	public void switchMove() {
+	void switchMove() {
 		if(this.currentMove==PieceColor.WHITE) {
 			this.currentMove = PieceColor.BLACK;
 		} else {
@@ -123,7 +123,7 @@ public class ChessBoard {
 	 * @param toY 
 	 * @param capture 
 	 */
-	public void makeMove(char fromX, int fromY, char toX, int toY, boolean capture) {
+	void makeMove(char fromX, int fromY, char toX, int toY, boolean capture) {
 		BoardPiece previousPiece = this.squares.get(fromX)[fromY].piece;
 		previousPiece.square = this.squares.get(toX)[toY];
 		if(capture && this.squares.get(toX)[toY].piece != null) {
@@ -137,7 +137,7 @@ public class ChessBoard {
 	 * @param reduced True if the FEN need to be reduced.
 	 * @return The current FEN.
 	 */
-	public String currentFEN(boolean reduced) {
+	String currentFEN(boolean reduced) {
 		String fen = "";
 		for(int num=8 ; num>=1 ; num--) {
 			int emptyCounter = 0;
@@ -185,7 +185,7 @@ public class ChessBoard {
 	 * Prototype function used to load FEN into board.
 	 * @param fen The FEN.
 	 */
-	public void loadFEN(String fen) {
+	void loadFEN(String fen) {
 		for(char keyVar: this.squares.keySet()) {
 			for(int j=1 ; j<=8 ; j++) {
 				this.squares.get(keyVar)[j].piece = null;

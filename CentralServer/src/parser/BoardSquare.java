@@ -14,7 +14,7 @@ public class BoardSquare {
 	 * @param x The abscissa.
 	 * @param y The ordinate.
 	 */
-	public BoardSquare(char x, int y) {
+	BoardSquare(char x, int y) {
 		this.x = x;
 		this.y = y;
 	}
