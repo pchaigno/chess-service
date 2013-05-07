@@ -7,5 +7,7 @@ package core;
 public enum Statistic {
 	MEAN,
 	VARIANCE,
-	WEIGHT;
+	WEIGHT,
+	NORMALIZATION_MEAN,
+	NORMALIZATION_VARIANCE;
 }
