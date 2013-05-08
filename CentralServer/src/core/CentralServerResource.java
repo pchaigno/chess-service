@@ -6,6 +6,8 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.OPTIONS;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -87,6 +89,15 @@ public class CentralServerResource {
 	public Response startGame(@DefaultValue("true")@FormParam("san")boolean san) {
 		int gameId = GamesManager.addNewGame(san);
 		return respond(String.valueOf(gameId));
+	}
+	
+	@OPTIONS
+	@Produces("text/plain")
+	public Response startGame(@HeaderParam("Access-Control-Request-Headers") String requestH) {
+		ResponseBuilder builder = Response.ok();
+		builder.header("Access-Control-Allow-Origin", "*");
+		builder.header("Access-Control-Allow-Headers", requestH);
+		return builder.build();
 	}
 	
 	/**
