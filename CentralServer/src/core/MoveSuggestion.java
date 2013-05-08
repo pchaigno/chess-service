@@ -61,4 +61,9 @@ public abstract class MoveSuggestion {
 			return false;
 		return true;
 	}
+	
+	/**
+	 * Compute the score.
+	 */
+	protected abstract void computeScore();
 }

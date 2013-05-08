@@ -23,16 +23,7 @@ public class OpeningSuggestion extends MoveSuggestion {
 		this.nbPlay = nbPlay;
 		this.probaWin = probaWin;
 		this.probaDraw = probaDraw;
-		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE))!=0) {
-			this.score = WEIGHT_NB_PLAY*computeScoreNbPlay()/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE))));
-		} else {
-			this.score = WEIGHT_NB_PLAY*computeScoreNbPlay();
-		}
-		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE))!=0) {
-			this.score += WEIGHT_PROBA_WIN*computeScoreProbaWin()/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE))));
-		} else {
-			this.score += WEIGHT_PROBA_WIN*computeScoreProbaWin();
-		}
+		this.computeScore();
 	}
 	
 	/**
@@ -75,5 +66,19 @@ public class OpeningSuggestion extends MoveSuggestion {
 	public String toString() {
 		return "DatabaseSuggestion [move="+this.move+", nbPlay="+this.nbPlay+", probaWin="+this.probaWin
 				+", probaDraw="+this.probaDraw+"]";
+	}
+
+	@Override
+	protected void computeScore() {
+		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE))!=0) {
+			this.score = WEIGHT_NB_PLAY*computeScoreNbPlay()/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE))));
+		} else {
+			this.score = WEIGHT_NB_PLAY*computeScoreNbPlay();
+		}
+		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE))!=0) {
+			this.score += WEIGHT_PROBA_WIN*computeScoreProbaWin()/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE))));
+		} else {
+			this.score += WEIGHT_PROBA_WIN*computeScoreProbaWin();
+		}
 	}
 }

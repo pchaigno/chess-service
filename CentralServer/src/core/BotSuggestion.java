@@ -18,7 +18,7 @@ public class BotSuggestion extends MoveSuggestion {
 		super(move);
 		this.depth = depth;
 		this.engineScore = engineScore;
-		// TODO Compute score.
+		this.computeScore();
 	}
 	
 	/**
@@ -51,5 +51,10 @@ public class BotSuggestion extends MoveSuggestion {
 	public double computeScoreEngineScore() {
 		// TODO
 		return -1;
+	}
+
+	@Override
+	protected void computeScore() {
+		// TODO Compute score.
 	}
 }

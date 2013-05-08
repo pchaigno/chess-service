@@ -43,8 +43,9 @@ public abstract class Resource {
 	 * @param active True if the resource is active.
 	 */
 	public Resource(String uri, String name, int trust, boolean active) {
-		if(!uri.endsWith("/"))
+		if(!uri.endsWith("/")) {
 			uri+="/";
+		}
 		this.uri = uri;
 		this.name = name;
 		this.changed = false;

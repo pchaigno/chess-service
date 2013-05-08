@@ -11,7 +11,6 @@ public class EndingSuggestion extends MoveSuggestion {
 	public static final int LOOSE_RESULT = -1;
 	public static final int DRAW_RESULT = 0;
 	
-	
 	/**
 	 * Constructor
 	 * @param move The move suggested.
@@ -27,7 +26,7 @@ public class EndingSuggestion extends MoveSuggestion {
 		} else {
 			this.result = result;
 		}
-		this.score = this.result*this.nbMoves;
+		this.computeScore();
 	}
 	
 	/**
@@ -47,5 +46,10 @@ public class EndingSuggestion extends MoveSuggestion {
 	@Override
 	public String toString() {
 		return "EndingSuggestion [nbMoves="+nbMoves+", result="+result+ "]";
+	}
+
+	@Override
+	protected void computeScore() {
+		this.score = this.result*this.nbMoves;
 	}
 }
