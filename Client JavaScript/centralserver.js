@@ -50,7 +50,6 @@ function getFirstMoveFromCentralServer(p4d, fen) {
 
 	var query = "san=false";
 	xmlreq.open("POST", central_server_uri+"/", true);
-	xmlreq.setRequestHeader("Content-length", query.length);
 	xmlreq.send(query);
 }
 
@@ -61,8 +60,12 @@ function getMoveFromCentralServer(p4d, fen) {
 	xmlreq.onreadystatechange = function() {
 		if(xmlreq.readyState == 4) {
 			if(xmlreq.status == 200) {
-				move = convertToDigits(xmlreq.responseText);
-				p4d.move(move[0], move[1]);
+				if(xmlreq.responseText=='NULL') {
+					alert('No more moves to propose!');
+				} else {
+					move = convertToDigits(xmlreq.responseText);
+					p4d.move(move[0], move[1]);
+				}
 			} else {
 				alert('Error get: '+xmlreq.status);
 			}
