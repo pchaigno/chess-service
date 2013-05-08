@@ -14,13 +14,14 @@ import junit.framework.TestCase;
 public class TestForCreation extends TestCase {
 
 	public void testCreateResources() {
-		//fail();
+		fail();
 		Connection dbConnect = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			dbConnect = DriverManager.getConnection("jdbc:sqlite:databases/resources/resources.db");
+			dbConnect = DriverManager.getConnection("jdbc:sqlite:resources.db");
 		} catch (SQLException e) {
 			System.err.println("Impossible to connect to the database resources.db.");
+			System.err.println(e.getMessage());
 		} catch (ClassNotFoundException e) {
 			System.err.println("Driver missing for SQLite JDBC.");
 		}
@@ -40,7 +41,7 @@ public class TestForCreation extends TestCase {
 		} catch (SQLException e) {
 			System.err.println("SQLException: "+e.getMessage());
 		}
-		query = "CREATE TABLE moves(id_resource INTEGER REFERENCES resources(id), id_game INTEGER REFERENCES games(id), num_move INTEGER, move_trust DOUBLE, PRIMARY KEY(id_resource, id_game, num_move))";
+		query = "CREATE TABLE moves(resource INTEGER REFERENCES resources(id), game INTEGER REFERENCES games(id), num_move INTEGER, move_trust DOUBLE, PRIMARY KEY(resource, game, num_move))";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.executeUpdate();

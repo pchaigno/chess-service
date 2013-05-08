@@ -19,8 +19,8 @@ public class GamesManager extends DatabaseManager {
 	private static final String GAME_ID = "id";
 	private static final String GAME_FEN = "fen";
 	private static final String GAME_SAN = "san";
-	private static final String MOVE_GAME = "id_game";
-	private static final String MOVE_RESOURCE = "id_resource";
+	private static final String MOVE_GAME = "game";
+	private static final String MOVE_RESOURCE = "resource";
 	private static final String MOVE_NUMBER = "num_move"; // The number of the move in the game
 	private static final String MOVE_TRUST = "move_trust";
 	
