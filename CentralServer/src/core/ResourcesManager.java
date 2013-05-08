@@ -1,7 +1,6 @@
 package core;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,14 +9,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.sqlite.SQLiteConfig;
-
 /**
  * Handle all the accesses to the SQLite database for the resources.
  * @author Paul Chaignon
  */
-public class ResourcesManager {
-	public static String DATABASE_FILE = PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE);
+public class ResourcesManager extends DatabaseManager {
 	private static final String RESOURCES = "resources";
 	private static final String RESOURCE_ID = "id";
 	private static final String RESOURCE_URI = "uri";
@@ -25,21 +21,6 @@ public class ResourcesManager {
 	private static final String RESOURCE_TRUST = "trust";
 	private static final String RESOURCE_TYPE = "type";
 	private static final String RESOURCE_ACTIVE = "active";
-
-	/**
-	 * Change the current database.
-	 * @param newDatabase The new database used.
-	 */
-	public static void changeDatabase(String newDatabase){
-		DATABASE_FILE = newDatabase;
-	}
-	
-	/**
-	 * @return The database file.
-	 */
-	public static String getDatabaseFile(){
-		return DATABASE_FILE;
-	}
 	
 	/**
 	 * @param active If true then this method will only return the active resources.
@@ -266,26 +247,5 @@ public class ResourcesManager {
 			System.err.println("updateResourcesActive: "+e.getMessage());
 		}
 		return notUpdated;
-	}
-	
-	/**
-	 * Get a connection to the SQLite database.
-	 * Configure the database to add foreign keys support.
-	 * @return The connection.
-	 */
-	private static Connection getConnection() {
-		Connection dbConnect = null;
-		try {
-			Class.forName("org.sqlite.JDBC");
-			SQLiteConfig config = new SQLiteConfig();
-	        config.enforceForeignKeys(true);
-			dbConnect = DriverManager.getConnection("jdbc:sqlite:"+DATABASE_FILE, config.toProperties());
-		} catch(SQLException e) {
-			System.err.println("Impossible to connect to the database "+DATABASE_FILE+".");
-			System.err.println(e.getMessage());
-		} catch(ClassNotFoundException e) {
-			System.err.println("Driver missing for SQLite JDBC.");
-		}
-		return dbConnect;
 	}
 }

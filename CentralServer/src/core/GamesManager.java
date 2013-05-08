@@ -1,7 +1,6 @@
 package core;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,13 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.sqlite.SQLiteConfig;
-
 /**
  * Handle all the accesses to the game SQLite table.
  * @author Clement Gautrais
  */
-public class GamesManager {
+public class GamesManager extends DatabaseManager {
 	private static final String FIRST_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -";
 	private static final String GAMES = "games";
 	private static final String MOVES = "moves";
@@ -255,26 +252,5 @@ public class GamesManager {
 			System.err.println("isSAN: "+e.getMessage());
 		}
 		return null;
-	}
-	
-	/**
-	 * Get a connection to the SQLite database.
-	 * Configure the database to add foreign keys support.
-	 * @return The connection.
-	 */
-	private static Connection getConnection() {
-		Connection dbConnect = null;
-		try {
-			Class.forName("org.sqlite.JDBC");
-			SQLiteConfig config = new SQLiteConfig();
-	        config.enforceForeignKeys(true);
-			dbConnect = DriverManager.getConnection("jdbc:sqlite:"+ResourcesManager.DATABASE_FILE, config.toProperties());
-		} catch(SQLException e) {
-			System.err.println("Impossible to connect to the database "+ResourcesManager.DATABASE_FILE+".");
-			System.err.println(e.getMessage());
-		} catch(ClassNotFoundException e) {
-			System.err.println("Driver missing for SQLite JDBC.");
-		}
-		return dbConnect;
 	}
 }
