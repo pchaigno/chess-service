@@ -2,11 +2,9 @@ package tests;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import core.GamesManager;
-import core.ResourcesManager;
 
 import junit.framework.TestCase;
 

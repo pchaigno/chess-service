@@ -5,9 +5,9 @@ package core;
  * @author Paul Chaignon
  */
 public class BotSuggestion extends MoveSuggestion {
-
 	protected int depth;
 	protected double engineScore;
+	
 	/**
 	 * Constructor
 	 * @param move The move suggested
@@ -16,27 +16,35 @@ public class BotSuggestion extends MoveSuggestion {
 		super(move);
 	}
 	
+	/**
+	 * @return The depth.
+	 */
 	public int getDepth() {
 		return depth;
 	}
-	public void setDepth(int depth) {
-		this.depth = depth;
-	}
+	
+	/**
+	 * @return The engine score.
+	 */
 	public double getEngineScore() {
 		return engineScore;
 	}
-	public void setEngineScore(double engineScore) {
-		this.engineScore = engineScore;
-	}
 	
-	public double computeScoreDepth(){
-		//TODO
+	/**
+	 * TODO
+	 * @return TODO
+	 */
+	public double computeScoreDepth() {
+		// TODO
 		return -1;
 	}
 	
-	public double computeScoreEngineScore(){
-		//TODO
+	/**
+	 * TODO
+	 * @return TODO
+	 */
+	public double computeScoreEngineScore() {
+		// TODO
 		return -1;
 	}
-	
 }

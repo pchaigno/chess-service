@@ -5,8 +5,8 @@ package core;
  * @author Paul Chaignon
  */
 public class EndingSuggestion extends MoveSuggestion {
-	private int nbMoves;
-	private int result;
+	protected int nbMoves;
+	protected int result;
 	public static final int WIN_RESULT = 1;
 	public static final int LOOSE_RESULT = -1;
 	public static final int DRAW_RESULT = 0;

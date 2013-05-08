@@ -10,7 +10,6 @@ import org.eclipse.core.runtime.URIUtil;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 
 /**
@@ -95,8 +94,7 @@ public abstract class Resource {
 		try {
 			fenUri = URIUtil.fromString(fen).toASCIIString();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("FEN incorrect: "+fen);
 		}
 		// We call the client
 		Client c = Client.create();
@@ -105,13 +103,13 @@ public abstract class Resource {
 		WebResource r = c.resource(this.uri+fenUri);
 		c.setConnectTimeout(CONNECT_TIMEOUT);
 		c.setReadTimeout(READ_TIMEOUT);
-		try{
-			String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class); //TODO checkversion
+		try {
+			String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
 
 			fen = fen.replaceAll("\\$", "/");
 			this.parseJSONMove(response, fen);
-		}catch(ClientHandlerException e){
-			
+		} catch(ClientHandlerException e) {
+			// It just do nothing if the resource isn't connected.
 		}
 	}
 

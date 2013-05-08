@@ -22,7 +22,7 @@ public class StatsManager {
 	public static final String STATS_BOT_DEPTH = "bot_depth";
 	public static final String STATS_BOT_SCORE = "bot_score";
 	
-	//TODO mieux gerer les parametres avec un "structure" commune (un nom et un rang par param) pour plus de généricite
+	// TODO mieux gerer les parametres avec un "structure" commune (un nom et un rang par param) pour plus de généricite
 	private static final int NB_PARAMS_OPENINGS = 2;
 	private static final int RANGE_NB_PLAY = 0;
 	private static final int RANGE_PROBAW = 1;
@@ -30,7 +30,6 @@ public class StatsManager {
 	private static final int NB_PARAMS_BOTS = 2;
 	private static final int RANGE_BOT_DEPTH = 0;
 	private static final int RANGE_BOT_SCORE = 1;
-	
 	
 	/**
 	 * @return The object containing the configuration.
@@ -53,10 +52,10 @@ public class StatsManager {
 	}
 	
 	/**
-	 * Return the stat about the property entity.
-	 * @param propertyEntity The entity to acces the stat about.
-	 * @param stat The stat asked.
-	 * @return TODO
+	 * Get a statictic from the property entity.
+	 * @param propertyEntity The entity to access the statistic about.
+	 * @param stat The statistic asked.
+	 * @return The value of this statistic.
 	 */
 	public static String getProperty(String propertyEntity, Statistic stat) {
 		return getConfiguration().getProperty(propertyEntity+"."+stat);
@@ -68,7 +67,7 @@ public class StatsManager {
 	 * @param stat The stat asked @see Statistic.
 	 * @param propertyValue The new value.
 	 */
-	public static void setProperty(String propertyEntity, Statistic stat, String propertyValue){
+	public static void setProperty(String propertyEntity, Statistic stat, String propertyValue) {
 		getConfiguration().setProperty(propertyEntity+"."+stat, propertyValue);
 	}
 	
@@ -80,10 +79,10 @@ public class StatsManager {
 		try {
 			getConfiguration().store(new FileOutputStream(CONFIG_FILE), "Game statistics");
 			return true;
-		} catch (FileNotFoundException e) {
+		} catch(FileNotFoundException e) {
 			init();
 			System.err.println("Config file ("+CONFIG_FILE+") not found.");
-		} catch (IOException e) {
+		} catch(IOException e) {
 			System.err.println("Unable to load the config file.");
 			System.err.println(e.getMessage());
 		}
@@ -95,25 +94,30 @@ public class StatsManager {
 	 * @param moves The moves that will be played.
 	 * @return True if stats are updated, false otherwise.
 	 */
-	public static boolean updateStatistics(Set<? extends MoveSuggestion> moves){
+	public static boolean updateStatistics(Set<MoveSuggestion> moves) {
 		Set<OpeningSuggestion> openings = new HashSet<OpeningSuggestion>();
 		Set<BotSuggestion> bots = new HashSet<BotSuggestion>();
 		
-		for(MoveSuggestion m : moves){
-			if(m instanceof OpeningSuggestion)
-				openings.add((OpeningSuggestion) m);
-			
-			else if(m instanceof BotSuggestion)
-				bots.add((BotSuggestion) m);
+		for(MoveSuggestion m: moves) {
+			if(m.getClass()==OpeningSuggestion.class) {
+				openings.add((OpeningSuggestion)m);
+			} else if(m.getClass()==BotSuggestion.class) {
+				bots.add((BotSuggestion)m);
+			}
 		}
 		
 		boolean updated = updateOpeningStatistics(openings);
-		updated&=updateBotStatistics(bots);
+		updated &= updateBotStatistics(bots);
 		
 		return updated;		
 	}
 	
-	private static boolean updateOpeningStatistics(Set<OpeningSuggestion> moves){
+	/**
+	 * Update the statistics about openings.
+	 * @param moves The opening moves.
+	 * @return True if the statistics were successfully updated.
+	 */
+	private static boolean updateOpeningStatistics(Set<OpeningSuggestion> moves) {
 		double[] movesStats = computeOpeningStats(moves);
 		
 		boolean updated = updateEntity(STATS_NB_PLAY, movesStats[RANGE_NB_PLAY], movesStats[RANGE_NB_PLAY+NB_PARAMS_OPENINGS], moves.size(), movesStats[RANGE_NB_PLAY+2*NB_PARAMS_OPENINGS], movesStats[RANGE_NB_PLAY+3*NB_PARAMS_OPENINGS]);
@@ -122,7 +126,12 @@ public class StatsManager {
 		return updated;
 	}
 	
-	private static boolean updateBotStatistics(Set<BotSuggestion> moves){
+	/**
+	 * Update the statistics about bot moves.
+	 * @param moves The bot moves.
+	 * @return True if the statistics were successfully updated.
+	 */
+	private static boolean updateBotStatistics(Set<BotSuggestion> moves) {
 		double[] movesStats = computeBotStats(moves);
 		
 		boolean updated = updateEntity(STATS_BOT_DEPTH, movesStats[RANGE_BOT_DEPTH], movesStats[RANGE_BOT_DEPTH+NB_PARAMS_BOTS], moves.size(), movesStats[RANGE_BOT_DEPTH+2*NB_PARAMS_BOTS], movesStats[RANGE_BOT_DEPTH+3*NB_PARAMS_BOTS]);
@@ -137,7 +146,7 @@ public class StatsManager {
 	 * @return A table of size 4*NB_PARAMS. The NB_PARAMS firsts elements contain the mean, the NB_PARAMS last the variance, same pattern for normalization (2 last)
 	 * and the 2 "subtables" are ordered by RANGE_...
 	 */
-	private static double[] computeOpeningStats(Set<OpeningSuggestion> moves){
+	private static double[] computeOpeningStats(Set<OpeningSuggestion> moves) {
 		double[] stats = new double[4*NB_PARAMS_OPENINGS];
 		Arrays.fill(stats, 0);
 		
@@ -157,7 +166,7 @@ public class StatsManager {
 				stats[i] /= moves.size();
 			}
 		}
-		for(int i=0 ; i<NB_PARAMS_OPENINGS ; i++){
+		for(int i=0 ; i<NB_PARAMS_OPENINGS ; i++) {
 			stats[NB_PARAMS_OPENINGS+i] -= Math.pow(stats[i], 2);
 			stats[3*NB_PARAMS_OPENINGS+i] -= Math.pow(stats[2*NB_PARAMS_OPENINGS+i], 2);
 		}
@@ -165,7 +174,12 @@ public class StatsManager {
 		return stats;
 	}
 	
-	private static double[] computeBotStats(Set<BotSuggestion> moves){
+	/**
+	 * TODO
+	 * @param moves TODO
+	 * @return TODO
+	 */
+	private static double[] computeBotStats(Set<BotSuggestion> moves) {
 		double[] stats = new double[4*NB_PARAMS_BOTS];
 		Arrays.fill(stats, 0);
 		
@@ -185,7 +199,7 @@ public class StatsManager {
 				stats[i] /= moves.size();
 			}
 		}
-		for(int i=0 ; i<NB_PARAMS_BOTS ; i++){
+		for(int i=0 ; i<NB_PARAMS_BOTS ; i++) {
 			stats[NB_PARAMS_BOTS+i] -= Math.pow(stats[i], 2);
 			stats[3*NB_PARAMS_BOTS+i] -= Math.pow(stats[2*NB_PARAMS_BOTS+i], 2);
 		}
@@ -201,7 +215,7 @@ public class StatsManager {
 	 * @param weight The weight (size) of the new data.
 	 * @return True if entity is updated, false otherwise.
 	 */
-	private static boolean updateEntity(String propertyEntity, double mean, double variance, int weight, double normalizationMean, double normalizationVariance){
+	private static boolean updateEntity(String propertyEntity, double mean, double variance, int weight, double normalizationMean, double normalizationVariance) {
 		double newMean = computeMean(propertyEntity, mean, weight, false);
 		double newVariance = computeVariance(propertyEntity, mean, variance, weight, false);
 		double newNormalizationMean = computeMean(propertyEntity, normalizationMean, weight, true);
@@ -242,7 +256,7 @@ public class StatsManager {
 		double currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.MEAN));
 		double currentVariance = Double.parseDouble(getProperty(propertyEntity, Statistic.VARIANCE));
 		
-		if(normalization){
+		if(normalization) {
 			currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.NORMALIZATION_MEAN));
 			currentVariance = Double.parseDouble(getProperty(propertyEntity, Statistic.NORMALIZATION_VARIANCE));
 		}
@@ -267,11 +281,11 @@ public class StatsManager {
 	private static double computeMean(String propertyEntity, double mean, int weight, boolean normalization) {
 		int currentWeight = Integer.parseInt(getProperty(propertyEntity, Statistic.WEIGHT));
 		double currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.MEAN));
-		if(normalization){
+		if(normalization) {
 			currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.NORMALIZATION_MEAN));
 		}
 		if(weight+currentWeight > 0) {
-			return (currentMean*currentWeight+mean*weight)/(currentWeight+weight);
+			return (currentMean*currentWeight+mean*weight) / (currentWeight+weight);
 		} else {
 			return 0;
 		}

@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.sqlite.SQLiteConfig;
 
@@ -148,6 +147,7 @@ public class GamesManager {
 	}
 	
 	/**
+	 * Check if a game exist in the database.
 	 * @param gameId The game id.
 	 * @return True if the game exists.
 	 */

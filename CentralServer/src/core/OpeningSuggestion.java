@@ -5,11 +5,11 @@ package core;
  * @author Clement Gautrais
  */
 public class OpeningSuggestion extends MoveSuggestion {
-	private int nbPlay;
-	private double probaWin;
-	private double probaDraw;
-	private static final double WEIGHT_NB_PLAY = 0.8;
-	private static final double WEIGHT_PROBA_WIN = 0.2;
+	protected int nbPlay;
+	protected double probaWin;
+	protected double probaDraw;
+	protected static final double WEIGHT_NB_PLAY = 0.8;
+	protected static final double WEIGHT_PROBA_WIN = 0.2;
 	
 	/**
 	 * Constructor
@@ -23,22 +23,30 @@ public class OpeningSuggestion extends MoveSuggestion {
 		this.nbPlay = nbPlay;
 		this.probaWin = probaWin;
 		this.probaDraw = probaDraw;
-		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE))!=0)
+		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE))!=0) {
 			this.score = WEIGHT_NB_PLAY*computeScoreNbPlay()/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE))));
-		else
+		} else {
 			this.score = WEIGHT_NB_PLAY*computeScoreNbPlay();
-		
-		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE))!=0)
-			this.score+=WEIGHT_PROBA_WIN*computeScoreProbaWin()/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE))));
-		else
-			this.score+=WEIGHT_PROBA_WIN*computeScoreProbaWin();
+		}
+		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE))!=0) {
+			this.score += WEIGHT_PROBA_WIN*computeScoreProbaWin()/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE))));
+		} else {
+			this.score += WEIGHT_PROBA_WIN*computeScoreProbaWin();
+		}
 	}
 	
-	public double computeScoreNbPlay(){
+	/**
+	 * TODO
+	 */
+	public double computeScoreNbPlay() {
 		return (nbPlay-Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.MEAN)));
 	}
 	
-	public double computeScoreProbaWin(){
+	/**
+	 * TODO
+	 * @return TODO
+	 */
+	public double computeScoreProbaWin() {
 		return (probaWin - 0.5);
 	}
 
