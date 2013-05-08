@@ -155,10 +155,10 @@ public class StatsManager {
 			stats[RANGE_PROBAW] += move.getProbaWin();
 			stats[RANGE_NB_PLAY+NB_PARAMS_OPENINGS] += Math.pow(move.getNbPlay(), 2);
 			stats[RANGE_PROBAW+NB_PARAMS_OPENINGS] += Math.pow(move.getProbaWin(), 2);
-			stats[RANGE_NB_PLAY+2*NB_PARAMS_OPENINGS] += move.computeScoreNbPlay();
-			stats[RANGE_PROBAW+2*NB_PARAMS_OPENINGS] += move.computeScoreProbaWin();
-			stats[RANGE_NB_PLAY+3*NB_PARAMS_OPENINGS] += Math.pow(move.computeScoreNbPlay(), 2);
-			stats[RANGE_PROBAW+3*NB_PARAMS_OPENINGS] += Math.pow(move.computeScoreProbaWin(), 2);
+			stats[RANGE_NB_PLAY+2*NB_PARAMS_OPENINGS] += move.getScoreNbPlay();
+			stats[RANGE_PROBAW+2*NB_PARAMS_OPENINGS] += move.getScoreProbaWin();
+			stats[RANGE_NB_PLAY+3*NB_PARAMS_OPENINGS] += Math.pow(move.getScoreNbPlay(), 2);
+			stats[RANGE_PROBAW+3*NB_PARAMS_OPENINGS] += Math.pow(move.getScoreProbaWin(), 2);
 			
 		}
 		if(moves.size()>0) {

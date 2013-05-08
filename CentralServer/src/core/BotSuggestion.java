@@ -7,6 +7,8 @@ package core;
 public class BotSuggestion extends MoveSuggestion {
 	protected int depth;
 	protected double engineScore;
+	protected static final double WEIGHT_ENGINE_SCORE = 0.7;
+	protected static final double WEIGHT_DEPTH = 0.3;
 	
 	/**
 	 * Constructor
@@ -40,8 +42,7 @@ public class BotSuggestion extends MoveSuggestion {
 	 * @return TODO
 	 */
 	public double computeScoreDepth() {
-		// TODO
-		return -1;
+		return this.depth - Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_DEPTH, Statistic.MEAN));
 	}
 	
 	/**
@@ -49,12 +50,22 @@ public class BotSuggestion extends MoveSuggestion {
 	 * @return TODO
 	 */
 	public double computeScoreEngineScore() {
-		// TODO
-		return -1;
+		return this.engineScore - Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_SCORE, Statistic.MEAN));
 	}
 
 	@Override
 	protected void computeScore() {
-		// TODO Compute score.
+		double variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_DEPTH, Statistic.NORMALIZATION_VARIANCE));
+		if(variance!=0) {
+			this.score = WEIGHT_DEPTH * this.computeScoreDepth() / Math.sqrt(variance);
+		} else {
+			this.score = WEIGHT_DEPTH * this.computeScoreDepth();
+		}
+		variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_SCORE, Statistic.NORMALIZATION_VARIANCE));
+		if(variance!=0) {
+			this.score += WEIGHT_ENGINE_SCORE * this.computeScoreEngineScore() / Math.sqrt(variance);
+		} else {
+			this.score += WEIGHT_ENGINE_SCORE * this.computeScoreEngineScore();
+		}
 	}
 }

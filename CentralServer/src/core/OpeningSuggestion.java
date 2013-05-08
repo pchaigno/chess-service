@@ -29,16 +29,16 @@ public class OpeningSuggestion extends MoveSuggestion {
 	/**
 	 * TODO
 	 */
-	public double computeScoreNbPlay() {
-		return (nbPlay-Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.MEAN)));
+	public double getScoreNbPlay() {
+		return this.nbPlay - Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.MEAN));
 	}
 	
 	/**
 	 * TODO
 	 * @return TODO
 	 */
-	public double computeScoreProbaWin() {
-		return (probaWin - 0.5);
+	public double getScoreProbaWin() {
+		return this.probaWin - 0.5;
 	}
 
 	/**
@@ -70,15 +70,17 @@ public class OpeningSuggestion extends MoveSuggestion {
 
 	@Override
 	protected void computeScore() {
-		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE))!=0) {
-			this.score = WEIGHT_NB_PLAY*computeScoreNbPlay()/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE))));
+		double variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE));
+		if(variance!=0) {
+			this.score = WEIGHT_NB_PLAY * this.getScoreNbPlay() / Math.sqrt(variance);
 		} else {
-			this.score = WEIGHT_NB_PLAY*computeScoreNbPlay();
+			this.score = WEIGHT_NB_PLAY * this.getScoreNbPlay();
 		}
-		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE))!=0) {
-			this.score += WEIGHT_PROBA_WIN*computeScoreProbaWin()/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE))));
+		variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE));
+		if(variance!=0) {
+			this.score += WEIGHT_PROBA_WIN * this.getScoreProbaWin() / Math.sqrt(variance);
 		} else {
-			this.score += WEIGHT_PROBA_WIN*computeScoreProbaWin();
+			this.score += WEIGHT_PROBA_WIN * this.getScoreProbaWin();
 		}
 	}
 }
