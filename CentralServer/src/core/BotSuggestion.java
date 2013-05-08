@@ -10,10 +10,15 @@ public class BotSuggestion extends MoveSuggestion {
 	
 	/**
 	 * Constructor
-	 * @param move The move suggested
+	 * @param move The move suggested.
+	 * @param depth The depth.
+	 * @param engineScore The score attributed by the engine.
 	 */
-	public BotSuggestion(String move) {
+	public BotSuggestion(String move, int depth, double engineScore) {
 		super(move);
+		this.depth = depth;
+		this.engineScore = engineScore;
+		// TODO Compute score.
 	}
 	
 	/**

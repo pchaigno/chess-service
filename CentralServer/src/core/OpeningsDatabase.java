@@ -15,9 +15,9 @@ import parser.ChessParser;
  */
 public class OpeningsDatabase extends Resource {
 	private List<OpeningSuggestion> moves;
-	private static final String JSON_NB_PLAY = "nb";
-	private static final String JSON_PROBA_WIN = "probatowin";
-	private static final String JSON_PROBA_DRAW = "probatonull";
+	protected static final String JSON_NB_PLAY = "nb";
+	protected static final String JSON_PROBA_WIN = "probatowin";
+	protected static final String JSON_PROBA_DRAW = "probatonull";
 	
 	/**
 	 * Constructor
