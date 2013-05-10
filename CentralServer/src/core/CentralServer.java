@@ -41,11 +41,12 @@ public class CentralServer {
 
 		for(Resource resource: this.resources) {
 			resource.checkVersion();
-			String resource_version = resource.getVersion().substring(0, resource.getVersion().indexOf("."));
+
 
 			if(!resource.isConnected()) {
 				incompatibleResources.add(resource);
 			} else {
+				String resource_version = resource.getVersion().substring(0, resource.getVersion().indexOf("."));
 				if(!centralserveur_version.equals(resource_version)) {
 					incompatibleResources.add(resource);
 				}
@@ -60,7 +61,7 @@ public class CentralServer {
 	}
 
 	/**
-	 * save a resource in the corresponding table
+	 * Save a resource in the corresponding table.
 	 */
 	public void saveResourcesTrust(Set<Resource> resources) {
 		ResourcesManager.updateResourcesTrust(resources);	
@@ -97,10 +98,10 @@ public class CentralServer {
 		String bestMove = this.bestMove(scores, ends);
 		
 		if(gameId>0) {
-			GamesManager.addMove(gameId, getMoveResourcesId(bestMove), GamesManager.getNumberOfMoves(gameId)+1);
+			GamesManager.addMoves(gameId, getMoveResourcesConfidence(bestMove), GamesManager.getNumberOfMoves(gameId)+1);
 		}
 		
-		StatsManager.updateStatistics(getOpeningSuggestions());
+		StatsManager.updateStatistics(getSuggestions());
 
 		if(bestMove==null) {
 			return null;
@@ -142,48 +143,70 @@ public class CentralServer {
 	}
 	
 	/**
-	 * Return all the resources proposing the move move
-	 * @param move the move that is proposed
-	 * @return resources
+	 * Return all the resources proposing the move move.
+	 * @param move The move that is proposed.
+	 * @return The resources.
 	 */
-	private Set<Integer> getMoveResourcesId(String move){
-		HashSet<Integer> moveResources = new HashSet<Integer>();
-		for(Resource r : resources){
-			for(MoveSuggestion moveSug : r.getMoveSuggestions()){
-				if(moveSug.getMove().equals(move)){
-					moveResources.add(r.getId());
+	private Map<Integer, Double> getMoveResourcesConfidence(String move){
+		Set<Resource> moveResources = new HashSet<Resource>();
+		Map<Integer, Double> resourcesConfidence = new HashMap<Integer, Double>();
+		double scoreMax = Double.MIN_VALUE;
+		for(Resource r : resources) {
+			for(MoveSuggestion moveSug : r.getMoveSuggestions()) {
+				if(moveSug.getMove().equals(move)) {
+					if(moveSug.getScore() > scoreMax) {
+						scoreMax = moveSug.getScore();
+					}
+					moveResources.add(r);
 				}
 			}
 		}
-		return moveResources;
+		
+		for(Resource r: moveResources) {
+			for(MoveSuggestion moveSug: r.getMoveSuggestions()) {
+				if(moveSug.getMove().equals(move)) {
+					if(scoreMax>0) {
+						resourcesConfidence.put(r.getId(), moveSug.getScore()/scoreMax);
+					} else if(scoreMax<0) {
+						resourcesConfidence.put(r.getId(), scoreMax/moveSug.getScore());
+					} else {
+						resourcesConfidence.put(r.getId(), (double)0);
+					}
+				}
+			}
+		}
+		
+		return resourcesConfidence;
 	}
 	
 	/**
-	 * Return all the OpenningsSuggestions made by the resources
-	 * @return the openingSuggestions
+	 * Return all the Suggestions made by the resources
+	 * @return the Suggestions
 	 */
-	private Set<OpeningSuggestion> getOpeningSuggestions(){
-		HashSet<OpeningSuggestion> moveOpenings = new HashSet<OpeningSuggestion>();
-		for(Resource r : resources){
-			for(MoveSuggestion moveSug : r.getMoveSuggestions()){
-				if(moveSug.getClass() == OpeningSuggestion.class)
-					moveOpenings.add((OpeningSuggestion) moveSug);
-			}
+	private Set<MoveSuggestion> getSuggestions() {
+		HashSet<MoveSuggestion> moves = new HashSet<MoveSuggestion>();
+		for(Resource r: this.resources) {
+			moves.addAll(r.getMoveSuggestions());
 		}
-		return moveOpenings;
+		return moves;
 	}
 	
-	public void rewardResources(int game_id, int game_result){
+	/**
+	 * Reward the resources depending on their participation in the game.
+	 * @param gameId The game id.
+	 * @param gameResult The game result.
+	 */
+	public void rewardResources(int gameId, int gameResult) {
 		int rewardValue=REWARD_VALUE;
-		if(game_result == EndingSuggestion.LOOSE_RESULT)
+		if(gameResult == EndingSuggestion.LOOSE_RESULT) {
 			rewardValue*=-1;
+		}
+		if(gameResult!=EndingSuggestion.DRAW_RESULT) {
+			Map<Integer, Double> resourcesStats = GamesManager.getResourcesStats(gameId);
 
-		if(game_result!=EndingSuggestion.DRAW_RESULT){
-			Map<Integer, Double> resourcesStats = GamesManager.getResourcesStats(game_id);
-
-			for(Map.Entry<Integer, Double> entry : resourcesStats.entrySet()){
+			for(Map.Entry<Integer, Double> entry: resourcesStats.entrySet()) {
 				Resource r = getResource(entry.getKey());
-				if(r!=null){
+				if(r!=null) {
 					r.setTrust(r.getTrust()+(int)(rewardValue*entry.getValue()));
 				}
 			}
@@ -191,10 +214,16 @@ public class CentralServer {
 		}
 	}
 	
-	private Resource getResource(int id){
-		for(Resource r : resources){
-			if(r.getId()==id)
+	/**
+	 * Get a resource by its id.
+	 * @param id The id of the resource.
+	 * @return The resource.
+	 */
+	private Resource getResource(int id) {
+		for(Resource r: this.resources) {
+			if(r.getId()==id) {
 				return r;
+			}
 		}
 		return null;
 	}

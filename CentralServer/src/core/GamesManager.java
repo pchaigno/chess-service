@@ -1,30 +1,28 @@
 package core;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-
-import org.sqlite.SQLiteConfig;
+import java.util.Map.Entry;
 
 /**
  * Handle all the accesses to the game SQLite table.
  * @author Clement Gautrais
  */
-public class GamesManager {
+public class GamesManager extends DatabaseManager {
 	private static final String FIRST_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -";
 	private static final String GAMES = "games";
 	private static final String MOVES = "moves";
 	private static final String GAME_ID = "id";
 	private static final String GAME_FEN = "fen";
 	private static final String GAME_SAN = "san";
-	private static final String MOVE_GAME = "id_game";
-	private static final String MOVE_RESOURCE = "id_resource";
+	private static final String MOVE_GAME = "game";
+	private static final String MOVE_RESOURCE = "resource";
 	private static final String MOVE_NUMBER = "num_move"; // The number of the move in the game
+	private static final String MOVE_TRUST = "move_trust";
 	
 	/**
 	 * Remove all traces of the game id_game.
@@ -146,6 +144,7 @@ public class GamesManager {
 	}
 	
 	/**
+	 * Check if a game exist in the database.
 	 * @param gameId The game id.
 	 * @return True if the game exists.
 	 */
@@ -171,15 +170,16 @@ public class GamesManager {
 	 * @param moveNumber The move number.
 	 * @return True if added, false otherwise.
 	 */
-	public static boolean addMove(int gameId, Set<Integer> resourcesId, int moveNumber) {
+	public static boolean addMoves(int gameId, Map<Integer, Double> resourcesConfidence, int moveNumber) {
 		Connection dbConnect = getConnection();
-		String query = "INSERT INTO "+MOVES+" ("+MOVE_GAME+", "+MOVE_RESOURCE+", "+MOVE_NUMBER+") VALUES(?, ?, ?)";
+		String query = "INSERT INTO "+MOVES+" ("+MOVE_GAME+", "+MOVE_RESOURCE+", "+MOVE_NUMBER+", "+MOVE_TRUST+") VALUES(?, ?, ?, ?)";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
-			for(Integer resource_id: resourcesId) {
+			for(Entry<Integer, Double> resourceConfidence : resourcesConfidence.entrySet()) {
 				statement.setInt(1, gameId);
-				statement.setInt(2, resource_id);
+				statement.setInt(2, resourceConfidence.getKey());
 				statement.setInt(3, moveNumber);
+				statement.setDouble(4, resourceConfidence.getValue());
 				statement.addBatch();
 			}
 			int[] results = statement.executeBatch();
@@ -212,13 +212,13 @@ public class GamesManager {
 		}
 		if(exist(gameId)) {
 			Connection dbConnect = getConnection();
-			String query = "SELECT COUNT(DISTINCT "+MOVE_NUMBER+") AS moveNumber, "+MOVE_RESOURCE+" FROM "+MOVES+" WHERE "+MOVE_GAME+"= ? GROUP BY "+MOVE_RESOURCE;
+			String query = "SELECT TOTAL("+MOVE_TRUST+") AS totalTrust, "+MOVE_RESOURCE+" FROM "+MOVES+" WHERE "+MOVE_GAME+"= ? GROUP BY "+MOVE_RESOURCE;
 			try {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
 				statement.setInt(1, gameId);
 				ResultSet set = statement.executeQuery();
 				while(set.next()) {
-					stats.put(set.getInt(MOVE_RESOURCE), (Double)set.getDouble("moveNumber")/nbTotalMoves);
+					stats.put(set.getInt(MOVE_RESOURCE), set.getDouble("totalTrust"));
 				}
 				dbConnect.close();
 				return stats;
@@ -252,26 +252,5 @@ public class GamesManager {
 			System.err.println("isSAN: "+e.getMessage());
 		}
 		return null;
-	}
-	
-	/**
-	 * Get a connection to the SQLite database.
-	 * Configure the database to add foreign keys support.
-	 * @return The connection.
-	 */
-	private static Connection getConnection() {
-		Connection dbConnect = null;
-		try {
-			Class.forName("org.sqlite.JDBC");
-			SQLiteConfig config = new SQLiteConfig();
-	        config.enforceForeignKeys(true);
-			dbConnect = DriverManager.getConnection("jdbc:sqlite:"+ResourcesManager.DATABASE_FILE, config.toProperties());
-		} catch(SQLException e) {
-			System.err.println("Impossible to connect to the database "+ResourcesManager.DATABASE_FILE+".");
-			System.err.println(e.getMessage());
-		} catch(ClassNotFoundException e) {
-			System.err.println("Driver missing for SQLite JDBC.");
-		}
-		return dbConnect;
 	}
 }

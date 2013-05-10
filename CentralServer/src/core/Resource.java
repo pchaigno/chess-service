@@ -8,6 +8,7 @@ import javax.ws.rs.core.MediaType;
 import org.eclipse.core.runtime.URIUtil;
 
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
@@ -42,8 +43,9 @@ public abstract class Resource {
 	 * @param active True if the resource is active.
 	 */
 	public Resource(String uri, String name, int trust, boolean active) {
-		if(!uri.endsWith("/"))
+		if(!uri.endsWith("/")) {
 			uri+="/";
+		}
 		this.uri = uri;
 		this.name = name;
 		this.changed = false;
@@ -86,15 +88,14 @@ public abstract class Resource {
 	 */
 	public void query(String fen) {
 		this.clearSuggestions();
-		
+
 		fen = fen.replaceAll("/", "\\$");
-		
+
 		String fenUri = "";
 		try {
 			fenUri = URIUtil.fromString(fen).toASCIIString();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("FEN incorrect: "+fen);
 		}
 		// We call the client
 		Client c = Client.create();
@@ -103,10 +104,14 @@ public abstract class Resource {
 		WebResource r = c.resource(this.uri+fenUri);
 		c.setConnectTimeout(CONNECT_TIMEOUT);
 		c.setReadTimeout(READ_TIMEOUT);
-		String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
-		
-		fen = fen.replaceAll("\\$", "/");
-		this.parseJSONMove(response, fen);
+		try {
+			String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
+
+			fen = fen.replaceAll("\\$", "/");
+			this.parseJSONMove(response, fen);
+		} catch(ClientHandlerException e) {
+			// It just do nothing if the resource isn't connected.
+		}
 	}
 
 	/**
@@ -204,15 +209,19 @@ public abstract class Resource {
 		WebResource webresource = client.resource(tmp_uri);
 		client.setConnectTimeout(CONNECT_TIMEOUT);
 		client.setReadTimeout(READ_TIMEOUT);
-		ClientResponse clientresponse = webresource.get(ClientResponse.class);
-		int status = clientresponse.getStatus();
-		if(status == 408) {
+		try{
+			ClientResponse clientresponse = webresource.get(ClientResponse.class);
+			int status = clientresponse.getStatus();
+			if(status != 200) {
+				connected = false;
+			} else {
+				connected = true;
+				String response = clientresponse.getEntity(String.class);
+				this.san = ('s' == response.charAt(response.length()-1));
+				this.version = response.substring(0, response.length()-1);
+			}
+		}catch(ClientHandlerException e){
 			connected = false;
-		} else {
-			connected = true;
-			String response = clientresponse.getEntity(String.class);
-			this.san = ('s' == response.charAt(response.length()-1));
-			this.version = response.substring(0, response.length()-1);
 		}
 	}
 

@@ -5,11 +5,11 @@ package core;
  * @author Clement Gautrais
  */
 public class OpeningSuggestion extends MoveSuggestion {
-	private int nbPlay;
-	private double probaWin;
-	private double probaDraw;
-	private static final double WEIGHT_NB_PLAY = 0.8;
-	private static final double WEIGHT_PROBA_WIN = 0.2;
+	protected int nbPlay;
+	protected double probaWin;
+	protected double probaDraw;
+	protected static final double WEIGHT_NB_PLAY = 0.8;
+	protected static final double WEIGHT_PROBA_WIN = 0.2;
 	
 	/**
 	 * Constructor
@@ -23,23 +23,22 @@ public class OpeningSuggestion extends MoveSuggestion {
 		this.nbPlay = nbPlay;
 		this.probaWin = probaWin;
 		this.probaDraw = probaDraw;
-		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE))!=0)
-			this.score = WEIGHT_NB_PLAY*computeScoreNbPlay()/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE))));
-		else
-			this.score = WEIGHT_NB_PLAY*computeScoreNbPlay();
-		
-		if(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE))!=0)
-			this.score+=WEIGHT_PROBA_WIN*computeScoreProbaWin()/(Math.sqrt(Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE))));
-		else
-			this.score+=WEIGHT_PROBA_WIN*computeScoreProbaWin();
+		this.computeScore();
 	}
 	
-	public double computeScoreNbPlay(){
-		return (nbPlay-Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.MEAN)));
+	/**
+	 * TODO
+	 */
+	public double getScoreNbPlay() {
+		return this.nbPlay - Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.MEAN));
 	}
 	
-	public double computeScoreProbaWin(){
-		return (probaWin - 0.5);
+	/**
+	 * TODO
+	 * @return TODO
+	 */
+	public double getScoreProbaWin() {
+		return this.probaWin - 0.5;
 	}
 
 	/**
@@ -67,5 +66,21 @@ public class OpeningSuggestion extends MoveSuggestion {
 	public String toString() {
 		return "DatabaseSuggestion [move="+this.move+", nbPlay="+this.nbPlay+", probaWin="+this.probaWin
 				+", probaDraw="+this.probaDraw+"]";
+	}
+
+	@Override
+	protected void computeScore() {
+		double variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE));
+		if(variance!=0) {
+			this.score = WEIGHT_NB_PLAY * this.getScoreNbPlay() / Math.sqrt(variance);
+		} else {
+			this.score = WEIGHT_NB_PLAY * this.getScoreNbPlay();
+		}
+		variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE));
+		if(variance!=0) {
+			this.score += WEIGHT_PROBA_WIN * this.getScoreProbaWin() / Math.sqrt(variance);
+		} else {
+			this.score += WEIGHT_PROBA_WIN * this.getScoreProbaWin();
+		}
 	}
 }
