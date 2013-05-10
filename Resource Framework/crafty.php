@@ -9,14 +9,14 @@ $wrapper->rest();
 // Variables
 $originalpath = 'Crafty.ini';
 $inputpath = 'input.txt';
-$outputpath = 'game.001';
+$outputpath = 'log.001';
 
 // Get the middle moves according to the FEN.
 function getMiddle($fen) {
 	
 	$originalpath = 'Crafty.ini';
 	$inputpath = 'input.txt';
-	$outputpath = 'game.001';
+	$outputpath = 'log.001';
 
 	// Step 1 : Create "input.txt" file 
 	// ----------------------------------------------
@@ -35,27 +35,31 @@ function getMiddle($fen) {
 	exec('Crafty.bat'); // use system() to display all console output, use exec() to hide everything
 
 
-	// Step 3 : Get best move from "game.001"
+	// Step 3 : Get moves, depths and scores from "log.001"
 	// ----------------------------------------------
-	// Note : the best move is the last line of the output file
 	if(file_exists($outputpath)) {
 		$outputfile = fopen($outputpath, "r");
-			fseek($outputfile, -1, SEEK_END); // Place reading at end file
-			$pos = ftell($outputfile);
-			$lastLine = "";
-			// Loop backword util a space is found.
-			while(($C = fgetc($outputfile))!=' ' && $pos>0) {
-			    $lastLine = $C.$lastLine;
-			    fseek($outputfile, $pos--);
-			}
-			$lastLine = trim($lastLine);
-			$bestmove = array ('move' => $lastLine);
-			return json_encode($bestmove);
+
+		while($lines[] = fgets($outputfile));
+		$lines = preg_grep('#^\s*(\d+)\s*(\d+\.\d{2})\s*(-?\d+\.\d{2})\s*1\.\s\.\.\.\s(.)+\s#', $lines); //lines /depth time score variation/
+
+		foreach($lines as $line){
+			preg_match('#1\.\s\.\.\.\s*(.*?)\s#', $line, $match); // move
+			$move = $match[1];
+			$moves[$move]['move'] = $move;
+			preg_match('#\d+\.\d{2}.*?(-?\d+\.\d{2})#', $line, $match); // score
+			$moves[$move]['score'] = $match[1];
+			preg_match('#\s(\d+)\s#', $line, $match); // depth
+			$moves[$move]['depth'] = $match[1];
+		}
+
 		fclose($outputfile);
 
 		// Keep a backup and then delete output file after use, in order to avoid conflict with next moves
 		copy($outputpath, $outputpath.".bak");
 		unlink($outputpath);
+
+		return json_encode(array_values($moves));
 	} else {
 		echo "Failed to get output file...\n";
 	}
