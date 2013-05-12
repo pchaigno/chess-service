@@ -39,7 +39,8 @@ function getMiddle($fen) {
 	// ----------------------------------------------
 	if(file_exists($outputpath)) {
 		$outputfile = fopen($outputpath, "r");
-
+		$moves = array();
+		
 		while($lines[] = fgets($outputfile));
 		$lines = preg_grep('#^\s*(\d+)\s*(\d+\.\d{2})\s*(-?\d+\.\d{2})\s*1\.\s\.\.\.\s(.)+\s#', $lines); //lines /depth time score variation/
 
