@@ -3,11 +3,11 @@
 require('resourcewrapper.class.php');
 
 $wrapper = new ResourceWrapper(false);
-$wrapper->setDatabaseOpenings('http://chessok.com/onlineserv/opening/connection.php?timestamp='.time(), '1.0', false, 'parserXMLToJSON');
+$wrapper->setDatabaseOpenings('http://chessok.com/onlineserv/opening/connection.php?timestamp='.time(), '1.0', false, 'parserOpeningsToJSON');
 $wrapper->rest();
 
 // Transforme le xml renvoye par chessok en JSon et l'affiche.
-function parserXMLToJSON($xmlstr, $fen) {
+function parserOpeningsToJSON($xmlstr, $fen) {
 	// On regarde qui va jouer (blancs ou noirs).
 	preg_match("/^[^ ]* ([bw]) .*$/", $fen, $matches);
 	if(count($matches)==2) {
@@ -40,5 +40,4 @@ function parserXMLToJSON($xmlstr, $fen) {
 	}
 	return json_encode($movesArray);
 }
-
 ?>

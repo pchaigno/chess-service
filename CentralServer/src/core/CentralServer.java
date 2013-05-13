@@ -86,7 +86,7 @@ public class CentralServer {
 					ends.put(move.getMove(), move.getScore());	
 				} else {
 					if(scores.containsKey(move.getMove())) {
-						double newScore = scores.get(move) + resource.getTrust()*move.getScore();
+						double newScore = scores.get(move.getMove()) + resource.getTrust()*move.getScore();
 						scores.put(move.getMove(), newScore);
 					} else {
 						scores.put(move.getMove(), resource.getTrust()*move.getScore());
@@ -131,7 +131,7 @@ public class CentralServer {
 				return move;
 			}
 		}
-		double max = Double.MIN_VALUE;
+		double max = Double.NEGATIVE_INFINITY;
 		move = null;
 		for(Map.Entry<String, Double> entry: moves.entrySet()) {
 			if(entry.getValue() > max) {
@@ -150,7 +150,7 @@ public class CentralServer {
 	private Map<Integer, Double> getMoveResourcesConfidence(String move){
 		Set<Resource> moveResources = new HashSet<Resource>();
 		Map<Integer, Double> resourcesConfidence = new HashMap<Integer, Double>();
-		double scoreMax = Double.MIN_VALUE;
+		double scoreMax = Double.NEGATIVE_INFINITY;
 		for(Resource r : resources) {
 			for(MoveSuggestion moveSug : r.getMoveSuggestions()) {
 				if(moveSug.getMove().equals(move)) {

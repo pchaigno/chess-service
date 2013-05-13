@@ -186,7 +186,11 @@ class ResourceWrapper {
 	// Make an HTTP GET request using cURL.
 	private function curlGet($url, $fen) {
 		if(!$this->complete_fen) {
-			$fen = substr($fen, 0, strpos($fen, '-')+1);
+			//On enlève les deux derniers chiffres du fen
+			preg_match("#^(.+)((\s[0-9]+){2})$#", $fen, $matches);
+			if(count($matches)>0){
+				$fen = $matches[1];
+			}
 		}
 		$fen = rawurlencode($fen);
 		$url = str_replace('$url_fen$', $fen, $url);
