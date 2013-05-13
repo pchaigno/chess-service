@@ -77,6 +77,24 @@ function getMoveFromCentralServer(p4d, fen) {
 	xmlreq.send();
 }
 
+/** Call the central server to end the game **/
+function endGame() {
+	xmlreq = createXMLHttpRequest();
+	
+	xmlreq.onreadystatechange = function() {
+		if(xmlreq.readyState == 4) {
+			if(xmlreq.status == 200) {
+				game_id = -1;
+			} else {
+				alert('Error get: '+xmlreq.status);
+			}
+		}
+	}
+
+	xmlreq.open("DELETE", central_server_uri+"/"+game_id, true);
+	xmlreq.send();
+}
+
 /** Convert the LAN to a 4 digits number for p4d **/
 function convertToDigits(lan) {
 	var move = new Array();
