@@ -131,6 +131,27 @@ public class GamesManager extends DatabaseManager {
 		}
 	}
 	
+	public static char getColor(int gameId) {
+		Connection dbConnect = getConnection();
+		String query = "SELECT "+GAME_FEN+" FROM "+GAMES+" WHERE "+GAME_ID+" = ?";
+		try {
+			PreparedStatement statement = dbConnect.prepareStatement(query);
+			statement.setInt(1, gameId);
+			ResultSet set = statement.executeQuery();
+			char color = 'e';
+			if(set.next()) {
+				String fen = set.getString(GAME_FEN);
+				String[] splited_fen = fen.split(" ");
+				color = splited_fen[1].charAt(0);
+			}
+			dbConnect.close();
+			return color;
+		} catch(SQLException e) {
+			System.err.println("getColor: "+e.getMessage());
+			return 'e';
+		}
+	}
+	
 	/**
 	 * Generate an id that isn't used.
 	 * @return The id.

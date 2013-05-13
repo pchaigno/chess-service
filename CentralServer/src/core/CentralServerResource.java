@@ -44,11 +44,32 @@ public class CentralServerResource {
 		return respond(move);
 	}
 	
-	@Path("/{gameId: [0-9]+}")
+	@Path("/{gameId: [0-9]+}/{fen}")
 	@DELETE
-	public void endOfGame(@PathParam("gameId")int gameId) {
-		// TODO Get the real result (i set 0 for now).
-		server.rewardResources(gameId, 0);
+	public void endOfGame(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
+		int reward;
+		String[] splited_fen = fen.split(" ");
+		int nb = 0;
+		try {
+			nb = Integer.parseInt(splited_fen[4]);
+		}catch(NumberFormatException e){
+
+		}
+		if(nb<50) {
+			char color = splited_fen[1].charAt(0);
+			if(color == GamesManager.getColor(gameId)) {
+				reward = EndingSuggestion.WIN_RESULT;
+			}else{
+				if(GamesManager.getColor(gameId)=='b' || GamesManager.getColor(gameId)=='w') {
+					reward = EndingSuggestion.LOOSE_RESULT;
+				}else{
+					reward = EndingSuggestion.DRAW_RESULT;
+				}
+			}
+		}else{
+			reward = EndingSuggestion.DRAW_RESULT;
+		}
+		server.rewardResources(gameId, reward);
 		GamesManager.removeGame(gameId);
 	}
 	
