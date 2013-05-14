@@ -262,8 +262,9 @@ public class ChessParser {
 		char color;
 		if(splited_fen.length > 3) {
 			color = splited_fen[1].charAt(0);
-			// TODO The color variable need to be checked to see if it's b or w.
-			// If not, the FEN is incorrect...
+			if(color != 'b' && color != 'w'){
+				throw new IncorrectFENException("Color incorrect.");
+			}
 		} else {
 			throw new IncorrectFENException("Number of argument incorrect.");
 		}
@@ -278,12 +279,18 @@ public class ChessParser {
 	 * @throws NumberFormatException
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
-	public static int result(String fen, char gameColor) throws NumberFormatException, IncorrectFENException {
+	public static int result(String fen, char gameColor) throws IncorrectFENException {
 		int reward = 0;
 		String[] splited_fen = fen.split(" ");
+		
 		if(splited_fen.length == 6) {
-			// TODO Throw the exception if the parse method fails.
-			int nb =  Integer.parseInt(splited_fen[4]);
+			int nb;
+			try{
+				nb =  Integer.parseInt(splited_fen[4]);
+			}catch(NumberFormatException e){
+				throw new IncorrectFENException("Nomber of half move incorrect.");
+			}
+			
 			if(nb<50) {
 				char color = 0;
 				try {
@@ -303,6 +310,7 @@ public class ChessParser {
 			} else {
 				reward = EndingSuggestion.DRAW_RESULT;
 			}
+			
 		} else {
 			throw new IncorrectFENException("Number of argument incorrect.");
 		}

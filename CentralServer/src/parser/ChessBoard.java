@@ -198,8 +198,11 @@ public class ChessBoard {
 						} else if(String.valueOf(letter).matches("[RBQKPN]")) {
 							color = PieceColor.WHITE;
 						} else {
-							// TODO Throw the exception if the parse method fails.
-							colsY = colsY + Integer.parseInt(String.valueOf(letter));
+							try{
+								colsY = colsY + Integer.parseInt(String.valueOf(letter));
+							}catch(NumberFormatException e){
+								throw new IncorrectFENException("Board representation incorrect in the FEN.");
+							}
 							continue;
 						}
 						PieceType name = PieceType.getType(letter);
@@ -216,15 +219,22 @@ public class ChessBoard {
 			if(fenArray[1].equals("b")) {
 				this.currentMove = PieceColor.BLACK;
 			} else {
-				this.currentMove = PieceColor.WHITE;
-			} // TODO Complete the if else with an exception.
+				if(fenArray[1].equals("w")) {
+					this.currentMove = PieceColor.WHITE;
+				}else{
+					throw new IncorrectFENException("Color incorrect.");
+				}
+			}
 
 			this.castling = fenArray[2];
 			this.enPassant = fenArray[3];
 			if(fenArray.length==6) {
-				// TODO Throw the exception if the parse method fails:
+				try{
 				this.halfMoves = Integer.parseInt(fenArray[4]);
 				this.fullMoves = Integer.parseInt(fenArray[5]);
+				}catch(NumberFormatException e){
+					throw new IncorrectFENException("Impossible to have the number of full move or half move.");
+				}
 			} else {
 				this.halfMoves = -1;
 				this.fullMoves = -1;
