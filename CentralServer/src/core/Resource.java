@@ -89,25 +89,26 @@ public abstract class Resource {
 	public void query(String fen) {
 		this.clearSuggestions();
 
-		fen = fen.replaceAll("/", "\\$");
+		// Replace the slashes in the FEN by dollars.
+		String fenEncoded = fen.replaceAll("/", "\\$");
 
-		String fenUri = "";
+		// Convert the FEN into a url encoded string:
 		try {
-			fenUri = URIUtil.fromString(fen).toASCIIString();
+			fenEncoded = URIUtil.fromString(fen).toASCIIString();
 		} catch (URISyntaxException e) {
 			System.err.println("FEN incorrect: "+fen);
 		}
-		// We call the client
+		
+		// Prepare the request (timeouts and URL):
 		Client c = Client.create();
-		// TODO handle the last slash
-		System.out.println(this.uri+fenUri); // TODO Call listener instead.
-		WebResource r = c.resource(this.uri+fenUri);
+		System.out.println(this.uri+fenEncoded); // TODO Call listener instead.
+		WebResource r = c.resource(this.uri+fenEncoded);
 		c.setConnectTimeout(CONNECT_TIMEOUT);
 		c.setReadTimeout(READ_TIMEOUT);
+		
+		// Launch the request and parse the result:
 		try {
 			String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
-
-			fen = fen.replaceAll("\\$", "/");
 			this.parseJSONMove(response, fen);
 		} catch(ClientHandlerException e) {
 			// It just do nothing if the resource isn't connected.
@@ -200,28 +201,29 @@ public abstract class Resource {
 	}
 
 	/**
-	 * Complete the version and the san parameters.
+	 * Complete the version and the san parameters by calling the resource.
 	 */
 	public void checkVersion() {
+		// Prepare the request:
 		Client client = Client.create();
-		String tmp_uri = this.uri.substring(0,this.uri.lastIndexOf("/"));
-		tmp_uri += "/version";
-		WebResource webresource = client.resource(tmp_uri);
+		WebResource webresource = client.resource(this.uri + "/version");
 		client.setConnectTimeout(CONNECT_TIMEOUT);
 		client.setReadTimeout(READ_TIMEOUT);
-		try{
+		
+		// Launch the request and complete the params:
+		try {
 			ClientResponse clientresponse = webresource.get(ClientResponse.class);
 			int status = clientresponse.getStatus();
 			if(status != 200) {
-				connected = false;
+				this.connected = false;
 			} else {
-				connected = true;
+				this.connected = true;
 				String response = clientresponse.getEntity(String.class);
 				this.san = ('s' == response.charAt(response.length()-1));
 				this.version = response.substring(0, response.length()-1);
 			}
-		}catch(ClientHandlerException e){
-			connected = false;
+		} catch(ClientHandlerException e) {
+			this.connected = false;
 		}
 	}
 

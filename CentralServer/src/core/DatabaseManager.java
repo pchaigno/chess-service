@@ -8,23 +8,24 @@ import org.sqlite.SQLiteConfig;
 
 /**
  * A master class for all database manager.
+ * Regroups the methods used by all database manager and the location of the database file.
  * @author Paul Chaignon
  */
 public class DatabaseManager {
 	protected static String DATABASE_FILE = PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE);
 
 	/**
-	 * Change the current database.
-	 * @param newDatabase The new database used.
+	 * Change the location of the current database file.
+	 * @param newDatabase The new database file used.
 	 */
-	public static void changeDatabase(String newDatabase){
+	public static void changeDatabase(String newDatabase) {
 		DATABASE_FILE = newDatabase;
 	}
 	
 	/**
-	 * @return The database file.
+	 * @return The location of the database file.
 	 */
-	public static String getDatabaseFile(){
+	public static String getDatabaseFile() {
 		return DATABASE_FILE;
 	}
 	

@@ -1,7 +1,7 @@
 package core;
 
 /**
- * Enumeration of the statistics used by StatsManager.
+ * Enumeration of statistics used by StatsManager.
  * @author Clement Gautrais
  */
 public enum Statistic {
@@ -13,11 +13,18 @@ public enum Statistic {
 	
 	private int value;
 	
-	Statistic(int value){
+	/**
+	 * Constructor
+	 * @param value The numeric value corresponding to the type of statistic.
+	 */
+	Statistic(int value) {
 		this.value = value;
 	}
 	
-	public int getValue(){
+	/**
+	 * @return The value corresponding to the type of statistic.
+	 */
+	public int getValue() {
 		return this.value;
 	}
 	
