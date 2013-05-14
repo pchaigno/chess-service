@@ -1,7 +1,5 @@
 package core;
 
-import java.io.UnsupportedEncodingException;
-
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -28,10 +26,17 @@ public class CentralServerResource {
 	protected static final String NO_RESULT = "NULL";
 	protected CentralServer server = new CentralServer();
 	
+	/**
+	 * Receive a FEN from a client and return the best move corresponding after
+	 * requesting all the resources.
+	 * The client calls this method with an HTTP GET request on /rest/{fen}.
+	 * @param fen The FEN send via the URL.
+	 * @return The best move computed.
+	 */
 	@Path("/{fen}")
 	@GET
 	@Produces("text/plain")
-	public Response getBestMove(@PathParam("fen")String fen) throws UnsupportedEncodingException {
+	public Response getBestMove(@PathParam("fen")String fen) {
 		fen = fen.replaceAll("\\$", "/");
 		if(!fen.endsWith("-")) {
 			ChessParser parser = new ChessParser(fen);
@@ -44,6 +49,13 @@ public class CentralServerResource {
 		return respond(move);
 	}
 	
+	/**
+	 * End a game and reward the resources depending on the result of the game.
+	 * One the resources are rewarded, the game is deleted from the database.
+	 * The client calls this method with an HTTP DELETE request on /rest/{gameId}.
+	 * @param gameId The id of the game to end.
+	 * @param fen The final FEN.
+	 */
 	@Path("/{gameId: [0-9]+}/{fen}")
 	@DELETE
 	public void endOfGame(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
@@ -73,6 +85,15 @@ public class CentralServerResource {
 		GamesManager.removeGame(gameId);
 	}
 	
+	/**
+	 * Receive a FEN from a client and return the best move corresponding after
+	 * requesting all the resources.
+	 * This method also keeps statistics about the moves suggested to reward the resources at the end of the game.
+	 * The client calls this method with an HTTP GET request on /rest/{gameId}/{fen}.
+	 * @param gameId The id of the game.
+	 * @param fen The current FEN.
+	 * @return The best move computed in the requested format (SAN or LAN).
+	 */
 	@Path("/{gameId: [0-9]+}/{fen}")
 	@GET
 	@Produces("text/plain")
@@ -105,6 +126,13 @@ public class CentralServerResource {
 		return builder.build();
 	}
 	
+	/**
+	 * Create a new game with a random generated id.
+	 * The client may indicate at this moment if he want that the server returns it SAN or LAN moves.
+	 * The client calls this method with an HTTP POST request on /rest.
+	 * @param san The boolean send in the request. If true, the move sent by the central server will be in SAN. Is true by default.
+	 * @return The id of the game created.
+	 */
 	@POST
 	@Produces("text/plain")
 	public Response startGame(@DefaultValue("true")@FormParam("san")boolean san) {
@@ -112,6 +140,12 @@ public class CentralServerResource {
 		return respond(String.valueOf(gameId));
 	}
 	
+	/**
+	 * This method is only called to respond to HTTP OPTIONS requests send by AJAX scripts.
+	 * AJAX scripts send a preflight request to determine if the request to come is allowed by the server.
+	 * @param requestH Headers to check.
+	 * @return Headers to specify that the headers requested are allowed.
+	 */
 	@OPTIONS
 	@Produces("text/plain")
 	public Response startGame(@HeaderParam("Access-Control-Request-Headers") String requestH) {
@@ -123,7 +157,7 @@ public class CentralServerResource {
 	
 	/**
 	 * Build the response from a string.
-	 * Allow us to put the right headers.
+	 * Allow us to put the right headers: notify the client that all origin are allowed (for AJAX use).
 	 * @param response The string response.
 	 * @return The response with headers.
 	 */
