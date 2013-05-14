@@ -39,7 +39,7 @@ public class CentralServerResource {
 	@Produces("text/plain")
 	public Response getBestMove(@PathParam("fen")String fen) {
 		fen = fen.replaceAll("\\$", "/");
-		if(ChessParser.isCorrect(fen)){
+		if(ChessParser.isCorrectFEN(fen)) {
 			if(!fen.endsWith("-")) {
 				ChessParser parser;
 				try {
@@ -55,7 +55,7 @@ public class CentralServerResource {
 				move = NO_RESULT;
 			}
 			return respond(move);
-		}else{
+		} else {
 			ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
 			builder.header("Access-Control-Allow-Origin", "*");
 			return builder.build(); 
@@ -100,7 +100,7 @@ public class CentralServerResource {
 		if(GamesManager.exist(gameId)) {
 			fen = fen.replaceAll("\\$", "/");
 			
-			if(ChessParser.isCorrect(fen)){
+			if(ChessParser.isCorrectFEN(fen)) {
 				
 				if(!fen.endsWith("-")) {
 					ChessParser parser;
@@ -135,7 +135,7 @@ public class CentralServerResource {
 				}
 
 				return respond(move);
-			}else{
+			} else {
 				ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
 				builder.header("Access-Control-Allow-Origin", "*");
 				return builder.build();

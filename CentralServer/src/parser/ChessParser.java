@@ -252,52 +252,58 @@ public class ChessParser {
 	}
 	
 	/**
-	 * @param fen
+	 * Get the color that play next from the FEN.
+	 * @param fen The FEN.
 	 * @return The color.
+	 * @throws IncorrectFENException If the FEN is incorrect: incorrect number of white spaces or wrong color character.
 	 */
 	public static char getColor(String fen) throws IncorrectFENException {
 		String[] splited_fen = fen.split(" ");
 		char color;
 		if(splited_fen.length > 3) {
 			color = splited_fen[1].charAt(0);
-		}else{
+			// TODO The color variable need to be checked to see if it's b or w.
+			// If not, the FEN is incorrect...
+		} else {
 			throw new IncorrectFENException("Number of argument incorrect.");
 		}
 		return color;
 	}
 	
 	/**
+	 * Return the result of the game by looking at the FEN and knowing the computer color.
 	 * @param fen The FEN.
-	 * @param gameColor Computer's color.
+	 * @param gameColor The computer color.
 	 * @return 0 for a draw, 1 for a win or -1 for a lose.
 	 * @throws NumberFormatException
-	 * @throws IncorectFENException
+	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
 	public static int result(String fen, char gameColor) throws NumberFormatException, IncorrectFENException {
 		int reward = 0;
 		String[] splited_fen = fen.split(" ");
 		if(splited_fen.length == 6) {
+			// TODO Throw the exception if the parse method fails.
 			int nb =  Integer.parseInt(splited_fen[4]);
 			if(nb<50) {
 				char color = 0;
 				try {
 					color = ChessParser.getColor(fen);
-				}catch(IncorrectFENException e) {
+				} catch(IncorrectFENException e) {
 					System.err.println("result :"+e.getMessage());
 				}
-				if(color == gameColor && color != 0) {
+				if(color==gameColor && color!=0) {
 					reward = EndingSuggestion.WIN_RESULT;
-				}else{
-					if(gameColor == 'b' || gameColor == 'w') {
+				} else {
+					if(gameColor=='b' || gameColor=='w') {
 						reward = EndingSuggestion.LOOSE_RESULT;
-					}else{
+					} else {
 						reward = EndingSuggestion.DRAW_RESULT;
 					}
 				}
-			}else{
+			} else {
 				reward = EndingSuggestion.DRAW_RESULT;
 			}
-		}else{
+		} else {
 			throw new IncorrectFENException("Number of argument incorrect.");
 		}
 
@@ -306,15 +312,19 @@ public class ChessParser {
 	
 	/**
 	 * Check is the FEN is correct.
-	 * @param fen
-	 * @return true if the FEN is correct.
+	 * The FEN must contain at least 3 white spaces and exactly 8 slashes for the board description.
+	 * @param fen The FEN to check.
+	 * @return True if the FEN is correct.
 	 */
-	public static boolean isCorrect(String fen){
+	public static boolean isCorrectFEN(String fen) {
 		String[] fenArray = fen.split(" ");
+		if(fenArray.length<=3) {
+			return false;
+		}
 		String[] boardArray = fenArray[0].split("/");
-		if(fenArray.length > 3 && boardArray.length == 8) {
+		if(boardArray.length==8) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}

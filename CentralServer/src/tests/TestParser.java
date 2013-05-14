@@ -62,10 +62,10 @@ public class TestParser extends TestCase {
 	/**
 	 * Test if the FEN structure is correct.
 	 */
-	public void testIsCorect() {
-		assertTrue(ChessParser.isCorrect("rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3"));
-		assertTrue(ChessParser.isCorrect("rnbqkbnr/pp2pppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3"));
-		assertFalse(ChessParser.isCorrect("rnbqkbnr/pp2pppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq"));
+	public void testIsCorrectFEN() {
+		assertTrue(ChessParser.isCorrectFEN("rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3"));
+		assertTrue(ChessParser.isCorrectFEN("rnbqkbnr/pp2pppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3"));
+		assertFalse(ChessParser.isCorrectFEN("rnbqkbnr/pp2pppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq"));
 	}
 	
 	/**

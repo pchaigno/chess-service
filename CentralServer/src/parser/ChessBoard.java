@@ -173,7 +173,7 @@ public class ChessBoard {
 	/**
 	 * Prototype function used to load FEN into board.
 	 * @param fen The FEN.
-	 * @throws IncorrectFENException 
+	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
 	void loadFEN(String fen) throws IncorrectFENException {
 		for(char keyVar: this.squares.keySet()) {
@@ -184,9 +184,9 @@ public class ChessBoard {
 		this.pieces = new LinkedList<BoardPiece>();
 
 		String[] fenArray = fen.split(" ");
-		if(fenArray.length > 3){
+		if(fenArray.length > 3) {
 			String[] boardArray = fenArray[0].split("/");
-			if(boardArray.length == 8){
+			if(boardArray.length == 8) {
 				for(int lines=1 ; lines<=8 ; lines++) {
 					String line = boardArray[lines-1];
 					int colsY = 1;
@@ -198,6 +198,7 @@ public class ChessBoard {
 						} else if(String.valueOf(letter).matches("[RBQKPN]")) {
 							color = PieceColor.WHITE;
 						} else {
+							// TODO Throw the exception if the parse method fails.
 							colsY = colsY + Integer.parseInt(String.valueOf(letter));
 							continue;
 						}
@@ -208,7 +209,7 @@ public class ChessBoard {
 						colsY++;
 					}
 				}
-			}else{
+			} else {
 				throw new IncorrectFENException("Board representation incorrect in the FEN.");
 			}
 
@@ -216,18 +217,19 @@ public class ChessBoard {
 				this.currentMove = PieceColor.BLACK;
 			} else {
 				this.currentMove = PieceColor.WHITE;
-			}
+			} // TODO Complete the if else with an exception.
 
 			this.castling = fenArray[2];
 			this.enPassant = fenArray[3];
 			if(fenArray.length==6) {
+				// TODO Throw the exception if the parse method fails:
 				this.halfMoves = Integer.parseInt(fenArray[4]);
 				this.fullMoves = Integer.parseInt(fenArray[5]);
 			} else {
 				this.halfMoves = -1;
 				this.fullMoves = -1;
 			}
-		}else{
+		} else {
 			throw new IncorrectFENException("Number of argument incorrect in the FEN.");
 		}
 	}
