@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 public class TestForCreation extends TestCase {
 
 	public void testCreateResources() {
-		fail();
+		//fail();
 		Connection dbConnect = null;
 		try {
 			Class.forName("org.sqlite.JDBC");

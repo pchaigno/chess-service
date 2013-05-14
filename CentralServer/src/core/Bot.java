@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import parser.ChessParser;
+import parser.IncorrectFENException;
 
 /**
  * Represent a bot.
@@ -46,8 +47,14 @@ public class Bot extends Resource {
 			JSONObject json = jsonArray.getJSONObject(i);
 			String move = json.getString(JSON_MOVE);
 			if(!this.san) {
-				ChessParser parser = new ChessParser(fen);
-				move = parser.convertLANToSAN(move);
+				ChessParser parser;
+				try {
+					parser = new ChessParser(fen);
+					move = parser.convertLANToSAN(move);
+				} catch (IncorrectFENException e) {
+					// Shouldn't happen !
+					System.err.println("parseJSONMove :"+e.getMessage());
+				}
 			}
 			int depth = json.getInt(JSON_DEPTH);
 			double engineScore = json.getDouble(JSON_ENGINE_SCORE);

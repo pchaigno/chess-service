@@ -173,53 +173,62 @@ public class ChessBoard {
 	/**
 	 * Prototype function used to load FEN into board.
 	 * @param fen The FEN.
+	 * @throws IncorrectFENException 
 	 */
-	void loadFEN(String fen) {
+	void loadFEN(String fen) throws IncorrectFENException {
 		for(char keyVar: this.squares.keySet()) {
 			for(int j=1 ; j<=8 ; j++) {
 				this.squares.get(keyVar)[j].piece = null;
 			}
 		}
 		this.pieces = new LinkedList<BoardPiece>();
-	
+
 		String[] fenArray = fen.split(" ");
-		String[] boardArray = fenArray[0].split("/");
-		for(int lines=1 ; lines<=8 ; lines++) {
-			String line = boardArray[lines-1];
-			int colsY = 1;
-			for(int cols=0 ; cols<line.length() ; cols++) {
-				char letter = line.charAt(cols);
-				PieceColor color;
-				if(String.valueOf(letter).matches("[rbqkpn]")) {
-					color = PieceColor.BLACK;
-				} else if(String.valueOf(letter).matches("[RBQKPN]")) {
-					color = PieceColor.WHITE;
-				} else {
-					colsY = colsY + Integer.parseInt(String.valueOf(letter));
-					continue;
+		if(fenArray.length > 3){
+			String[] boardArray = fenArray[0].split("/");
+			if(boardArray.length == 8){
+				for(int lines=1 ; lines<=8 ; lines++) {
+					String line = boardArray[lines-1];
+					int colsY = 1;
+					for(int cols=0 ; cols<line.length() ; cols++) {
+						char letter = line.charAt(cols);
+						PieceColor color;
+						if(String.valueOf(letter).matches("[rbqkpn]")) {
+							color = PieceColor.BLACK;
+						} else if(String.valueOf(letter).matches("[RBQKPN]")) {
+							color = PieceColor.WHITE;
+						} else {
+							colsY = colsY + Integer.parseInt(String.valueOf(letter));
+							continue;
+						}
+						PieceType name = PieceType.getType(letter);
+						char x = letters[colsY];
+						int y = numbers[lines];
+						this.addPiece(name, color, x, y);
+						colsY++;
+					}
 				}
-				PieceType name = PieceType.getType(letter);
-				char x = letters[colsY];
-				int y = numbers[lines];
-				this.addPiece(name, color, x, y);
-				colsY++;
+			}else{
+				throw new IncorrectFENException("Board representation incorrect in the FEN.");
 			}
-		}
-		
-		if(fenArray[1].equals("b")) {
-			this.currentMove = PieceColor.BLACK;
-		} else {
-			this.currentMove = PieceColor.WHITE;
-		}
-		
-		this.castling = fenArray[2];
-		this.enPassant = fenArray[3];
-		if(fenArray.length==6) {
-			this.halfMoves = Integer.parseInt(fenArray[4]);
-			this.fullMoves = Integer.parseInt(fenArray[5]);
-		} else {
-			this.halfMoves = -1;
-			this.fullMoves = -1;
+
+			if(fenArray[1].equals("b")) {
+				this.currentMove = PieceColor.BLACK;
+			} else {
+				this.currentMove = PieceColor.WHITE;
+			}
+
+			this.castling = fenArray[2];
+			this.enPassant = fenArray[3];
+			if(fenArray.length==6) {
+				this.halfMoves = Integer.parseInt(fenArray[4]);
+				this.fullMoves = Integer.parseInt(fenArray[5]);
+			} else {
+				this.halfMoves = -1;
+				this.fullMoves = -1;
+			}
+		}else{
+			throw new IncorrectFENException("Number of argument incorrect in the FEN.");
 		}
 	}
 }

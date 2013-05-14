@@ -7,6 +7,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.eclipse.core.runtime.URIUtil;
 
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientResponse;
@@ -86,7 +87,7 @@ public abstract class Resource {
 	 * Query the resource on the network and update the suggestions of move.
 	 * @param fen The FEN representing the current position of the chessboard.
 	 */
-	public void query(String fen) {
+	public void query(String fen){
 		this.clearSuggestions();
 
 		// Replace the slashes in the FEN by dollars.

@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import parser.ChessParser;
+import parser.IncorrectFENException;
 
 /**
  * Represent a database of openings.
@@ -43,8 +44,14 @@ public class OpeningsDatabase extends Resource {
 			JSONObject json = jsonArray.getJSONObject(i);
 			String move = json.getString(JSON_MOVE);
 			if(!this.san) {
-				ChessParser parser = new ChessParser(fen);
-				move = parser.convertLANToSAN(move);
+				ChessParser parser;
+				try {
+					parser = new ChessParser(fen);
+					move = parser.convertLANToSAN(move);
+				} catch (IncorrectFENException e) {
+					// Shouldn't happen !
+					System.err.println("parseJSONMove :"+e.getMessage());
+				}
 			}
 			double probaWin = json.getDouble(JSON_PROBA_WIN);
 			int nb = json.getInt(JSON_NB_PLAY);

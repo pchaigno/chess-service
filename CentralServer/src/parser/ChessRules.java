@@ -85,8 +85,9 @@ public class ChessRules {
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
 	 * @return The board square.
+	 * @throws IncorrectFENException An IncorrectFENException
 	 */
-	private BoardSquare knight(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private BoardSquare knight(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		List<BoardPiece> legalKnights = new LinkedList<BoardPiece>();
 		BoardPiece knight;
 		int knightX;
@@ -120,8 +121,9 @@ public class ChessRules {
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
 	 * @return The board square.
+	 * @throws IncorrectFENException An IncorrectFENException
 	 */
-	private BoardSquare bishop(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private BoardSquare bishop(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		List<BoardPiece> legalBishops = new LinkedList<BoardPiece>();
 		int bishopX;
 		int bishopY;
@@ -179,8 +181,9 @@ public class ChessRules {
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
 	 * @return The board square.
+	 * @throws IncorrectFENException An IncorrectFENException
 	 */
-	private BoardSquare rook(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private BoardSquare rook(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		List<BoardPiece> legalRooks = new LinkedList<BoardPiece>();
 		int rookX;
 		int rookY;
@@ -237,8 +240,9 @@ public class ChessRules {
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
 	 * @return The board square.
+	 * @throws IncorrectFENException An IncorrectFENException
 	 */
-	private BoardSquare queen(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private BoardSquare queen(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		List<BoardPiece> legalQueens = new LinkedList<BoardPiece>();
 		int queenX;
 		int queenY;
@@ -348,8 +352,9 @@ public class ChessRules {
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
 	 * @return The board square.
+	 * @throws IncorrectFENException An IncorrectFENException
 	 */
-	private BoardSquare executeCheck(ChessBoard board, List<BoardPiece> legalPieces, char toX, int toY, boolean capture) {
+	private BoardSquare executeCheck(ChessBoard board, List<BoardPiece> legalPieces, char toX, int toY, boolean capture) throws IncorrectFENException {
 		BoardSquare result = null;
 		if(legalPieces.size() > 1) {
 			for(int i=0 ; i<legalPieces.size() ; i++) {
@@ -378,8 +383,9 @@ public class ChessRules {
 	 * Sees if board is in check state for the current player.
 	 * @param board The chess board.
 	 * @return True if the board is in check state.
+	 * @throws IncorrectFENException An IncorrectFENException
 	 */
-	private boolean check(ChessBoard board) {
+	private boolean check(ChessBoard board) throws IncorrectFENException {
 		BoardSquare attackArray;
 		PieceColor kingColor;
 		BoardPiece king;
@@ -427,8 +433,9 @@ public class ChessRules {
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
 	 * @return The board square.
+	 * @throws IncorrectFENException An IncorrectFENException
 	 */
-	BoardSquare eval(PieceType piece, ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	BoardSquare eval(PieceType piece, ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		switch(piece) {
 			case PAWN:
 				return this.pawn(board, fromX, fromY, toX, toY, capture);

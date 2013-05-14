@@ -39,15 +39,27 @@ public class CentralServerResource {
 	@Produces("text/plain")
 	public Response getBestMove(@PathParam("fen")String fen) {
 		fen = fen.replaceAll("\\$", "/");
-		if(!fen.endsWith("-")) {
-			ChessParser parser = new ChessParser(fen);
-			parser.checkEnPassant();
+		if(ChessParser.isCorrect(fen)){
+			if(!fen.endsWith("-")) {
+				ChessParser parser;
+				try {
+					parser = new ChessParser(fen);
+					parser.checkEnPassant();
+				} catch (IncorrectFENException e) {
+					// Shouldn't happen !
+					System.err.println("getBestMove :"+e.getMessage());
+				}
+			}
+			String move = this.server.getBestMove(fen, -1);
+			if(move==null) {
+				move = NO_RESULT;
+			}
+			return respond(move);
+		}else{
+			ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
+			builder.header("Access-Control-Allow-Origin", "*");
+			return builder.build(); 
 		}
-		String move = this.server.getBestMove(fen, -1);
-		if(move==null) {
-			move = NO_RESULT;
-		}
-		return respond(move);
 	}
 	
 	/**
@@ -88,26 +100,47 @@ public class CentralServerResource {
 		if(GamesManager.exist(gameId)) {
 			fen = fen.replaceAll("\\$", "/");
 			
-			if(!fen.endsWith("-")) {
-				ChessParser parser = new ChessParser(fen);
-				parser.checkEnPassant();
-				fen = parser.getFEN(true);
-			}
-			String move = this.server.getBestMove(fen, gameId);
-			GamesManager.updateGame(gameId, fen);
-			if(move==null) {
-				move = NO_RESULT;
-			} else {
-				Boolean san = GamesManager.isSAN(gameId);
-				if(san!=null && !san) {
-					ChessParser parser = new ChessParser(fen);
-					move = parser.convertSANToLAN(move);
+			if(ChessParser.isCorrect(fen)){
+				
+				if(!fen.endsWith("-")) {
+					ChessParser parser;
+					try {
+						parser = new ChessParser(fen);
+						parser.checkEnPassant();
+						fen = parser.getFEN(true);
+					} catch (IncorrectFENException e) {
+						// Shouldn't happen !
+						System.err.println("getBestMove :"+e.getMessage());
+					}
 				}
+				
+				String move = this.server.getBestMove(fen, gameId);
+				GamesManager.updateGame(gameId, fen);
+				
+				if(move==null) {
+					move = NO_RESULT;
+				} else {
+					Boolean san = GamesManager.isSAN(gameId);
+					
+					if(san!=null && !san) {
+						ChessParser parser;
+						try {
+							parser = new ChessParser(fen);
+							move = parser.convertSANToLAN(move);
+						} catch (IncorrectFENException e) {
+							// Shouldn't happen !
+							System.err.println("getBestMove :"+e.getMessage());
+						}	
+					}
+				}
+
+				return respond(move);
+			}else{
+				ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
+				builder.header("Access-Control-Allow-Origin", "*");
+				return builder.build();
 			}
-			
-			return respond(move);
 		}
-		
 		ResponseBuilder builder = Response.status(Status.NOT_FOUND);
 		builder.header("Access-Control-Allow-Origin", "*");
 		return builder.build();

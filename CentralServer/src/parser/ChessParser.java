@@ -33,8 +33,9 @@ public class ChessParser {
 	/**
 	 * Constructor
 	 * @param fen The FEN.
+	 * @throws IncorrectFENException 
 	 */
-	public ChessParser(String fen) {
+	public ChessParser(String fen) throws IncorrectFENException {
 		this.fen = fen;
 	
 		this.rules = new ChessRules();
@@ -47,8 +48,9 @@ public class ChessParser {
 	 * Convert a LAN to a SAN.
 	 * @param lan The Long Algebraic Notation.
 	 * @return The Short Algebraic Notation.
+	 * @throws IncorrectFENException An IncorrectFENException
 	 */
-	public String convertLANToSAN(String lan) {
+	public String convertLANToSAN(String lan) throws IncorrectFENException {
 		return this.UCItoPGN(lan, this.board);
 	}
 	
@@ -56,8 +58,9 @@ public class ChessParser {
 	 * Convert a SAN to a LAN.
 	 * @param san The Short Algebraic Notation.
 	 * @return The Long Algebraic Notation.
+	 * @throws IncorrectFENException An IncorrectFENException
 	 */
-	public String convertSANToLAN(String san) {
+	public String convertSANToLAN(String san) throws IncorrectFENException {
 		// Regular move
 		if(san.matches("[RBQKPN]?[a-h]?[1-8]?[x]?[a-h][1-8][=]?[QNRB]?[+#]?")) {
 			return this.parseMove(this.board, san);
@@ -74,8 +77,9 @@ public class ChessParser {
 	 * @param ucimove The Long Algebraic Notation.
 	 * @param board The chess board.
 	 * @return The Short Algebraic Notation.
+	 * @throws IncorrectFENException An IncorrectFENException
 	 */
-	private String UCItoPGN(String ucimove, ChessBoard board) {
+	private String UCItoPGN(String ucimove, ChessBoard board) throws IncorrectFENException {
 		char fromX = ucimove.charAt(0);
 		int fromY = Integer.parseInt(String.valueOf(ucimove.charAt(1)));
 		char toX = ucimove.charAt(2);
@@ -137,8 +141,9 @@ public class ChessParser {
 	 * @param board The chess board.
 	 * @param token The Short Algebraic Notation.
 	 * @return The Long Algebraic Notation.
+	 * @throws IncorrectFENException An IncorrectFENException
 	 */
-	private String parseMove(ChessBoard board, String token) {
+	private String parseMove(ChessBoard board, String token) throws IncorrectFENException {
 		Matcher matcher = Pattern.compile("([RBQKPN])?([a-h])?([1-8])?([x])?([a-h])([1-8])([=]?)([QNRB]?)([+#]?)").matcher(token);
 		char[] moveArray = new char[6];
 		if(matcher.find()) {
@@ -297,5 +302,20 @@ public class ChessParser {
 		}
 
 		return reward;
+	}
+	
+	/**
+	 * Check is the FEN is correct.
+	 * @param fen
+	 * @return true if the FEN is correct.
+	 */
+	public static boolean isCorrect(String fen){
+		String[] fenArray = fen.split(" ");
+		String[] boardArray = fenArray[0].split("/");
+		if(fenArray.length > 3 && boardArray.length == 8) {
+			return true;
+		}else{
+			return false;
+		}
 	}
 }

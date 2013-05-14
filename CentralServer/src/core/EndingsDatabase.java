@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import parser.ChessParser;
+import parser.IncorrectFENException;
 
 /**
  * Represent a database of endings.
@@ -41,8 +42,14 @@ public class EndingsDatabase extends Resource {
 			JSONObject json = jsonArray.getJSONObject(i);
 			String move = json.getString(JSON_MOVE);
 			if(!this.san) {
-				ChessParser parser = new ChessParser(fen);
-				move = parser.convertLANToSAN(move);
+				ChessParser parser;
+				try {
+					parser = new ChessParser(fen);
+					move = parser.convertLANToSAN(move);
+				} catch (IncorrectFENException e) {
+					// Shouldn't happen !
+					System.err.println("parseJSONMove :"+e.getMessage());
+				}
 			}
 			int result = json.getInt(JSON_RESULT);
 			int nbMoves = json.getInt(JSON_NB_MOVES);
