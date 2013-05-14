@@ -1,6 +1,7 @@
 package tests;
 
 import parser.ChessParser;
+import parser.IncorrectFENException;
 import junit.framework.TestCase;
 
 /**
@@ -43,6 +44,12 @@ public class TestParser extends TestCase {
 		this.testFEN("rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2");
 		this.testFEN("rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR b KQkq d3");
 		this.testFEN("rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2");
+	}
+	
+	public void testGetColor() throws IncorrectFENException {
+		assertEquals('w', ChessParser.getColor("rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"));
+		assertEquals('b', ChessParser.getColor("rnbqkbnr/pp2pppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3"));
+		assertEquals('b', ChessParser.getColor("rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -"));
 	}
 	
 	/**

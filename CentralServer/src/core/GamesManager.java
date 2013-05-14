@@ -8,12 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import parser.ChessParser;
+import parser.IncorrectFENException;
+
 /**
  * Handle all the accesses to the game SQLite table.
  * @author Clement Gautrais
  */
 public class GamesManager extends DatabaseManager {
-	private static final String FIRST_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -";
+	private static final String FIRST_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq - 0 1";
 	private static final String GAMES = "games";
 	private static final String MOVES = "moves";
 	private static final String GAME_ID = "id";
@@ -131,6 +134,10 @@ public class GamesManager extends DatabaseManager {
 		}
 	}
 	
+	/**
+	 * @param gameId The id of the game concerned.
+	 * @return the computer color for the game concerned, 0 if the fen is incorect.
+	 */
 	public static char getColor(int gameId) {
 		Connection dbConnect = getConnection();
 		String query = "SELECT "+GAME_FEN+" FROM "+GAMES+" WHERE "+GAME_ID+" = ?";
@@ -138,17 +145,20 @@ public class GamesManager extends DatabaseManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, gameId);
 			ResultSet set = statement.executeQuery();
-			char color = 'e';
+			char color = 0;
 			if(set.next()) {
-				String fen = set.getString(GAME_FEN);
-				String[] splited_fen = fen.split(" ");
-				color = splited_fen[1].charAt(0);
+				try{
+					String fen = set.getString(GAME_FEN);
+					color = ChessParser.getColor(fen);
+				}catch(IncorrectFENException e){
+					System.err.println("getColor: "+e.getMessage());
+				}	
 			}
 			dbConnect.close();
 			return color;
 		} catch(SQLException e) {
 			System.err.println("getColor: "+e.getMessage());
-			return 'e';
+			return 0;
 		}
 	}
 	

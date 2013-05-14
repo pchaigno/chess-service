@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import core.EndingSuggestion;
 import parser.BoardPiece.PieceColor;
 import parser.BoardPiece.PieceType;
 
@@ -243,5 +244,58 @@ public class ChessParser {
 	 */
 	public String getFEN(boolean reduced) {
 		return board.currentFEN(reduced);
+	}
+	
+	/**
+	 * @param fen
+	 * @return The color.
+	 */
+	public static char getColor(String fen) throws IncorrectFENException {
+		String[] splited_fen = fen.split(" ");
+		char color;
+		if(splited_fen.length > 3) {
+			color = splited_fen[1].charAt(0);
+		}else{
+			throw new IncorrectFENException("Number of argument incorrect.");
+		}
+		return color;
+	}
+	
+	/**
+	 * @param fen The FEN.
+	 * @param gameColor Computer's color.
+	 * @return 0 for a draw, 1 for a win or -1 for a lose.
+	 * @throws NumberFormatException
+	 * @throws IncorectFENException
+	 */
+	public static int result(String fen, char gameColor) throws NumberFormatException, IncorrectFENException {
+		int reward = 0;
+		String[] splited_fen = fen.split(" ");
+		if(splited_fen.length == 6) {
+			int nb =  Integer.parseInt(splited_fen[4]);
+			if(nb<50) {
+				char color = 0;
+				try {
+					color = ChessParser.getColor(fen);
+				}catch(IncorrectFENException e) {
+					System.err.println("result :"+e.getMessage());
+				}
+				if(color == gameColor && color != 0) {
+					reward = EndingSuggestion.WIN_RESULT;
+				}else{
+					if(gameColor == 'b' || gameColor == 'w') {
+						reward = EndingSuggestion.LOOSE_RESULT;
+					}else{
+						reward = EndingSuggestion.DRAW_RESULT;
+					}
+				}
+			}else{
+				reward = EndingSuggestion.DRAW_RESULT;
+			}
+		}else{
+			throw new IncorrectFENException("Number of argument incorrect.");
+		}
+
+		return reward;
 	}
 }

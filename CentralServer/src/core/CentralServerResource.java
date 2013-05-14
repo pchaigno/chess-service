@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import parser.ChessParser;
+import parser.IncorrectFENException;
 
 /**
  * This class will handle the call from the client to the central server and will send the answer.
@@ -47,30 +48,16 @@ public class CentralServerResource {
 	@Path("/{gameId: [0-9]+}/{fen}")
 	@DELETE
 	public void endOfGame(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
-		int reward;
-		String[] splited_fen = fen.split(" ");
-		int nb = 0;
 		try {
-			nb = Integer.parseInt(splited_fen[4]);
-		}catch(NumberFormatException e){
-
+			int reward;
+			reward = ChessParser.result(fen, GamesManager.getColor(gameId));
+			server.rewardResources(gameId, reward);
+			GamesManager.removeGame(gameId);
+		}catch(IncorrectFENException ife){
+			System.err.println("endOfGame :"+ife.getMessage());			
+		}catch(NumberFormatException nfe){
+			System.err.println("endOfGame :"+nfe.getMessage());
 		}
-		if(nb<50) {
-			char color = splited_fen[1].charAt(0);
-			if(color == GamesManager.getColor(gameId)) {
-				reward = EndingSuggestion.WIN_RESULT;
-			}else{
-				if(GamesManager.getColor(gameId)=='b' || GamesManager.getColor(gameId)=='w') {
-					reward = EndingSuggestion.LOOSE_RESULT;
-				}else{
-					reward = EndingSuggestion.DRAW_RESULT;
-				}
-			}
-		}else{
-			reward = EndingSuggestion.DRAW_RESULT;
-		}
-		server.rewardResources(gameId, reward);
-		GamesManager.removeGame(gameId);
 	}
 	
 	@Path("/{gameId: [0-9]+}/{fen}")
