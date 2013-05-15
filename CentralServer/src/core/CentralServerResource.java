@@ -78,9 +78,7 @@ public class CentralServerResource {
 			server.rewardResources(gameId, reward);
 			GamesManager.removeGame(gameId);
 		}catch(IncorrectFENException ife){
-			System.err.println("endOfGame :"+ife.getMessage());			
-		}catch(NumberFormatException nfe){
-			System.err.println("endOfGame :"+nfe.getMessage());
+			System.err.println("endOfGame :"+ife.getMessage());
 		}
 	}
 	
