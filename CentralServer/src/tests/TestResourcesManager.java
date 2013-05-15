@@ -71,15 +71,6 @@ public class TestResourcesManager extends TestCase {
 		Set<Resource> newResources = new HashSet<Resource>();
 		newResources.add(bot);
 		newResources.add(database);
-		ResourcesManager.updateResourcesTrust(newResources);
-		resources = ResourcesManager.getResources(false);
-		for(Resource resource: resources) {
-			if(resource.equals(bot)) {
-				assertEquals(bot.getTrust(), resource.getTrust());
-			} else if(resource.equals(database)) {
-				assertEquals(database.getTrust(), resource.getTrust());
-			}
-		}
 		
 		// Remove the resources:
 		assertEquals(0, ResourcesManager.removeResources(newResources).size());

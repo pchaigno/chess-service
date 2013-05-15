@@ -2,7 +2,6 @@ package core;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,7 +14,6 @@ import java.util.Set;
 public class CentralServer {
 	private Set<Resource> resources;
 	private static final String version = "1.0";
-	private static final int REWARD_VALUE = 20;
 
 	/**
 	 * Constructor
@@ -59,13 +57,6 @@ public class CentralServer {
 		for(Resource resource: incompatibleResources) {
 			this.resources.remove(resource);
 		}
-	}
-
-	/**
-	 * Save a resource in the corresponding table.
-	 */
-	public void saveResourcesTrust(Set<Resource> resources) {
-		ResourcesManager.updateResourcesTrust(resources);	
 	}
 
 	/**
@@ -202,20 +193,6 @@ public class CentralServer {
 			Map<Integer, Double> resourcesInvolvement = GamesManager.getResourcesInvolvement(gameId);
 			ResourcesManager.updateResourcesTrust(resourcesInvolvement, gameResult);
 		}
-	}
-	
-	/**
-	 * Get a resource by its id.
-	 * @param id The id of the resource.
-	 * @return The resource.
-	 */
-	private Resource getResource(int id) {
-		for(Resource r: this.resources) {
-			if(r.getId()==id) {
-				return r;
-			}
-		}
-		return null;
 	}
 
 	/**
