@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -183,35 +184,31 @@ public class ResourcesManager extends DatabaseManager {
 	
 	/**
 	 * Update the trust parameter of resources.
-	 * @param resources All the resources, even the one that don't need an update.
-	 * @return The resources that weren't updated.
+	 * @param resourcesInvolvement A map with the id of the resources as key and the value that need to be add to the trust of the resource.
+	 * @param gameResult The result of the game: -1 for lose, 1 for win, 0 for draw.
+	 * @return The id of the resources that weren't updated.
 	 */
-	public static Set<Resource> updateResourcesTrust(Set<Resource> resources) {
-		Set<Resource> notUpdated = new HashSet<Resource>();
-		List<Resource> resourcesToUpdate = new ArrayList<Resource>();
-		resourcesToUpdate.addAll(resources);
+	public static Set<Integer> updateResourcesTrust(Map<Integer, Double> resourcesInvolvement, int gameResult) {
+		Set<Integer> notUpdated = new HashSet<Integer>();
+		List<Integer> resourcesToUpdate = new ArrayList<Integer>();
+		resourcesToUpdate.addAll(resourcesInvolvement.keySet());
 		Connection dbConnect = getConnection();
-		boolean changed = false;
-		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_TRUST+" = ? WHERE "+RESOURCE_ID+" = ?";
+		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_TRUST+" += ? WHERE "+RESOURCE_ID+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
-			for(Resource resource: resourcesToUpdate) {
-				if(resource.isChanged()) {
-					changed = true;
-					statement.setInt(1, resource.getTrust());
-					statement.setInt(2, resource.getId());
-					statement.addBatch();
+			for(int resourceId: resourcesToUpdate) {
+				double reward = gameResult*resourcesInvolvement.get(resourceId);
+				statement.setInt(1, (int)reward);
+				statement.setInt(2, resourceId);
+				statement.addBatch();
+			}
+			int[] results = statement.executeBatch();
+			for(int i=0 ; i<results.length ; i++) {
+				if(results[i]==0) {
+					notUpdated.add(resourcesToUpdate.get(i));
 				}
 			}
-			if(changed) {
-				int[] results = statement.executeBatch();
-				for(int i=0 ; i<results.length ; i++) {
-					if(results[i]==0) {
-						notUpdated.add(resourcesToUpdate.get(i));
-					}
-				}
-				dbConnect.close();
-			}
+			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("updateResourcesTrust: "+e.getMessage());
 		}

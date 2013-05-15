@@ -229,12 +229,13 @@ public class GamesManager extends DatabaseManager {
 	}
 	
 	/**
-	 * Get the ration of played move for each resources in a game.
-	 * Return a map with the resource id as key and the ration of played move as value.
+	 * Get the involvement in the game for each resources.
+	 * Return a map with the resource as key and the total of trust in the moves.
+	 * It only add the trust in the move suggestions that were finally played.
 	 * @param gameId The id of the game to scan.
 	 * @return The map or null if an error occurred.
 	 */
-	public static Map<Integer,Double> getResourcesStats(int gameId) {
+	public static Map<Integer,Double> getResourcesInvolvement(int gameId) {
 		Map<Integer, Double> stats = new HashMap<Integer, Double>();
 		// TODO Isn't it possible to get that info after?
 		int nbTotalMoves = getNumberOfMoves(gameId);

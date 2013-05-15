@@ -2,6 +2,7 @@ package core;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -194,23 +195,12 @@ public class CentralServer {
 	/**
 	 * Reward the resources depending on their participation in the game.
 	 * @param gameId The game id.
-	 * @param gameResult The game result.
+	 * @param gameResult The game result: -1 for lose, 1 for win, 0 for draw.
 	 */
 	public void rewardResources(int gameId, int gameResult) {
-		int rewardValue=REWARD_VALUE;
-		if(gameResult == EndingSuggestion.LOOSE_RESULT) {
-			rewardValue*=-1;
-		}
 		if(gameResult!=EndingSuggestion.DRAW_RESULT) {
-			Map<Integer, Double> resourcesStats = GamesManager.getResourcesStats(gameId);
-
-			for(Map.Entry<Integer, Double> entry: resourcesStats.entrySet()) {
-				Resource r = getResource(entry.getKey());
-				if(r!=null) {
-					r.setTrust(r.getTrust()+(int)(rewardValue*entry.getValue()));
-				}
-			}
-			ResourcesManager.updateResourcesTrust(resources);
+			Map<Integer, Double> resourcesInvolvement = GamesManager.getResourcesInvolvement(gameId);
+			ResourcesManager.updateResourcesTrust(resourcesInvolvement, gameResult);
 		}
 	}
 	
@@ -236,6 +226,7 @@ public class CentralServer {
 	 */
 	private void updateResources(final String fen) {
 		Set<Thread> threads = new HashSet<Thread>();
+		// Start the requests on different threads:
 		for(final Resource resource: this.resources) {
 			Thread thread = new Thread(new Runnable() {
 				@Override
@@ -246,11 +237,12 @@ public class CentralServer {
 			thread.start();
 			threads.add(thread);
 		}
+		// Wait for all the threads to end:
 		for(Thread thread: threads) {
 			try {
 				thread.join();
 			} catch (InterruptedException e) {
-				// Shouldn't happen.
+				// Shouldn't happen: we never interrupt a thread.
 				System.err.println("The thread was interrupted: "+e.getMessage());
 			}
 		}
