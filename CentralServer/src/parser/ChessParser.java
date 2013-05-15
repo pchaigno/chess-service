@@ -6,6 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import core.EndingSuggestion;
+import core.PlayerColor;
 import parser.BoardPiece.PieceColor;
 import parser.BoardPiece.PieceType;
 
@@ -257,29 +258,32 @@ public class ChessParser {
 	 * @return The color.
 	 * @throws IncorrectFENException If the FEN is incorrect: incorrect number of white spaces or wrong color character.
 	 */
-	public static char getColor(String fen) throws IncorrectFENException {
+	public static PlayerColor getColor(String fen) throws IncorrectFENException {
 		String[] splited_fen = fen.split(" ");
-		char color;
 		if(splited_fen.length > 3) {
-			color = splited_fen[1].charAt(0);
-			if(color != 'b' && color != 'w'){
+			char charColor = splited_fen[1].charAt(0);
+			PlayerColor color;
+			if(charColor=='b') {
+				color = PlayerColor.BLACK;
+			} else if (charColor=='w') {
+				color = PlayerColor.WHITE;
+			} else {
 				throw new IncorrectFENException("Color incorrect.");
 			}
+			return color;
 		} else {
 			throw new IncorrectFENException("Number of argument incorrect.");
 		}
-		return color;
 	}
 	
 	/**
-	 * Return the result of the game by looking at the FEN and knowing the computer color.
+	 * Return the result of the game by looking at the FEN, knowing the computer color.
 	 * @param fen The FEN.
 	 * @param gameColor The computer color.
 	 * @return 0 for a draw, 1 for a win or -1 for a lose.
-	 * @throws NumberFormatException
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
-	public static int result(String fen, char gameColor) throws IncorrectFENException {
+	public static int result(String fen, PlayerColor gameColor) throws IncorrectFENException {
 		int reward = 0;
 		String[] splited_fen = fen.split(" ");
 		
@@ -292,20 +296,12 @@ public class ChessParser {
 			}
 			
 			if(nb<50) {
-				char color = 0;
-				try {
-					color = ChessParser.getColor(fen);
-				} catch(IncorrectFENException e) {
-					System.err.println("result :"+e.getMessage());
-				}
-				if(color==gameColor && color!=0) {
+				PlayerColor color = null;
+				color = ChessParser.getColor(fen);
+				if(color==gameColor) {
 					reward = EndingSuggestion.WIN_RESULT;
 				} else {
-					if(gameColor=='b' || gameColor=='w') {
-						reward = EndingSuggestion.LOOSE_RESULT;
-					} else {
-						reward = EndingSuggestion.DRAW_RESULT;
-					}
+					reward = EndingSuggestion.LOOSE_RESULT;
 				}
 			} else {
 				reward = EndingSuggestion.DRAW_RESULT;

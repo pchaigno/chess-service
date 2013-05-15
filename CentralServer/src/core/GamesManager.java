@@ -135,31 +135,30 @@ public class GamesManager extends DatabaseManager {
 	}
 	
 	/**
+	 * Get the color of the last FEN play.
+	 * This means getting the player color.
 	 * @param gameId The id of the game concerned.
-	 * @return the computer color for the game concerned, 0 if the fen is incorect.
+	 * @return The computer color for the game concerned, null if the game doesn't exist.
+	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
-	public static char getColor(int gameId) {
+	public static PlayerColor getColor(int gameId) throws IncorrectFENException {
 		Connection dbConnect = getConnection();
 		String query = "SELECT "+GAME_FEN+" FROM "+GAMES+" WHERE "+GAME_ID+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, gameId);
 			ResultSet set = statement.executeQuery();
-			char color = 0;
+			PlayerColor color = null;
 			if(set.next()) {
-				try{
-					String fen = set.getString(GAME_FEN);
-					color = ChessParser.getColor(fen);
-				}catch(IncorrectFENException e){
-					System.err.println("getColor: "+e.getMessage());
-				}	
+				String fen = set.getString(GAME_FEN);
+				color = ChessParser.getColor(fen);
 			}
 			dbConnect.close();
 			return color;
 		} catch(SQLException e) {
 			System.err.println("getColor: "+e.getMessage());
-			return 0;
 		}
+		return null;
 	}
 	
 	/**
@@ -235,7 +234,7 @@ public class GamesManager extends DatabaseManager {
 	 * @param gameId The id of the game to scan.
 	 * @return The map or null if an error occurred.
 	 */
-	public static Map<Integer,Double> getResourcesInvolvement(int gameId) {
+	public static Map<Integer, Double> getResourcesInvolvement(int gameId) {
 		Map<Integer, Double> stats = new HashMap<Integer, Double>();
 		// TODO Isn't it possible to get that info after?
 		int nbTotalMoves = getNumberOfMoves(gameId);
@@ -256,14 +255,13 @@ public class GamesManager extends DatabaseManager {
 				return stats;
 			} catch(SQLException e) {
 				System.err.println("getResourcesStats: "+e.getMessage());
-				return null;
 			}
-		} else {
-			return null;
 		}
+		return null;
 	}
 	
 	/**
+	 * Check if a game require SAN moves to be send or LAN.
 	 * @param gameId The game id.
 	 * @return True if the server must return SAN for this game, null if the game doesn't exist.
 	 */

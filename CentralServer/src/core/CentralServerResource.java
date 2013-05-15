@@ -77,7 +77,7 @@ public class CentralServerResource {
 			reward = ChessParser.result(fen, GamesManager.getColor(gameId));
 			server.rewardResources(gameId, reward);
 			GamesManager.removeGame(gameId);
-		}catch(IncorrectFENException ife){
+		} catch(IncorrectFENException ife) {
 			System.err.println("endOfGame :"+ife.getMessage());
 		}
 	}
