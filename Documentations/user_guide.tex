@@ -1,0 +1,76 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{listings}
+
+\title{Distributed Chess Services - Guide d'utilisation}
+\author{P. Chaignon, C. Gautrais, T. François, D. Le Guen, B. Travers}
+\date{INSA Rennes - 2012-2013} 
+
+% Style listing Java
+\lstnewenvironment{java}[1][]{\lstset{tabsize=4,
+	language=matlab,
+        basicstyle=\scriptsize,
+        %upquote=true,
+        aboveskip={1.5\baselineskip},
+        columns=fixed,
+        showstringspaces=false,
+        extendedchars=true,
+        breaklines=true,
+        prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+        showtabs=false,
+        showspaces=false,
+        showstringspaces=false,
+        identifierstyle=\ttfamily,
+	language=Java,
+	label={#1},caption={#1},%avec nom du listing}
+}}{}
+
+\begin{document}
+\maketitle{}
+
+{\it Ce guide vous apprendra à utiliser le Distributed Chess Services afin d'ajouter à un projet de jeu d'échecs une intelligence artificielle distante. Deux aspects seront abordés : la connexion d'un jeu avec le service distant et, dans un deuxième temps, l'ajout et la modification de base de connaissances au service}
+
+\section*{Contexte}
+	Afin de simuler une intelligence artificielle de jeu d'échecs, il existe de nombreuses bases de connaissances répertoriant les meilleurs coups à jouer d'après les parties d'échecs de grands champions, ainsi que de nombreux bots (robots) pouvant, à partir d'une situation d'échiquier donnée, choisir le coup suivant le plus efficace. Cependant, inclure toutes les informations de jeu et la logique d'un bot au sein même du jeu peut se révéler délicat. Cela nécessite en effet une mise à jour du programme dès la moindre modification des informations. Et ce genre de recherche demandant une puissance de calcul importante de la part de la plateforme, le portage du logiciel sur une plateforme moins puissante (notamment mobile) devient un casse-tête d'optimisation.
+	
+	Déléguer cette partie du jeu d'échecs à un service tiers constitue ainsi une solution élégante. Ce service distant fait office de serveur centralisant toutes les opérations de recherche et de calculs. Votre jeu d'échecs (ici en position de client) pourra envoyer à ce serveur une requête web et obtenir en retour le meilleur coup à jouer. En plus de libérer le client de la lourde tâche de calculs (permettant ainsi le portage théorique sur toute plateforme disposant d'une simple connexion Internet), cela permet aussi de garder un certain contôle sur l'accès des joueurs aux données. Et ainsi tirer des statistiques sur la performance des algorithmes mis en place.
+
+\section{Interfaçage client et serveur central}
+	On supposera l'existence préalable de votre programme capable de gérer la logique et les règles du jeu d'échecs (déplacement correct des différentes pièces, connaissance du joueur devant jouer le prochain coup, reconnaissance des situtaions particulières telles que l'échec et l'échec et mat...) ainsi que de l'aspect graphique du plateau. Prenons le cas d'un logiciel sachant déjà gérer une partie d'échecs entre deux joueurs humains en local. L'ajout d'un mode humain contre ordinateur s'effectuera en remplaçant la logique de jeu du deuxième joueur par l'envoi d'une requête au serveur central via une adresse URI. La réponse reçue donnera le prochain déplacement à effectuer.
+	
+	Cette URI ne nécessite qu'une seule information : l'état actuel de l'échiquier au format normalisé FEN (pour Forsyth-Edwards Notation). Ce code FEN est composé de deux parties distinctes : la position du plateau à un instant donné et la couleur des pièces du prochain joueur. Ainsi le code : \\{\tt rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b}\\ donne l'échiquier en position de départ à l'exception du pion devant le roi blanc, qui a avancé de 2 cases, le "{\tt b}".final indique que c'est au noir (black) de jouer. Pour plus de détails sur le système FEN, des ressources sont disponibles en fin de guide [utile??].
+	
+	La réponse du serveur à traiter est quand à elle au format algébrique. Ainsi, avancer de deux cases le pion blanc placé en e4 s'écrira {\tt e4-e6}. Vous pourrez trouver en annexe ci-dessous un exemple d'appel en Java utilisant la classe java.net.URL pour lancer la requête et recevoir le coup à jouer.
+	
+\section{Ajouter des ressources au serveur central}
+	 Dans le cadre d'un réel jeu d'échecs, vous pourriez être amené à vouloir ajouter et modifier vos propres ressources (bots et bases de données de coups) afin de paramétrer au mieux le choix des coups par le serveur.
+	 
+	 [Todo]
+	 
+	 
+	 
+\section{Annexes}
+
+\begin{java}[{Java}]
+import java.net.*;
+import java.io.*;
+
+public class URLReader {
+    public static void main(String[] args) throws Exception {
+		String fen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b";
+		
+        URL coreserver = new URL("http://www.mychessserver.com/?fen=" + fen);
+        BufferedReader in = new BufferedReader(
+        new InputStreamReader(coreserver.openStream()));
+
+        String nextMove;
+        while ((nextMove = in.readLine()) != null)
+            System.out.println(nextMove);
+        in.close();
+    }
+}
+\end{java}
+
+\end{document}
