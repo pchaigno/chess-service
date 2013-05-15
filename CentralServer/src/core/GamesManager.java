@@ -34,7 +34,7 @@ public class GamesManager extends DatabaseManager {
 	 */
 	public static boolean removeGame(int gameId) {
 		Connection dbConnect = getConnection();
-		String queryMoves = "DELETE FROM "+MOVES+" WHERE "+MOVE_GAME+"= ?";
+		String queryMoves = "DELETE FROM "+MOVES+" WHERE "+MOVE_GAME+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(queryMoves);
 			statement.setInt(1, gameId);
@@ -44,7 +44,7 @@ public class GamesManager extends DatabaseManager {
 			return false;
 		}
 		// TODO See for a cascade deletion.
-		String queryGames = "DELETE FROM "+GAMES+" WHERE "+GAME_ID+"= ?";
+		String queryGames = "DELETE FROM "+GAMES+" WHERE "+GAME_ID+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(queryGames);
 			statement.setInt(1, gameId);
@@ -113,7 +113,7 @@ public class GamesManager extends DatabaseManager {
 	/**
 	 * Return the number of moves in the game gameId.
 	 * @param gameId The id of the game concerned.
-	 * @return The number of moves, -1 if problem encountered.
+	 * @return The number of moves, -1 if an error occurred.
 	 */
 	public static int getNumberOfMoves(int gameId) {
 		Connection dbConnect = getConnection();
@@ -162,7 +162,7 @@ public class GamesManager extends DatabaseManager {
 	}
 	
 	/**
-	 * Generate an id that isn't used.
+	 * Generate randomly an id that isn't used.
 	 * @return The id.
 	 */
 	private static int generateGameId() {
@@ -180,7 +180,7 @@ public class GamesManager extends DatabaseManager {
 	 */
 	public static boolean exist(int gameId) {
 		Connection dbConnect = getConnection();
-		String query = "SELECT "+GAME_ID+" FROM "+GAMES+" WHERE "+GAME_ID+"= ?";
+		String query = "SELECT "+GAME_ID+" FROM "+GAMES+" WHERE "+GAME_ID+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, gameId);
@@ -188,7 +188,7 @@ public class GamesManager extends DatabaseManager {
 			dbConnect.close();
 			return set.next();
 		} catch(SQLException e) {
-			System.err.println("gameExist: "+e.getMessage());
+			System.err.println("exist: "+e.getMessage());
 			return false; // TODO That's kind of dangerous...
 		}
 	}
@@ -222,7 +222,7 @@ public class GamesManager extends DatabaseManager {
 			dbConnect.close();
 			return true;
 		} catch(SQLException e) {
-			System.err.println("addMove: "+e.getMessage());
+			System.err.println("addMoves: "+e.getMessage());
 			return false;
 		}
 	}
@@ -254,7 +254,7 @@ public class GamesManager extends DatabaseManager {
 				dbConnect.close();
 				return stats;
 			} catch(SQLException e) {
-				System.err.println("getResourcesStats: "+e.getMessage());
+				System.err.println("getResourcesInvolvement: "+e.getMessage());
 			}
 		}
 		return null;
