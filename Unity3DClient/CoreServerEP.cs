@@ -44,7 +44,7 @@ public class CoreServerEP : MonoBehaviour {
 			//Debug.Log(url);
 		}
 
-		StartCoroutine(SendRequest("POST", url));
+		SendRequest("POST", url);
 	}
 
 
@@ -67,7 +67,7 @@ public class CoreServerEP : MonoBehaviour {
 				if (requestFEN.Length > 0)
 				{
 					status = EngineStatus.SendRequest;
-					StartCoroutine(SendRequest("GET", url + gameId + "/" + ConvertFEN(requestFEN)));
+					SendRequest("GET", url + gameId + "/" + ConvertFEN(requestFEN));
 					lastRequestFEN = requestFEN;
 					requestFEN = "";
 				}
@@ -110,8 +110,7 @@ public class CoreServerEP : MonoBehaviour {
 
 	// Send a request to CoreServer
 	// -------------------------------------------------------------
-	IEnumerator SendRequest(string method, string uri)
-	{
+	void SendRequest(string method, string uri) {
 		Debug.Log("SendRequest : " + uri);
 
 		// Launch request
@@ -147,13 +146,14 @@ public class CoreServerEP : MonoBehaviour {
 				answer = readStream.ReadToEnd();
 				if (answer == "NULL") {
 					status = EngineStatus.Error;
-					yield break; // <=> return;
+					return; // <=> return;
 				}
 				GetResponse();
 				break;
 
 			// End game
 			case "DELETE":
+				Debug.Log(response.StatusCode);
 				Debug.Log("Game '" + gameId + "' deleted");
 				status = EngineStatus.Ended;
 				break;
@@ -161,10 +161,9 @@ public class CoreServerEP : MonoBehaviour {
 
 		response.Close();
 		readStream.Close();
-		
-		yield break;
-	}
 
+		return;
+	}
 
 	// Get best move from CoreServer
 	// -------------------------------------------------------------
@@ -197,7 +196,7 @@ public class CoreServerEP : MonoBehaviour {
 			if (requestFEN.Length > 0) {
 				lastRequestFEN = requestFEN;
 			}
-			SendRequest("DELETE", url + gameId + "/" + lastRequestFEN);
+			SendRequest("DELETE", url + gameId + "/" + ConvertFEN(lastRequestFEN));
 		}
 	}
 
