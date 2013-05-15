@@ -7,62 +7,97 @@
 
 using UnityEngine;
 using System.Collections;
+using System.IO;
+using System.Net;
+using System.Text;
 
 public class CoreServerEP : MonoBehaviour {
-	public string url;
-	public string request_FEN;
-	public int levelDeep; // Strength of search
-	public string answer;
+	public string gameId;				// Unique game Id allocated by the core server
+	public string url;					// Adress of the server
+	public string requestFEN;			// FEN representation of the board
+	public string lastRequestFEN;		// Prior FEN representation
+	public int levelDeep;				// Strength of search
+	public string answer;				// Best move to pplay giving back by the server
 
-	public enum EngineStatus { Initializing, Sleep, SendRequest, GetResponse, TimeoutError };
+	public enum EngineStatus { Initializing, Sleep, SendRequest, GetResponse, Error, Timeout, Ended };
 	public EngineStatus status;
-	public bool accessible; // True if CoreServer is available
+	public bool accessible;				// True if CoreServer is available
 
 	public string lastRequestAnswer;
 	public float lastRequestTime = 0;
 	public float lastRequestDuration = 0;
-	public float requestTimeout = 0; // Time to wait before launch a timeout exception
+	public float requestTimeout = 0;	// Time to wait before launch a timeout exception
 
 	
 	// Test WWW (renvoi contenu page)
 	void Start() {
+		gameId = "";
 		status = EngineStatus.Initializing;
 		accessible = false;
 
-		url = "http://localhost/testCS.html";
-		StartCoroutine(TestConnexion(url));
+		using (StreamReader sr = new StreamReader("config.ini"))
+		{
+			while (sr.Peek() >= 0)
+			{
+				url = sr.ReadLine();
+			}
+			//Debug.Log(url);
+		}
+
+		StartCoroutine(SendRequest("POST", url));
 	}
 
+
+	string ConvertFEN(string fen)
+	{
+		fen = fen.Replace("/", "$").TrimEnd(); // Remove slash
+		fen = fen.Replace(" ", "%20");
+		fen = fen.Replace("QKqk", "KQkq"); // Small hack to handle incorrect FEN
+		return fen;
+	}
 
 
 	void Update()
 	{
-		if (!accessible || status == EngineStatus.TimeoutError) return;
+		if (!accessible) return;
 
 		switch (status)
 		{
 			case EngineStatus.Sleep:
-				if (request_FEN.Length > 0)
+				if (requestFEN.Length > 0)
 				{
 					status = EngineStatus.SendRequest;
-					StartCoroutine(SendRequest(url));// + request_FEN));
-					request_FEN = "";
+					StartCoroutine(SendRequest("GET", url + gameId + "/" + ConvertFEN(requestFEN)));
+					lastRequestFEN = requestFEN;
+					requestFEN = "";
 				}
 				break;
 
 			case EngineStatus.SendRequest:
 				// Just wait for answer from CoreServer
+				// TODO : add timeout
 				break;
 
 			case EngineStatus.GetResponse:
 				if (answer.Length > 0)
 				{
-					Debug.Log("Response from CoreServer" + answer);
+					Debug.Log("Response from CoreServer : " + answer);
 					((TextMesh)GetComponent(typeof(TextMesh))).text = answer;
 					(GameObject.Find("MainScript")).SendMessage("EngineAnswer", answer);
 					answer = "";
 					status = EngineStatus.Sleep;
 				}
+				break;
+
+			case EngineStatus.Error:
+				Debug.Log("No response from CoreServer : you may check URI");
+				accessible = false;
+				LetKnow3D();
+				break;
+
+			case EngineStatus.Ended:
+				accessible = false;
+				LetKnow3D();
 				break;
 
 			default:
@@ -72,41 +107,62 @@ public class CoreServerEP : MonoBehaviour {
 	}
 
 
-	// Send a simple request to CoreServer to check its availability
-	// -------------------------------------------------------------
-	IEnumerator TestConnexion(string uri)
-	{
-		WWW www = new WWW(uri);
-		yield return www;
-		
-		// Connexion error => timeout
-		if (www.error != null)
-		{
-			status = EngineStatus.TimeoutError;
-			yield break; // <=> return;
-		}
-		
-		accessible = true;
-		LetKnow3D();
-	}
-
 
 	// Send a request to CoreServer
 	// -------------------------------------------------------------
-	IEnumerator SendRequest(string uri)
+	IEnumerator SendRequest(string method, string uri)
 	{
-		WWW www = new WWW(uri);
-		yield return www;
+		Debug.Log("SendRequest : " + uri);
 
-		// No response => timeout
-		if (www.error != null)
-		{
-			status = EngineStatus.TimeoutError;
-			yield break; // <=> return;
+		// Launch request
+		HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(uri);
+		httpWebRequest.Method = method;
+
+		// Encode SAN info to create the new game
+		if (method == "POST") {
+			ASCIIEncoding encoding = new ASCIIEncoding();
+			byte[] byte1 = encoding.GetBytes("san=false");
+			httpWebRequest.ContentType = "application/x-www-form-urlencoded";
+			httpWebRequest.ContentLength = byte1.Length;
+			Stream newStream = httpWebRequest.GetRequestStream();
+			newStream.Write(byte1, 0, byte1.Length);
 		}
 
-		answer = www.text;
-		GetResponse();
+		// Get the response from the server
+		HttpWebResponse response = (HttpWebResponse)httpWebRequest.GetResponse();
+		Stream receiveStream = response.GetResponseStream();
+		StreamReader readStream = new StreamReader(receiveStream);
+
+		switch (method) {
+			// Create a new game
+			case "POST":
+				gameId = readStream.ReadToEnd();
+				Debug.Log("New game id allocated : " + gameId);
+				accessible = true;
+				LetKnow3D();
+				break;
+
+			// Request for the best move
+			case "GET":
+				answer = readStream.ReadToEnd();
+				if (answer == "NULL") {
+					status = EngineStatus.Error;
+					yield break; // <=> return;
+				}
+				GetResponse();
+				break;
+
+			// End game
+			case "DELETE":
+				Debug.Log("Game '" + gameId + "' deleted");
+				status = EngineStatus.Ended;
+				break;
+		}
+
+		response.Close();
+		readStream.Close();
+		
+		yield break;
 	}
 
 
@@ -125,11 +181,28 @@ public class CoreServerEP : MonoBehaviour {
 		levelDeep = 3 + (( System.Convert.ToInt32( st ) - 1 ));
 	}
 
+
 	// Set FEN to search (called from MainScript)
 	// -------------------------------------------------------------
 	void SetRequestFEN(string FENs)
 	{
-		request_FEN = FENs;
+		requestFEN = FENs;
+	}
+
+
+	// Close game connexion on server
+	// -------------------------------------------------------------
+	void OnApplicationQuit() {
+		if (gameId.Length > 0) {
+			if (requestFEN.Length > 0) {
+				lastRequestFEN = requestFEN;
+			}
+			SendRequest("DELETE", url + gameId + "/" + lastRequestFEN);
+		}
+	}
+
+	void OnDestroy() {
+		OnApplicationQuit();
 	}
 
 
@@ -140,11 +213,11 @@ public class CoreServerEP : MonoBehaviour {
 		(GameObject.Find("MainScript")).SendMessage("CoreServerAccess", (accessible ? "YES" : "NO"));
 		if (accessible)
 		{
-			status = EngineStatus.Sleep; request_FEN = ""; answer = "";
+			status = EngineStatus.Sleep; requestFEN = ""; answer = "";
 		}
 		else
 		{
-			status = EngineStatus.TimeoutError; request_FEN = ""; answer = "";
+			status = EngineStatus.Error; requestFEN = ""; answer = "";
 		}
 	}
 }
