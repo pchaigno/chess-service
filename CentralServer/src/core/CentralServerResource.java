@@ -68,17 +68,24 @@ public class CentralServerResource {
 	 * The client calls this method with an HTTP DELETE request on /rest/{gameId}.
 	 * @param gameId The id of the game to end.
 	 * @param fen The final FEN.
+	 * @return Ok if the game is deleted from the database.
 	 */
 	@Path("/{gameId: [0-9]+}/{fen}")
 	@DELETE
-	public void endOfGame(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
+	public Response endOfGame(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
 		try {
 			int reward;
 			reward = ChessParser.result(fen, GamesManager.getColor(gameId));
 			server.rewardResources(gameId, reward);
 			GamesManager.removeGame(gameId);
+			ResponseBuilder builder = Response.ok();
+			builder.header("Access-Control-Allow-Origin", "*");
+			return builder.build();
 		} catch(IncorrectFENException ife) {
 			System.err.println("endOfGame :"+ife.getMessage());
+			ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
+			builder.header("Access-Control-Allow-Origin", "*");
+			return builder.build();
 		}
 	}
 	
