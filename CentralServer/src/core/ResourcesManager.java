@@ -24,6 +24,7 @@ public class ResourcesManager extends DatabaseManager {
 	private static final String RESOURCE_ACTIVE = "active";
 	
 	/**
+	 * Get the resources from the database.
 	 * @param active If true then this method will only return the active resources.
 	 * @return All resources from the database.
 	 */
@@ -136,11 +137,7 @@ public class ResourcesManager extends DatabaseManager {
 				statement.addBatch();
 			}
 			int[] results = statement.executeBatch();
-			for(int i=0 ; i<results.length ; i++) {
-				if(results[i]==0) {
-					notRemoved.add(resourcesToRemove.get(i));
-				}
-			}
+			notRemoved = computeResourceResults(resourcesToRemove, results);
 			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("removeResources: "+e.getMessage());
@@ -203,11 +200,7 @@ public class ResourcesManager extends DatabaseManager {
 				statement.addBatch();
 			}
 			int[] results = statement.executeBatch();
-			for(int i=0 ; i<results.length ; i++) {
-				if(results[i]==0) {
-					notUpdated.add(resourcesToUpdate.get(i));
-				}
-			}
+			notUpdated = computeIdResults(resourcesToUpdate, results);
 			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("updateResourcesTrust: "+e.getMessage());
@@ -234,15 +227,45 @@ public class ResourcesManager extends DatabaseManager {
 				statement.addBatch();
 			}
 			int[] results = statement.executeBatch();
-			for(int i=0 ; i<results.length ; i++) {
-				if(results[i]==0) {
-					notUpdated.add(resourcesToUpdate.get(i));
-				}
-			}
+			notUpdated = computeResourceResults(resourcesToUpdate, results);
 			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("updateResourcesActive: "+e.getMessage());
 		}
 		return notUpdated;
+	}
+	
+	/**
+	 * Get the resources that weren't successfully submitted from the list of resources submitted
+	 * and the results from the database.
+	 * @param resources The resources submitted.
+	 * @param results Results of each operations: one operation per resource.
+	 * @return The resources that weren't successfully submitted.
+	 */
+	private static Set<Resource> computeResourceResults(List<Resource> resources, int[] results) {
+		Set<Resource> notSubmitted = new HashSet<Resource>();
+		for(int i=0 ; i<results.length ; i++) {
+			if(results[i]==0) {
+				notSubmitted.add(resources.get(i));
+			}
+		}
+		return notSubmitted;
+	}
+	
+	/**
+	 * Get the resources that weren't successfully submitted from the list of resources submitted
+	 * and the results from the database.
+	 * @param resources The id of the resources submitted.
+	 * @param results Results of each operations: one operation per resource.
+	 * @return The resource ids that weren't successfully submitted.
+	 */
+	private static Set<Integer> computeIdResults(List<Integer> resources, int[] results) {
+		Set<Integer> notSubmitted = new HashSet<Integer>();
+		for(int i=0 ; i<results.length ; i++) {
+			if(results[i]==0) {
+				notSubmitted.add(resources.get(i));
+			}
+		}
+		return notSubmitted;
 	}
 }

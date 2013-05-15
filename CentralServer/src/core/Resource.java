@@ -38,6 +38,7 @@ public abstract class Resource {
 
 	/**
 	 * Constructor
+	 * Add a slash at the end of the URI if there isn't already one.
 	 * @param uri The URI of the resource.
 	 * @param name The name of the resource.
 	 * @param trust The trust in the resource.
@@ -45,7 +46,7 @@ public abstract class Resource {
 	 */
 	public Resource(String uri, String name, int trust, boolean active) {
 		if(!uri.endsWith("/")) {
-			uri+="/";
+			uri += "/";
 		}
 		this.uri = uri;
 		this.name = name;
@@ -85,9 +86,12 @@ public abstract class Resource {
 
 	/**
 	 * Query the resource on the network and update the suggestions of move.
+	 * The resource need to send moves in a JSON document.
+	 * To be send to the resource, the slashes in the FEN are replaced by dollars.
+	 * Indead, slashes are a special character for URL.
 	 * @param fen The FEN representing the current position of the chessboard.
 	 */
-	public void query(String fen){
+	public void query(String fen) {
 		this.clearSuggestions();
 
 		// Replace the slashes in the FEN by dollars.

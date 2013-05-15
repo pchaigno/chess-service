@@ -20,11 +20,12 @@ public class PropertiesManager {
 	public static final String PROPERTY_DATABASE = "database";
 	
 	/**
+	 * Load the configuration properties.
 	 * @return The object containing the configuration.
 	 */
 	private static Properties getConfiguration() {
 		if(conf == null) {
-			/** Load the configuration's properties. */
+			/** Load the configuration properties. */
 			conf = new Properties();
 			try {
 				conf.load(new FileInputStream(CONFIG_FILE));

@@ -32,7 +32,9 @@ public class CentralServer {
 	}
 
 	/**
-	 * Check resources version.
+	 * Check the resource versions.
+	 * Remove the incompatible resources from the set.
+	 * Compatible resources must have the same first digit for the version number.
 	 */
 	private void checkVersion() {
 		String centralserveur_version = CentralServer.version.substring(0, CentralServer.version.indexOf('.'));
@@ -40,7 +42,6 @@ public class CentralServer {
 
 		for(Resource resource: this.resources) {
 			resource.checkVersion();
-
 
 			if(!resource.isConnected()) {
 				incompatibleResources.add(resource);
@@ -139,12 +140,12 @@ public class CentralServer {
 	 * @param move The move that is proposed.
 	 * @return The resources.
 	 */
-	private Map<Integer, Double> getMoveResourcesConfidence(String move){
+	private Map<Integer, Double> getMoveResourcesConfidence(String move) {
 		Set<Resource> moveResources = new HashSet<Resource>();
 		Map<Integer, Double> resourcesConfidence = new HashMap<Integer, Double>();
 		double scoreMax = Double.NEGATIVE_INFINITY;
-		for(Resource r : resources) {
-			for(MoveSuggestion moveSug : r.getMoveSuggestions()) {
+		for(Resource r: resources) {
+			for(MoveSuggestion moveSug: r.getMoveSuggestions()) {
 				if(moveSug.getMove().equals(move)) {
 					if(moveSug.getScore() > scoreMax) {
 						scoreMax = moveSug.getScore();
@@ -172,8 +173,8 @@ public class CentralServer {
 	}
 	
 	/**
-	 * Return all the Suggestions made by the resources
-	 * @return the Suggestions
+	 * Compile all the suggestions made by the resources.
+	 * @return All the suggestions.
 	 */
 	private Set<MoveSuggestion> getSuggestions() {
 		HashSet<MoveSuggestion> moves = new HashSet<MoveSuggestion>();
