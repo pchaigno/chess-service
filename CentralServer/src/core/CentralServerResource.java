@@ -161,7 +161,7 @@ public class CentralServerResource {
 		fen = fen.replaceAll("\\$", "/");
 		
 		if(!ChessParser.isCorrectFEN(fen)) {
-			return respondBadRequest();
+			return respondBadRequest("debug :FEN incorrect.");
 		}
 			
 		if(!fen.endsWith("-")) {
@@ -173,7 +173,7 @@ public class CentralServerResource {
 			} catch (IncorrectFENException e) {
 				// Shouldn't happen !
 				System.err.println("getBestMove :"+e.getMessage());
-				return respondBadRequest();
+				return respondBadRequest("getBestMove :"+e.getMessage());
 			}
 		}
 		
