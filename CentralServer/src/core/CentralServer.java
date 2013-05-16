@@ -104,6 +104,62 @@ public class CentralServer {
 	}
 
 	/**
+	 * Build a big debug information string in HTML with:
+	 * - the moves suggested by each resources with their scores;
+	 * - the total scores for each moves suggested;
+	 * - the move choosen.
+	 * @param fen The FEN.
+	 * @return The debug information string.
+	 */
+	public String getDebugInformation(String fen) {
+		this.updateResources(fen);
+		// This map contains all the moves and the scores associated except the ending moves.
+		Map<String, Double> scores = new HashMap<String, Double>();
+		// This map contains the ending moves with their scores.
+		Map<String, Double> ends = new HashMap<String, Double>();
+
+		// Build the debug information with the moves suggested by each resources:
+		String debugResources = "";
+		for(Resource resource: this.resources) {
+			debugResources += "<u>"+resource.getName()+" ("+resource.getURI()+"):</u><br/>";
+			for(MoveSuggestion move: resource.getMoveSuggestions()) {
+				debugResources += move.getMove()+": "+move.getScore();
+				if(move.getClass()==EndingSuggestion.class) {
+					debugResources += " END";
+					ends.put(move.getMove(), move.getScore());	
+				} else {
+					if(scores.containsKey(move.getMove())) {
+						double newScore = scores.get(move.getMove()) + resource.getTrust()*move.getScore();
+						scores.put(move.getMove(), newScore);
+					} else {
+						scores.put(move.getMove(), resource.getTrust()*move.getScore());
+					}
+				}
+				debugResources += "<br/>";
+			}
+			debugResources += "<br/>";
+		}
+		
+		// Build the debug information with the total scores for each suggestion:
+		String debugSuggestions = "<u>Totals for each suggestions:</u><br/>";
+		for(String move: scores.keySet()) {
+			debugSuggestions += move+": "+scores.get(move)+"<br/>";
+		}
+		for(String move: ends.keySet()) {
+			debugSuggestions += move+": "+scores.get(move)+"<br/>";
+		}
+		
+		// Get the best move suggestion:
+		String bestMove = this.bestMove(scores, ends);
+		if(bestMove==null) {
+			bestMove = "Nothing to propose.";
+		}
+		
+		// Return all the debug information built.
+		return bestMove+"<br/>"+debugSuggestions+"<br/>"+debugResources;
+	}
+
+	/**
 	 * Get the best move by comparing the scores among all moves suggested.
 	 * @param moves The map containing all the moves and the scores associated.
 	 * @param ends The map containing all the ending moves and their scores.

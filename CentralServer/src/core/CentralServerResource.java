@@ -148,6 +148,41 @@ public class CentralServerResource {
 	}
 	
 	/**
+	 * Receive an FEN from a client and return all the information used in a normal computation.
+	 * It will return all intermediate scores as an HTML document.
+	 * The client calls this method with a HTTP GET request on /rest/debug/{fen}.
+	 * @param fen The current FEN.
+	 * @return All the information on the computation as an HTML document.
+	 */
+	@Path("/debug/{fen}")
+	@GET
+	@Produces("text/html")
+	public Response debug(@PathParam("fen")String fen) {
+		fen = fen.replaceAll("\\$", "/");
+		
+		if(!ChessParser.isCorrectFEN(fen)) {
+			return respondBadRequest();
+		}
+			
+		if(!fen.endsWith("-")) {
+			ChessParser parser;
+			try {
+				parser = new ChessParser(fen);
+				parser.checkEnPassant();
+				fen = parser.getFEN(true);
+			} catch (IncorrectFENException e) {
+				// Shouldn't happen !
+				System.err.println("getBestMove :"+e.getMessage());
+				return respondBadRequest();
+			}
+		}
+		
+		String debug = this.server.getDebugInformation(fen);
+
+		return respondOK(debug);
+	}
+	
+	/**
 	 * Create a new game with a random generated id.
 	 * The client may indicate at this moment if he want that the server returns it SAN or LAN moves.
 	 * The client calls this method with an HTTP POST request on /rest.

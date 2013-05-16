@@ -62,11 +62,11 @@ public class ChessParser {
 	 * @throws IncorrectFENException An IncorrectFENException
 	 */
 	public String convertSANToLAN(String san) throws IncorrectFENException {
-		// Regular move
+		// Regular move:
 		if(san.matches("[RBQKPN]?[a-h]?[1-8]?[x]?[a-h][1-8][=]?[QNRB]?[+#]?")) {
 			return this.parseMove(this.board, san);
-		// Castling
 		}
+		// Castling:
 		if(san.matches("(O-O-O|O-O)\\+?")) {
 			return san;
 		}
@@ -92,7 +92,7 @@ public class ChessParser {
 			capture = true;
 		}
 		
-		// Castling
+		// Castling:
 		if(piece==PieceType.KING && Math.abs(letter.get(fromX)-letter.get(toX))==2) {
 			if(toX == 'g') {
 				return "O-O";
@@ -104,7 +104,7 @@ public class ChessParser {
 		String pgnfromX = "";
 		String pgnfromY = "";
 
-		// Determine if we need fromX/fromY coordinates in PGN move
+		// Determine if we need fromX/fromY coordinates in PGN move:
 		if(this.rules.eval(piece, board, (char)0, -1, toX, toY, capture).x!=0) {
 			pgnfromX = "";
 			pgnfromY = "";
@@ -121,7 +121,7 @@ public class ChessParser {
 
 		String pgnpiece = PieceType.getLetter(piece, true);
 
-		// En passant capture
+		// En passant capture:
 		if(board.enPassant.equals(String.valueOf(toX)+toY) && piece==PieceType.PAWN) {
 			capture = true;
 		}
@@ -134,6 +134,7 @@ public class ChessParser {
 			pgnfromX = String.valueOf(fromX);
 		}
 
+		// Return the PGN style move.
 		return pgnpiece + pgnfromX + pgnfromY + pgncapture + toX + toY;
 	}
 	
@@ -160,8 +161,10 @@ public class ChessParser {
 			}
 		}
 		
+		// Parse the type of the piece:
 		PieceType piece = PieceType.getType(moveArray[0]);
 
+		// Parse the origin coordinates:
 		char fromX = 0;
 		if(moveArray[1]!=0) {
 			fromX = moveArray[1];
@@ -171,6 +174,8 @@ public class ChessParser {
 			fromY = Integer.parseInt(String.valueOf(moveArray[2]));
 		}
 
+		// Parse the capture character:
+		// There should be an 'x' character is there was a capture move.
 		boolean capture;
 		if(moveArray[3]!=0) {
 			capture = true;
@@ -178,12 +183,20 @@ public class ChessParser {
 			capture = false;
 		}
 
-		char toX = moveArray[4];
-		int toY = Integer.parseInt(String.valueOf(moveArray[5]));
+		// Parse the destination coordinates:
+		char toX = 0;
+		int toY = -1;
+		if(moveArray[4]!=0) {
+			toX = moveArray[4];
+		}
+		if(moveArray[5]!=0) {
+			toY = Integer.parseInt(String.valueOf(moveArray[5]));
+		}
 
 		// Determine the location of the piece to move using chess rules and incomplete information about it
 		BoardSquare pieceXY = this.rules.eval(piece, board, fromX, fromY, toX, toY, capture);
 		
+		// Return the Long Algebraic Notation.
 		return String.valueOf(pieceXY.x)+pieceXY.y+toX+toY;
 	}
 	
@@ -245,11 +258,12 @@ public class ChessParser {
 	}
 	
 	/**
+	 * Re-build the FEN from the board.
 	 * @param reduced True if the FEN need to be reduced.
 	 * @return The FEN.
 	 */
 	public String getFEN(boolean reduced) {
-		return board.currentFEN(reduced);
+		return this.board.currentFEN(reduced);
 	}
 	
 	/**
@@ -259,20 +273,20 @@ public class ChessParser {
 	 * @throws IncorrectFENException If the FEN is incorrect: incorrect number of white spaces or wrong color character.
 	 */
 	public static PlayerColor getColor(String fen) throws IncorrectFENException {
-		String[] splited_fen = fen.split(" ");
-		if(splited_fen.length > 3) {
-			char charColor = splited_fen[1].charAt(0);
+		String[] fenInfos = fen.split(" ");
+		if(fenInfos.length > 3) {
+			char charColor = fenInfos[1].charAt(0);
 			PlayerColor color;
 			if(charColor=='b') {
 				color = PlayerColor.BLACK;
-			} else if (charColor=='w') {
+			} else if(charColor=='w') {
 				color = PlayerColor.WHITE;
 			} else {
-				throw new IncorrectFENException("Color incorrect.");
+				throw new IncorrectFENException("Color of the player to move next incorrect.");
 			}
 			return color;
 		} else {
-			throw new IncorrectFENException("Number of argument incorrect.");
+			throw new IncorrectFENException("Number of arguments incorrect.");
 		}
 	}
 	
@@ -285,14 +299,14 @@ public class ChessParser {
 	 */
 	public static int result(String fen, PlayerColor gameColor) throws IncorrectFENException {
 		int reward = 0;
-		String[] splited_fen = fen.split(" ");
+		String[] fenInfos = fen.split(" ");
 		
-		if(splited_fen.length == 6) {
+		if(fenInfos.length == 6) {
 			int nb;
-			try{
-				nb =  Integer.parseInt(splited_fen[4]);
-			}catch(NumberFormatException e){
-				throw new IncorrectFENException("Nomber of half move incorrect.");
+			try {
+				nb = Integer.parseInt(fenInfos[4]);
+			} catch(NumberFormatException e) {
+				throw new IncorrectFENException("Number of half moves incorrect.");
 			}
 			
 			if(nb<50) {
@@ -321,10 +335,12 @@ public class ChessParser {
 	 * @return True if the FEN is correct.
 	 */
 	public static boolean isCorrectFEN(String fen) {
+		// Check the white spaces:
 		String[] fenArray = fen.split(" ");
 		if(fenArray.length<=3) {
 			return false;
 		}
+		// Check the slashes:
 		String[] boardArray = fenArray[0].split("/");
 		if(boardArray.length==8) {
 			return true;

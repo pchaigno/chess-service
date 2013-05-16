@@ -1,5 +1,9 @@
 package parser;
 
+/**
+ * Exception for when the FEN is incorrect.
+ * @author Benoit Travers
+ */
 @SuppressWarnings("serial")
 public class IncorrectFENException extends Exception {
 

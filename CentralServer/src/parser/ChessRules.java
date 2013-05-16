@@ -12,6 +12,9 @@ import parser.BoardPiece.*;
  * @author Paul Chaignon
  */
 public class ChessRules {
+	/**
+	 * Letters-digit correspondance.
+	 */
 	@SuppressWarnings("serial")
 	private static final Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
 		this.put('a', 1);
@@ -26,15 +29,15 @@ public class ChessRules {
 	private static final char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 
 	/**
-	 * Found the piece and complete the informations about it.
-	 * @param piece The piece type.
+	 * Found the position of a piece on the board.
+	 * If the origin coordinates are missing, it will find them by using the movement rules for pawns.
 	 * @param board The chess board.
 	 * @param fromX The original abscissa.
 	 * @param fromY The original ordinate.
 	 * @param toX The destination abscissa.
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
-	 * @return The board square.
+	 * @return The position of the piece on the board.
 	 */
 	private BoardSquare pawn(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		List<BoardPiece> legalPawns = new LinkedList<BoardPiece>();
@@ -44,20 +47,21 @@ public class ChessRules {
 		int pawnX;
 		int pawnY;
 
-		// White pawns move "up", black move "down"
+		// White pawns move "up", black move "down":
 		int mod;
 		if(board.currentMove==PieceColor.WHITE) {
 			mod = 1;
 		} else {
 			mod = -1;
 		}
-		// Get possible pawns given the color and x coordinate
+		
+		// Get possible pawns given the color and x coordinate:
 		List<Integer> pawns = board.getPiece(PieceType.PAWN, board.currentMove, fromX, -1);
 		for(int i=0 ; i<pawns.size() ; i++) {
 			pawn = board.pieces.get(pawns.get(i));
 			pawnX = letter.get(pawn.square.x);
 			pawnY = pawn.square.y;
-			// Check if pawn could move to the the given square
+			// Check if pawn could move to the the given square:
 			if((!capture && (toY == pawnY + mod * 2 || toY == pawnY + mod) && toXnum == pawnX)
 					|| (capture && toY == pawnY + mod && (toXnum == pawnX + 1 || toXnum == pawnX - 1))) {
 				legalPawns.add(pawn);
@@ -65,27 +69,27 @@ public class ChessRules {
 		}
 
 		if(legalPawns.size() > 1) {
-			// The only case is if there's a pawn in starting position and pawn
-			// right above it
-			// Legal move would be move for 1
+			// The only case is if there's a pawn in starting position and pawn right above it.
+			// Legal move would be move for 1.
 			result = new BoardSquare(toX, toY - mod);
 		} else if(legalPawns.size() == 1) {
 			result = new BoardSquare(legalPawns.get(0).square.x, legalPawns.get(0).square.y);
 		}
+		
 		return result;
 	}
 
 	/**
-	 * Found the piece and complete the informations about it.
-	 * @param piece The piece type.
+	 * Found the position of a piece on the board.
+	 * If the origin coordinates are missing, it will find them by using the movement rules for knights.
 	 * @param board The chess board.
 	 * @param fromX The original abscissa.
 	 * @param fromY The original ordinate.
 	 * @param toX The destination abscissa.
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
-	 * @return The board square.
-	 * @throws IncorrectFENException An IncorrectFENException
+	 * @return The position of the piece on the board.
+	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
 	private BoardSquare knight(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		List<BoardPiece> legalKnights = new LinkedList<BoardPiece>();
@@ -99,29 +103,27 @@ public class ChessRules {
 			knight = board.pieces.get(knights.get(i));
 			knightX = letter.get(knight.square.x);
 			knightY = knight.square.y;
-			if((Math.abs(toY-knightY)==1 && Math.abs(toXnum-knightX)==2)
-					|| (Math.abs(toY-knightY)==2 && Math.abs(toXnum-knightX)==1)) {
+			if((Math.abs(toY-knightY)==1 && Math.abs(toXnum-knightX)==2) || (Math.abs(toY-knightY)==2 && Math.abs(toXnum-knightX)==1)) {
 				legalKnights.add(knight);
 			}
 		}
 
-		// Knight and all other pieces are tricker, because you have to exclude
-		// pieces from legalPieces which you can't move because that would
-		// impsoe your king to check
+		// Knight and all other pieces are tricker, because you have to exclude pieces from legalPieces which you can't move 
+		// because that would expose your king to check.
 		return this.executeCheck(board, legalKnights, toX, toY, capture);
 	}
 
 	/**
-	 * Found the piece and complete the informations about it.
-	 * @param piece The piece type.
+	 * Found the position of a piece on the board.
+	 * If the origin coordinates are missing, it will find them by using the movement rules for bishops.
 	 * @param board The chess board.
 	 * @param fromX The original abscissa.
 	 * @param fromY The original ordinate.
 	 * @param toX The destination abscissa.
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
-	 * @return The board square.
-	 * @throws IncorrectFENException An IncorrectFENException
+	 * @return The position of the piece on the board.
+	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
 	private BoardSquare bishop(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		List<BoardPiece> legalBishops = new LinkedList<BoardPiece>();
@@ -168,20 +170,21 @@ public class ChessRules {
 				}
 			}
 		}
+		
 		return this.executeCheck(board, legalBishops, toX, toY, capture);
 	}
 
 	/**
-	 * Found the piece and complete the informations about it.
-	 * @param piece The piece type.
+	 * Found the position of a piece on the board.
+	 * If the origin coordinates are missing, it will find them by using the movement rules for rooks.
 	 * @param board The chess board.
 	 * @param fromX The original abscissa.
 	 * @param fromY The original ordinate.
 	 * @param toX The destination abscissa.
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
-	 * @return The board square.
-	 * @throws IncorrectFENException An IncorrectFENException
+	 * @return The position of the piece on the board.
+	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
 	private BoardSquare rook(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		List<BoardPiece> legalRooks = new LinkedList<BoardPiece>();
@@ -227,20 +230,21 @@ public class ChessRules {
 				}
 			}
 		}
+		
 		return this.executeCheck(board, legalRooks, toX, toY, capture);
 	}
 
 	/**
-	 * Found the piece and complete the informations about it.
-	 * @param piece The piece type.
+	 * Found the position of a piece on the board.
+	 * If the origin coordinates are missing, it will find them by using the movement rules for queens.
 	 * @param board The chess board.
 	 * @param fromX The original abscissa.
 	 * @param fromY The original ordinate.
 	 * @param toX The destination abscissa.
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
-	 * @return The board square.
-	 * @throws IncorrectFENException An IncorrectFENException
+	 * @return The position of the piece on the board.
+	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
 	private BoardSquare queen(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		List<BoardPiece> legalQueens = new LinkedList<BoardPiece>();
@@ -320,15 +324,15 @@ public class ChessRules {
 	}
 
 	/**
-	 * Found the piece and complete the informations about it.
-	 * @param piece The piece type.
+	 * Found the position of a piece on the board.
+	 * If the origin coordinates are missing, it will find them by using the movement rules for kings.
 	 * @param board The chess board.
 	 * @param fromX The original abscissa.
 	 * @param fromY The original ordinate.
 	 * @param toX The destination abscissa.
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
-	 * @return The board square.
+	 * @return The position of the piece on the board.
 	 */
 	private BoardSquare king(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		BoardPiece king;
@@ -341,18 +345,16 @@ public class ChessRules {
 		}
 		throw new IllegalArgumentException("Can't get the piece in king.");
 	}
-
+	
 	/**
-	 * Found the piece and complete the informations about it.
-	 * @param piece The piece type.
-	 * @param board The chess board.
-	 * @param fromX The original abscissa.
-	 * @param fromY The original ordinate.
+	 * Remove from the list of legal pieces the pieces that would results in a check for the king.
+	 * @param board The board.
+	 * @param legalPieces The pieces that can correspond to the destination coordinates.
 	 * @param toX The destination abscissa.
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
-	 * @return The board square.
-	 * @throws IncorrectFENException An IncorrectFENException
+	 * @return The position of the piece on the board.
+	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
 	private BoardSquare executeCheck(ChessBoard board, List<BoardPiece> legalPieces, char toX, int toY, boolean capture) throws IncorrectFENException {
 		BoardSquare result = null;
@@ -383,7 +385,7 @@ public class ChessRules {
 	 * Sees if board is in check state for the current player.
 	 * @param board The chess board.
 	 * @return True if the board is in check state.
-	 * @throws IncorrectFENException An IncorrectFENException
+	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
 	private boolean check(ChessBoard board) throws IncorrectFENException {
 		BoardSquare attackArray;
@@ -399,7 +401,8 @@ public class ChessRules {
 		} else {
 			kingColor = PieceColor.WHITE;
 		}
-		List<Integer> pieces = board.getPiece(PieceType.KING, kingColor, (char) 0, -1);
+		
+		List<Integer> pieces = board.getPiece(PieceType.KING, kingColor, (char)0, -1);
 		if(pieces.size() == 1) {
 			king = board.pieces.get(pieces.get(0));
 			kingX = king.square.x;
@@ -418,11 +421,12 @@ public class ChessRules {
 			}
 			return false;
 		}
-		throw new IllegalArgumentException("Can't get the piece in check.");
+		throw new IncorrectFENException("The "+kingColor+" king is missing.");
 	}
 
 	/**
-	 * Found the piece and complete the informations about it. 
+	 * Found the position of a piece on the board.
+	 * If the origin coordinates are missing, it will find them by using the movement rules.
 	 * Call the right method depending on the piece type.
 	 * Note: Added to convert eval method from JavaScript.
 	 * @param piece The piece type.
@@ -433,7 +437,7 @@ public class ChessRules {
 	 * @param toY The destination ordinate.
 	 * @param capture True if there is a capture.
 	 * @return The board square.
-	 * @throws IncorrectFENException An IncorrectFENException
+	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
 	BoardSquare eval(PieceType piece, ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		switch(piece) {

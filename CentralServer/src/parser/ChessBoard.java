@@ -105,12 +105,13 @@ public class ChessBoard {
 	}
 	
 	/**
-	 * Simple move function with from & to variables
-	 * @param fromX 
-	 * @param fromY 
-	 * @param toX 
-	 * @param toY 
-	 * @param capture 
+	 * Simple move function with from & to variables.
+	 * Make a move on the board.
+	 * @param fromX The origin abscissa.
+	 * @param fromY The origin ordinate.
+	 * @param toX The destination abscissa.
+	 * @param toY The destination ordinate.
+	 * @param capture True if there is a capture.
 	 */
 	void makeMove(char fromX, int fromY, char toX, int toY, boolean capture) {
 		BoardPiece previousPiece = this.squares.get(fromX)[fromY].piece;
@@ -123,11 +124,14 @@ public class ChessBoard {
 	}
 	
 	/**
+	 * Build the FEN from the board.
 	 * @param reduced True if the FEN need to be reduced.
 	 * @return The current FEN.
 	 */
 	String currentFEN(boolean reduced) {
 		String fen = "";
+		
+		// Build the board description:
 		for(int num=8 ; num>=1 ; num--) {
 			int emptyCounter = 0;
 			char[] keys = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
@@ -156,9 +160,13 @@ public class ChessBoard {
 				fen += "/";
 			}
 		}
+		
+		// Add the color of the player to move next, the castling and the en passant:
 		fen += " "+PieceColor.getLetter(this.currentMove);
 		fen += " "+this.castling;
 		fen += " "+this.enPassant;
+		
+		// Add the half moves and full moves number if the unreduced FEN is required:
 		if(!reduced) {
 			if(this.halfMoves!=-1) {
 				fen += " "+this.halfMoves;
@@ -167,11 +175,12 @@ public class ChessBoard {
 				fen += " "+this.fullMoves;
 			}
 		}
+		
 		return fen;
 	}
 
 	/**
-	 * Prototype function used to load FEN into board.
+	 * Load the FEN into board.
 	 * @param fen The FEN.
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
@@ -183,64 +192,66 @@ public class ChessBoard {
 		}
 		this.pieces = new LinkedList<BoardPiece>();
 
+		// Split the FEN with whitespaces:
 		String[] fenArray = fen.split(" ");
-		if(fenArray.length > 3) {
-			String[] boardArray = fenArray[0].split("/");
-			if(boardArray.length == 8) {
-				for(int lines=1 ; lines<=8 ; lines++) {
-					String line = boardArray[lines-1];
-					int colsY = 1;
-					for(int cols=0 ; cols<line.length() ; cols++) {
-						char letter = line.charAt(cols);
-						PieceColor color;
-						if(String.valueOf(letter).matches("[rbqkpn]")) {
-							color = PieceColor.BLACK;
-						} else if(String.valueOf(letter).matches("[RBQKPN]")) {
-							color = PieceColor.WHITE;
-						} else {
-							try{
-								colsY = colsY + Integer.parseInt(String.valueOf(letter));
-							}catch(NumberFormatException e){
-								throw new IncorrectFENException("Board representation incorrect in the FEN.");
-							}
-							continue;
-						}
-						PieceType name = PieceType.getType(letter);
-						char x = letters[colsY];
-						int y = numbers[lines];
-						this.addPiece(name, color, x, y);
-						colsY++;
+		if(fenArray.length < 4) {
+			throw new IncorrectFENException("Number of argument incorrect in the FEN.");
+		}
+		
+		// Parse the board description:
+		String[] boardArray = fenArray[0].split("/");
+		if(boardArray.length != 8) {
+			throw new IncorrectFENException("Board representation incorrect in the FEN.");
+		}
+		
+		for(int lines=1 ; lines<=8 ; lines++) {
+			String line = boardArray[lines-1];
+			int colsY = 1;
+			for(int cols=0 ; cols<line.length() ; cols++) {
+				char letter = line.charAt(cols);
+				PieceColor color;
+				if(String.valueOf(letter).matches("[rbqkpn]")) {
+					color = PieceColor.BLACK;
+				} else if(String.valueOf(letter).matches("[RBQKPN]")) {
+					color = PieceColor.WHITE;
+				} else {
+					try {
+						colsY = colsY + Integer.parseInt(String.valueOf(letter));
+					} catch(NumberFormatException e) {
+						throw new IncorrectFENException("Board representation incorrect in the FEN.");
 					}
+					continue;
 				}
-			} else {
-				throw new IncorrectFENException("Board representation incorrect in the FEN.");
+				PieceType name = PieceType.getType(letter);
+				char x = letters[colsY];
+				int y = numbers[lines];
+				this.addPiece(name, color, x, y);
+				colsY++;
 			}
+		}
 
-			if(fenArray[1].equals("b")) {
-				this.currentMove = PieceColor.BLACK;
-			} else {
-				if(fenArray[1].equals("w")) {
-					this.currentMove = PieceColor.WHITE;
-				}else{
-					throw new IncorrectFENException("Color incorrect.");
-				}
-			}
+		// Parse the color of the player to move next:
+		if(fenArray[1].equals("b")) {
+			this.currentMove = PieceColor.BLACK;
+		} else if(fenArray[1].equals("w")) {
+			this.currentMove = PieceColor.WHITE;
+		} else {
+			throw new IncorrectFENException("Color of the player to move next incorrect.");
+		}
 
-			this.castling = fenArray[2];
-			this.enPassant = fenArray[3];
-			if(fenArray.length==6) {
-				try{
+		// Parse the castling, en passant, half moves and full moves number:
+		this.castling = fenArray[2];
+		this.enPassant = fenArray[3];
+		if(fenArray.length==6) {
+			try {
 				this.halfMoves = Integer.parseInt(fenArray[4]);
 				this.fullMoves = Integer.parseInt(fenArray[5]);
-				}catch(NumberFormatException e){
-					throw new IncorrectFENException("Impossible to have the number of full move or half move.");
-				}
-			} else {
-				this.halfMoves = -1;
-				this.fullMoves = -1;
+			} catch(NumberFormatException e) {
+				throw new IncorrectFENException("Impossible to have the number of full move or half move.");
 			}
 		} else {
-			throw new IncorrectFENException("Number of argument incorrect in the FEN.");
+			this.halfMoves = -1;
+			this.fullMoves = -1;
 		}
 	}
 }
