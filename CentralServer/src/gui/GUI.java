@@ -68,10 +68,14 @@ public class GUI {
 	 */
 	private static void buildMenu() {
 		Menu menu = new Menu(shell, SWT.BAR);
+		
+		// Menu file:
 		MenuItem optionFile = new MenuItem(menu, SWT.CASCADE);
 		optionFile.setText("File");
 		Menu menuFile = new Menu(shell, SWT.DROP_DOWN);
 		optionFile.setMenu(menuFile);
+		
+		// Option "change database":
 		final MenuItem optionChangeDatabase = new MenuItem(menuFile, SWT.PUSH);
 		optionChangeDatabase.setText("Change database");
 		optionChangeDatabase.addSelectionListener(new SelectionAdapter() {
@@ -90,6 +94,8 @@ public class GUI {
 				}
 			}
 		});
+		
+		// Option "Set working database as default":
 		final MenuItem optionSetWorkingDbAsDefault = new MenuItem(menuFile, SWT.PUSH);
 		optionSetWorkingDbAsDefault.setText("Set working database as default");
 		optionSetWorkingDbAsDefault.addSelectionListener(new SelectionAdapter() {
@@ -99,8 +105,11 @@ public class GUI {
 				PropertiesManager.saveProperties();
 			}
 		});
+		
 		@SuppressWarnings("unused")
 		MenuItem databaseSeparator = new MenuItem(menuFile, SWT.SEPARATOR);
+		
+		// Options start and stop:
 		final MenuItem optionStart = new MenuItem(menuFile, SWT.PUSH);
 		optionStart.setText("Start server");
 		final MenuItem optionStop = new MenuItem(menuFile, SWT.PUSH);
@@ -128,17 +137,21 @@ public class GUI {
 				}
 			}
 		});
+		
 		@SuppressWarnings("unused")
 		MenuItem optionSeparator = new MenuItem(menuFile, SWT.SEPARATOR);
-		MenuItem optionFermer = new MenuItem(menuFile, SWT.PUSH);
-		optionFermer.setText("Exit");
-		optionFermer.addSelectionListener(new SelectionAdapter() {
+		
+		// Option "close":
+		MenuItem optionClose = new MenuItem(menuFile, SWT.PUSH);
+		optionClose.setText("Exit");
+		optionClose.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				shell.dispose();
 			}
 		});
 		
+		// Option "options":
 		MenuItem optionOptions = new MenuItem(menu, SWT.CASCADE);
 		optionOptions.setText("Options");
 		optionOptions.addSelectionListener(new SelectionAdapter() {
@@ -148,10 +161,13 @@ public class GUI {
 			}
 		});
 		
+		// Menu help:
 		MenuItem optionHelp = new MenuItem(menu, SWT.CASCADE);
 		Menu menuHelp = new Menu(shell, SWT.DROP_DOWN);
 		optionHelp.setMenu(menuHelp);
 		optionHelp.setText("Help");
+		
+		// Option "about":
 		MenuItem optionAbout = new MenuItem(menuHelp, SWT.CASCADE);
 		optionAbout.setText("About");
 		optionAbout.addSelectionListener(new SelectionAdapter() {
@@ -185,31 +201,36 @@ public class GUI {
 		gridLayout.marginHeight = 10;
 		gridLayout.marginWidth = 10;
 		shell.setLayout(gridLayout);
-
+		
+		// Port field:
 		Label portLabel = new Label(shell, SWT.NONE);
 		portLabel.setText("Listening port: ");
 		final Text port = new Text(shell, SWT.BORDER);
 		port.setText(PropertiesManager.getProperty(PropertiesManager.PROPERTY_PORT_LISTENER));
 		port.setLayoutData(new GridData(150, 13));
 		
+		// Connect timeout field:
 		Label connectTimeoutLabel = new Label(shell, SWT.NONE);
 		connectTimeoutLabel.setText("Connect Timeout(ms): ");
 		final Text connectTimeout = new Text(shell, SWT.BORDER);
 		connectTimeout.setText(PropertiesManager.getProperty(PropertiesManager.PROPERTY_CONNECT_TIMEOUT));
 		connectTimeout.setLayoutData(new GridData(150, 13));
 		
+		// Read timeout field:
 		Label readTimeoutLabel = new Label(shell, SWT.NONE);
 		readTimeoutLabel.setText("Read Timeout(ms): ");
 		final Text readTimeout = new Text(shell, SWT.BORDER);
 		readTimeout.setText(PropertiesManager.getProperty(PropertiesManager.PROPERTY_READ_TIMEOUT));
 		readTimeout.setLayoutData(new GridData(150, 13));
 		
+		// Database field:
 		Label databaseLabel = new Label(shell, SWT.NONE);
 		databaseLabel.setText("Database used by central server: ");
 		final Text database = new Text(shell, SWT.BORDER);
 		database.setText(PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE));
 		database.setLayoutData(new GridData(150, 13));
 		
+		// Button submit:
 		Button submit = new Button(shell, SWT.PUSH);
 		submit.setText("Submit");
 		GridData dataSubmit = new GridData();
@@ -241,6 +262,7 @@ public class GUI {
 	 * to quickly remove, edit or add a resource.
 	 */
 	private static void buildResourcesTable() {
+		// Configuration and headers:
 		final TableViewer tableViewer = new TableViewer(shell, SWT.BORDER|SWT.FULL_SELECTION|SWT.MULTI);
 		resourcesTable = tableViewer.getTable();
 		TableColumn columnType = new TableColumn(resourcesTable, SWT.LEFT);
@@ -263,6 +285,7 @@ public class GUI {
 		
 		buildContextMenu();
 		
+		// Double click support to the resources table:
 		tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
 			public void doubleClick(DoubleClickEvent e) {
@@ -271,6 +294,7 @@ public class GUI {
 			}
 		});
 		
+		// Listener on delete key for the resources table:
 		resourcesTable.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyReleased(KeyEvent e) {
@@ -280,6 +304,7 @@ public class GUI {
 			}
 		});
 		
+		// Initialization of the table with resources:
 		Set<Resource> resources = ResourcesManager.getResources(false);
 		for(Resource resource: resources) {
 			addResourceItem(resource);
@@ -324,6 +349,7 @@ public class GUI {
 	private static void buildContextMenu() {
 		Menu contextMenu = new Menu(resourcesTable);
 		
+		// Option to enable a resource:
 		MenuItem optionEnable = new MenuItem(contextMenu, SWT.PUSH);
 		optionEnable.setText("Enable");
 		optionEnable.addSelectionListener(new SelectionAdapter() {
@@ -332,6 +358,8 @@ public class GUI {
 				enableResources();
 			}
 		});
+		
+		// Option to disable a resource:
 		MenuItem optionDisable = new MenuItem(contextMenu, SWT.PUSH);
 		optionDisable.setText("Disable");
 		optionDisable.addSelectionListener(new SelectionAdapter() {
@@ -340,6 +368,8 @@ public class GUI {
 				disableResources();
 			}
 		});
+		
+		// Option to add a resource:
 		MenuItem optionAdd = new MenuItem(contextMenu, SWT.PUSH);
 		optionAdd.setText("Add");
 		optionAdd.addSelectionListener(new SelectionAdapter() {
@@ -348,6 +378,8 @@ public class GUI {
 				buildAddShell();
 			}
 		});
+		
+		// Option to edit a resource:
 		MenuItem optionEdit = new MenuItem(contextMenu, SWT.PUSH);
 		optionEdit.setText("Edit");
 		optionEdit.addSelectionListener(new SelectionAdapter() {
@@ -361,6 +393,8 @@ public class GUI {
 				}
 			}
 		});
+		
+		// Option to remove a resource:
 		MenuItem optionRemove = new MenuItem(contextMenu, SWT.PUSH);
 		optionRemove.setText("Remove");
 		optionRemove.addSelectionListener(new SelectionAdapter() {
@@ -370,6 +404,7 @@ public class GUI {
 			}
 		});
 		
+		// Bind the contextual menu to the resources table.
 		resourcesTable.setMenu(contextMenu);
 	}
 	
@@ -416,11 +451,16 @@ public class GUI {
 			String message = resourceItems.length>1? "Do you really want to remove those resources?" : "Do you really want to remove this resource?";
 			boolean confirm = MessageDialog.openConfirm(shell, "Remove resources", message);
 	        if(confirm) {
+	        	// Get the selected resources:
 				Set<Resource> resources = new HashSet<Resource>();
 				for(TableItem resourceItem: resourceItems) {
 					resources.add((Resource)resourceItem.getData());
 				}
+				
+				// Remove the resources from the database.
 				Set<Resource> notRemoved = ResourcesManager.removeResources(resources);
+				
+				// Remove the resources correctly removed from the database from the table:
 				for(TableItem resourceItem: resourceItems) {
 					if(!notRemoved.contains(resourceItem.getData())) {
 						resourceItem.dispose();
@@ -435,6 +475,7 @@ public class GUI {
 	 * Simply a small form.
 	 */
 	private static void buildAddShell() {
+		// Configuration of the window:
 		final Shell shell = new Shell();
 		shell.setText("Add a new resource");
 		shell.setImage(new Image(display, "chess.ico"));
@@ -444,6 +485,7 @@ public class GUI {
 		gridLayout.marginWidth = 10;
 		shell.setLayout(gridLayout);
 
+		// Type field:
 		Label typeLabel = new Label(shell, SWT.NONE);
 		typeLabel.setText("Type: ");
 		final Combo type = new Combo(shell, SWT.READ_ONLY);
@@ -452,21 +494,25 @@ public class GUI {
 		type.add("Bot");
 		type.setLayoutData(new GridData(100, 13));
 		
+		// Name field:
 		Label nameLabel = new Label(shell, SWT.NONE);
 		nameLabel.setText("Name: ");
 		final Text name = new Text(shell, SWT.BORDER);
 		name.setLayoutData(new GridData(100, 13));
 
+		// URI field:
 		Label uriLabel = new Label(shell, SWT.NONE);
 		uriLabel.setText("URI: ");
 		final Text uri = new Text(shell, SWT.BORDER);
 		uri.setLayoutData(new GridData(100, 13));
 
+		// Trust field:
 		Label trustLabel = new Label(shell, SWT.NONE);
 		trustLabel.setText("Trust: ");
 		final Text trust = new Text(shell, SWT.BORDER);
 		trust.setLayoutData(new GridData(100, 13));
 		
+		// Button submit:
 		Button submit = new Button(shell, SWT.PUSH);
 		submit.setText("Add");
 		GridData dataSubmit = new GridData();
@@ -502,6 +548,7 @@ public class GUI {
 	 * @param resource The resource to be editing.
 	 */
 	private static void buildEditShell(final Resource resource) {
+		// Configuration of the window:
 		final Shell shell = new Shell();
 		shell.setText("Edit "+resource.getName());
 		shell.setImage(new Image(display, "chess.ico"));
@@ -511,6 +558,7 @@ public class GUI {
 		gridLayout.marginWidth = 10;
 		shell.setLayout(gridLayout);
 
+		// Type field:
 		Label typeLabel = new Label(shell, SWT.NONE);
 		typeLabel.setText("Type: ");
 		final Combo type = new Combo(shell, SWT.READ_ONLY);
@@ -526,24 +574,28 @@ public class GUI {
 		type.setText(typeText);
 		type.setLayoutData(new GridData(100, 13));
 		
+		// Name field:
 		Label nameLabel = new Label(shell, SWT.NONE);
 		nameLabel.setText("Name: ");
 		final Text name = new Text(shell, SWT.BORDER);
 		name.setText(resource.getName());
 		name.setLayoutData(new GridData(100, 13));
 
+		// URI field:
 		Label uriLabel = new Label(shell, SWT.NONE);
 		uriLabel.setText("URI: ");
 		Text uri = new Text(shell, SWT.BORDER|SWT.READ_ONLY);
 		uri.setText(resource.getURI());
 		uri.setLayoutData(new GridData(100, 13));
 
+		// Trust field:
 		Label trustLabel = new Label(shell, SWT.NONE);
 		trustLabel.setText("Trust: ");
 		final Text trust = new Text(shell, SWT.BORDER);
 		trust.setText(""+resource.getTrust());
 		trust.setLayoutData(new GridData(100, 13));
 		
+		// Button submit:
 		Button submit = new Button(shell, SWT.PUSH);
 		submit.setText("Update");
 		GridData dataSubmit = new GridData();
