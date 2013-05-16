@@ -9,6 +9,9 @@ public class BoardPiece {
 	PieceColor color;
 	BoardSquare square;
 	
+	/**
+	 * Enumeration of piece types.
+	 */
 	enum PieceType {
 		BISHOP, PAWN, KING, KNIGHT, QUEEN, ROOK;
 		
@@ -69,9 +72,16 @@ public class BoardPiece {
 		}
 	}
 	
+	/**
+	 * Enumeration of piece colors: black or white.
+	 */
 	enum PieceColor {
 		WHITE, BLACK;
 		
+		/**
+		 * @param color The color.
+		 * @return The character corresponding to the color.
+		 */
 		static String getLetter(PieceColor color) {
 			if(color==PieceColor.BLACK) {
 				return "b";

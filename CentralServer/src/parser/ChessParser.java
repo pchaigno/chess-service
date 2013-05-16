@@ -62,11 +62,11 @@ public class ChessParser {
 	 * @throws IncorrectFENException An IncorrectFENException
 	 */
 	public String convertSANToLAN(String san) throws IncorrectFENException {
-		// Regular move
+		// Regular move:
 		if(san.matches("[RBQKPN]?[a-h]?[1-8]?[x]?[a-h][1-8][=]?[QNRB]?[+#]?")) {
 			return this.parseMove(this.board, san);
-		// Castling
 		}
+		// Castling:
 		if(san.matches("(O-O-O|O-O)\\+?")) {
 			return san;
 		}
@@ -92,7 +92,7 @@ public class ChessParser {
 			capture = true;
 		}
 		
-		// Castling
+		// Castling:
 		if(piece==PieceType.KING && Math.abs(letter.get(fromX)-letter.get(toX))==2) {
 			if(toX == 'g') {
 				return "O-O";
@@ -104,7 +104,7 @@ public class ChessParser {
 		String pgnfromX = "";
 		String pgnfromY = "";
 
-		// Determine if we need fromX/fromY coordinates in PGN move
+		// Determine if we need fromX/fromY coordinates in PGN move:
 		if(this.rules.eval(piece, board, (char)0, -1, toX, toY, capture).x!=0) {
 			pgnfromX = "";
 			pgnfromY = "";
@@ -121,7 +121,7 @@ public class ChessParser {
 
 		String pgnpiece = PieceType.getLetter(piece, true);
 
-		// En passant capture
+		// En passant capture:
 		if(board.enPassant.equals(String.valueOf(toX)+toY) && piece==PieceType.PAWN) {
 			capture = true;
 		}
@@ -134,6 +134,7 @@ public class ChessParser {
 			pgnfromX = String.valueOf(fromX);
 		}
 
+		// Return the PGN style move.
 		return pgnpiece + pgnfromX + pgnfromY + pgncapture + toX + toY;
 	}
 	
@@ -183,12 +184,19 @@ public class ChessParser {
 		}
 
 		// Parse the destination coordinates:
-		char toX = moveArray[4];
-		int toY = Integer.parseInt(String.valueOf(moveArray[5]));
+		char toX = 0;
+		int toY = -1;
+		if(moveArray[4]!=0) {
+			toX = moveArray[4];
+		}
+		if(moveArray[5]!=0) {
+			toY = Integer.parseInt(String.valueOf(moveArray[5]));
+		}
 
 		// Determine the location of the piece to move using chess rules and incomplete information about it
 		BoardSquare pieceXY = this.rules.eval(piece, board, fromX, fromY, toX, toY, capture);
 		
+		// Return the Long Algebraic Notation.
 		return String.valueOf(pieceXY.x)+pieceXY.y+toX+toY;
 	}
 	
@@ -327,10 +335,12 @@ public class ChessParser {
 	 * @return True if the FEN is correct.
 	 */
 	public static boolean isCorrectFEN(String fen) {
+		// Check the white spaces:
 		String[] fenArray = fen.split(" ");
 		if(fenArray.length<=3) {
 			return false;
 		}
+		// Check the slashes:
 		String[] boardArray = fenArray[0].split("/");
 		if(boardArray.length==8) {
 			return true;
