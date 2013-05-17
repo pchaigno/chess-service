@@ -99,7 +99,7 @@ public abstract class Resource {
 
 		// Convert the FEN into a url encoded string:
 		try {
-			fenEncoded = URIUtil.fromString(fen).toASCIIString();
+			fenEncoded = URIUtil.fromString(fenEncoded).toASCIIString();
 		} catch (URISyntaxException e) {
 			System.err.println("FEN incorrect: "+fen);
 		}
