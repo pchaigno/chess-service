@@ -111,9 +111,11 @@ public class GUI {
 		
 		// Options start and stop:
 		final MenuItem optionStart = new MenuItem(menuFile, SWT.PUSH);
-		optionStart.setText("Start server");
+		optionStart.setText("Start server\tCtrl+S");
+		optionStart.setAccelerator(SWT.CTRL+'S');
 		final MenuItem optionStop = new MenuItem(menuFile, SWT.PUSH);
-		optionStop.setText("Stop server");
+		optionStop.setText("Stop server\tCtrl+S");
+		optionStop.setAccelerator(SWT.CTRL+'S');
 		optionStop.setEnabled(false);
 		optionStart.addSelectionListener(new SelectionAdapter() {
 			@Override
