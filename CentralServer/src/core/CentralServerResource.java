@@ -40,7 +40,7 @@ public class CentralServerResource {
 	public Response getBestMove(@PathParam("fen")String fen) {
 		fen = fen.replaceAll("\\$", "/");
 		if(!ChessParser.isCorrectFEN(fen)) {
-			return respondBadRequest("getBestMove :FEN incorrect.");
+			return respondBadRequest("FEN incorrect.");
 		}
 		
 		if(!fen.endsWith("-")) {
@@ -50,8 +50,8 @@ public class CentralServerResource {
 				parser.checkEnPassant();
 			} catch (IncorrectFENException e) {
 				// Shouldn't happen !
-				System.err.println("getBestMove :"+e.getMessage());
-				return respondBadRequest("getBestMove :"+e.getMessage());
+				System.err.println(e.getMessage());
+				return respondBadRequest(e.getMessage());
 			}
 		}
 		
@@ -82,8 +82,8 @@ public class CentralServerResource {
 			builder.header("Access-Control-Allow-Origin", "*");
 			return builder.build();
 		} catch(IncorrectFENException ife) {
-			System.err.println("endOfGame :"+ife.getMessage());
-			return respondBadRequest("endOfGame :"+ife.getMessage());
+			System.err.println(ife.getMessage());
+			return respondBadRequest(ife.getMessage());
 		}
 	}
 	
@@ -101,13 +101,13 @@ public class CentralServerResource {
 	@Produces("text/plain")
 	public Response getBestMove(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
 		if(!GamesManager.exist(gameId)) {
-			return respondNotFound("getBestMove :Id incorrect.");
+			return respondNotFound("Game id not found in the database.");
 		}
 		
 		fen = fen.replaceAll("\\$", "/");
 		
 		if(!ChessParser.isCorrectFEN(fen)) {
-			return respondBadRequest("getBestMove :FEN incorrect.");
+			return respondBadRequest("FEN incorrect.");
 		}
 			
 		if(!fen.endsWith("-")) {
@@ -118,8 +118,8 @@ public class CentralServerResource {
 				fen = parser.getFEN(true);
 			} catch (IncorrectFENException e) {
 				// Shouldn't happen !
-				System.err.println("getBestMove :"+e.getMessage());
-				return respondBadRequest("getBestMove :"+e.getMessage());
+				System.err.println(e.getMessage());
+				return respondBadRequest(e.getMessage());
 			}
 		}
 		
@@ -138,8 +138,8 @@ public class CentralServerResource {
 					move = parser.convertSANToLAN(move);
 				} catch (IncorrectFENException e) {
 					// Shouldn't happen !
-					System.err.println("getBestMove :"+e.getMessage());
-					return respondBadRequest("getBestMove :"+e.getMessage());
+					System.err.println(e.getMessage());
+					return respondBadRequest(e.getMessage());
 				}	
 			}
 		}
@@ -161,7 +161,7 @@ public class CentralServerResource {
 		fen = fen.replaceAll("\\$", "/");
 		
 		if(!ChessParser.isCorrectFEN(fen)) {
-			return respondBadRequest("debug :FEN incorrect.");
+			return respondBadRequest("FEN incorrect.");
 		}
 			
 		if(!fen.endsWith("-")) {
@@ -172,8 +172,8 @@ public class CentralServerResource {
 				fen = parser.getFEN(true);
 			} catch (IncorrectFENException e) {
 				// Shouldn't happen !
-				System.err.println("getBestMove :"+e.getMessage());
-				return respondBadRequest("getBestMove :"+e.getMessage());
+				System.err.println(e.getMessage());
+				return respondBadRequest(e.getMessage());
 			}
 		}
 		
