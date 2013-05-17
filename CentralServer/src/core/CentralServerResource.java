@@ -40,7 +40,7 @@ public class CentralServerResource {
 	public Response getBestMove(@PathParam("fen")String fen) {
 		fen = fen.replaceAll("\\$", "/");
 		if(!ChessParser.isCorrectFEN(fen)) {
-			return respondBadRequest();
+			return respondBadRequest("getBestMove :FEN incorrect.");
 		}
 		
 		if(!fen.endsWith("-")) {
@@ -51,7 +51,7 @@ public class CentralServerResource {
 			} catch (IncorrectFENException e) {
 				// Shouldn't happen !
 				System.err.println("getBestMove :"+e.getMessage());
-				return respondBadRequest();
+				return respondBadRequest("getBestMove :"+e.getMessage());
 			}
 		}
 		
@@ -83,9 +83,7 @@ public class CentralServerResource {
 			return builder.build();
 		} catch(IncorrectFENException ife) {
 			System.err.println("endOfGame :"+ife.getMessage());
-			ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
-			builder.header("Access-Control-Allow-Origin", "*");
-			return builder.build();
+			return respondBadRequest("endOfGame :"+ife.getMessage());
 		}
 	}
 	
@@ -103,13 +101,13 @@ public class CentralServerResource {
 	@Produces("text/plain")
 	public Response getBestMove(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
 		if(!GamesManager.exist(gameId)) {
-			return respondNotFound();
+			return respondNotFound("getBestMove :Id incorrect.");
 		}
 		
 		fen = fen.replaceAll("\\$", "/");
 		
 		if(!ChessParser.isCorrectFEN(fen)) {
-			return respondBadRequest();
+			return respondBadRequest("getBestMove :FEN incorrect.");
 		}
 			
 		if(!fen.endsWith("-")) {
@@ -121,7 +119,7 @@ public class CentralServerResource {
 			} catch (IncorrectFENException e) {
 				// Shouldn't happen !
 				System.err.println("getBestMove :"+e.getMessage());
-				return respondBadRequest();
+				return respondBadRequest("getBestMove :"+e.getMessage());
 			}
 		}
 		
@@ -141,7 +139,7 @@ public class CentralServerResource {
 				} catch (IncorrectFENException e) {
 					// Shouldn't happen !
 					System.err.println("getBestMove :"+e.getMessage());
-					return respondBadRequest();
+					return respondBadRequest("getBestMove :"+e.getMessage());
 				}	
 			}
 		}
@@ -163,7 +161,7 @@ public class CentralServerResource {
 		fen = fen.replaceAll("\\$", "/");
 		
 		if(!ChessParser.isCorrectFEN(fen)) {
-			return respondBadRequest();
+			return respondBadRequest("debug :FEN incorrect.");
 		}
 			
 		if(!fen.endsWith("-")) {
@@ -175,7 +173,7 @@ public class CentralServerResource {
 			} catch (IncorrectFENException e) {
 				// Shouldn't happen !
 				System.err.println("getBestMove :"+e.getMessage());
-				return respondBadRequest();
+				return respondBadRequest("getBestMove :"+e.getMessage());
 			}
 		}
 		
@@ -230,9 +228,10 @@ public class CentralServerResource {
 	 * Put the right headers: notify the client that all origin are allowed (for AJAX use).
 	 * @return The 400 response with headers.
 	 */
-	private static Response respondBadRequest() {
+	private static Response respondBadRequest(String message) {
 		ResponseBuilder builder = Response.status(Status.BAD_REQUEST);
 		builder.header("Access-Control-Allow-Origin", "*");
+		builder.entity(message);
 		return builder.build();
 	}
 	
@@ -241,9 +240,10 @@ public class CentralServerResource {
 	 * Put the right headers: notify the client that all origin are allowed (for AJAX use).
 	 * @return The 404 response with headers.
 	 */
-	private static Response respondNotFound() {
+	private static Response respondNotFound(String message) {
 		ResponseBuilder builder = Response.status(Status.NOT_FOUND);
 		builder.header("Access-Control-Allow-Origin", "*");
+		builder.entity(message);
 		return builder.build();
 	}
 }
