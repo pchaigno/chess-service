@@ -1,5 +1,6 @@
 package core;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -112,18 +113,22 @@ public class CentralServer {
 	 * @return The debug information string.
 	 */
 	public String getDebugInformation(String fen) {
+		DecimalFormat df = new DecimalFormat("#######0.00");
 		this.updateResources(fen);
 		// This map contains all the moves and the scores associated except the ending moves.
 		Map<String, Double> scores = new HashMap<String, Double>();
 		// This map contains the ending moves with their scores.
 		Map<String, Double> ends = new HashMap<String, Double>();
 
+		String header = "<html>\n<head>\n<title>Central server debug</title>\n";
+		header += "<style>label {display:block;  width:50px; float:left;}</style>\n</head>\n<body>\n";
+		
 		// Build the debug information with the moves suggested by each resources:
 		String debugResources = "";
 		for(Resource resource: this.resources) {
-			debugResources += "<u>"+resource.getName()+" ("+resource.getURI()+"):</u><br/>";
+			debugResources += "<u>"+resource.getName()+" ("+resource.getURI()+"):</u><br/>\n";
 			for(MoveSuggestion move: resource.getMoveSuggestions()) {
-				debugResources += move.getMove()+": "+move.getScore();
+				debugResources += "<label>"+move.getMove()+":</label> "+df.format(move.getScore());
 				if(move.getClass()==EndingSuggestion.class) {
 					debugResources += " END";
 					ends.put(move.getMove(), move.getScore());	
@@ -135,18 +140,18 @@ public class CentralServer {
 						scores.put(move.getMove(), resource.getTrust()*move.getScore());
 					}
 				}
-				debugResources += "<br/>";
+				debugResources += "<br/>\n";
 			}
-			debugResources += "<br/>";
+			debugResources += "<br/>\n";
 		}
 		
 		// Build the debug information with the total scores for each suggestion:
-		String debugSuggestions = "<u>Totals for each suggestions:</u><br/>";
+		String debugSuggestions = "<u>Totals for each suggestions:</u><br/>\n";
 		for(String move: scores.keySet()) {
-			debugSuggestions += move+": "+scores.get(move)+"<br/>";
+			debugSuggestions += "<label>"+move+":</label> "+df.format(scores.get(move))+"<br/>\n";
 		}
 		for(String move: ends.keySet()) {
-			debugSuggestions += move+": "+scores.get(move)+"<br/>";
+			debugSuggestions += "<label>"+move+":</label> "+df.format(scores.get(move))+"<br/>\n";
 		}
 		
 		// Get the best move suggestion:
@@ -156,7 +161,7 @@ public class CentralServer {
 		}
 		
 		// Return all the debug information built.
-		return bestMove+"<br/>"+debugSuggestions+"<br/>"+debugResources;
+		return header+bestMove+"<br/>\n<br/>\n"+debugSuggestions+"<br/>\n"+debugResources+"</body></html>";
 	}
 
 	/**
