@@ -45,10 +45,13 @@ public abstract class Resource {
 	 * @param active True if the resource is active.
 	 */
 	public Resource(String uri, String name, int trust, boolean active) {
-		if(!uri.endsWith("/")) {
-			uri += "/";
-		}
 		this.uri = uri;
+		if(!this.uri.endsWith("/")) {
+			this.uri += "/";
+		}
+		if(!this.uri.contains("://")) {
+			this.uri = "http://"+this.uri;
+		}
 		this.name = name;
 		this.changed = false;
 		this.trust = trust;
