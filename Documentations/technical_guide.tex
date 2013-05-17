@@ -1,0 +1,43 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+
+\usepackage[french]{babel}
+
+\usepackage{listings}
+
+\title{Distributed Chess Services - Guide technique}
+
+\author{P. Chaignon, C. Gautrais, T. François, D. Le Guen, B. Travers}
+
+\date{INSA Rennes - 2012-2013}
+
+\begin{document}
+
+\maketitle
+
+\section{Organisation générale}
+
+    Le serveur central du projet permet de coordonner les différents appels entre : les requêtes des clients d'une part, et les recherches de meilleur coup de chaque ressource d'autre part.
+
+\section{Architecture REST}
+
+    Afin d'orchestrer les différents appels entre chaque partie, le projet utilise le framework Grizzly, basé sur une architecture de type REST.
+
+\section{Gestion des parties de jeux et des ressources}
+
+    L'utilisation de bases de données s'est révélée nécessaire sur deux aspects du serveur. Le premier étant d'enregistrer chaque partie se déroulant sur le serveur. Ainsi, en plus d'obtenir des informations sur le nombre de parties joués et leur déroulement, il est possible d'établir des statistiques précises sur les ressources choisies par le serveur pour donner le meilleur coup.
+
+   
+
+    Les ressources peuvent être de trois types : bases de données d'ouverture de partie (les meilleurs débuts de partie des grands champions d'échecs), bots (évaluant statistiquement le meilleur coup, efficace pour le milieu de partie), et bases de fermeture (meilleurs fin de parties). En interne, chacune possède une réputation servant à l'algorithme de sélection du coup à renvoyer au client.
+
+\section{Outil graphique de configuration du serveur et de gestion des ressources}
+
+    Afin de faciliter la maintenance du serveur par le maximum de personnes, une interface graphique a été mise en place. En plus d'aider à configurer les différents paramètres du serveur (port d'écoute des requêtes, temps maximum d'attente des réponses, nom des bases de données...), cet outil permet de paramétrer la liste des ressources disponibles et de modifier leur propriétés.
+
+   
+
+    Cet outil utilise la librairie SWT pour l'affichage de l'interface utilisateur.
+
+\end{document}
