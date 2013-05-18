@@ -112,6 +112,7 @@ public class CentralServerResource {
 	public Response endOfGame(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
 		fen = fen.replaceAll("\\$", "/");
 		
+		System.out.println("endOfGame: " + fen);
 		// Notify the central server listeners about the request.
 		fireEndOfGameRequest(gameId, fen);
 		
@@ -273,9 +274,26 @@ public class CentralServerResource {
 	 */
 	@OPTIONS
 	@Produces("text/plain")
-	public Response startGame(@HeaderParam("Access-Control-Request-Headers") String requestH) {
+	public Response preflightStartGame(@HeaderParam("Access-Control-Request-Headers") String requestH) {
 		ResponseBuilder builder = Response.ok();
 		builder.header("Access-Control-Allow-Origin", "*");
+		builder.header("Access-Control-Allow-Headers", requestH);
+		return builder.build();
+	}
+	
+	/**
+	 * This method is only called to respond to HTTP OPTIONS requests send by AJAX scripts.
+	 * AJAX scripts send a preflight request to determine if the request to come is allowed by the server.
+	 * @param requestH Headers to check.
+	 * @return Headers to specify that the headers requested are allowed.
+	 */
+	@Path("/{gameId: [0-9]+}/{fen}")
+	@OPTIONS
+	@Produces("text/plain")
+	public Response preflightEndOfGame(@HeaderParam("Access-Control-Request-Headers") String requestH) {
+		ResponseBuilder builder = Response.ok();
+		builder.header("Access-Control-Allow-Origin", "*");
+		builder.header("Access-Control-Allow-Methods", "DELETE, GET, OPTIONS");
 		builder.header("Access-Control-Allow-Headers", requestH);
 		return builder.build();
 	}

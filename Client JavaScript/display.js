@@ -125,7 +125,11 @@ _p4d_proto.computer_move = function(){
 	var fen;
     this.auto_play_timeout = undefined;
 	for(fen in this.board_state.position_counts) {}
-	getNextMove(this, fen);
+    if (P4_MOVE_FLAG_MATE || P4_MOVE_FLAG_DRAW){
+        endGame(fen);
+    } else{
+    	getNextMove(this, fen);
+    }
 	return;
 	
 	

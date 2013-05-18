@@ -78,7 +78,7 @@ function getMoveFromCentralServer(p4d, fen) {
 }
 
 /** Call the central server to end the game **/
-function endGame() {
+function endGame(fen) {
 	xmlreq = createXMLHttpRequest();
 	
 	xmlreq.onreadystatechange = function() {
@@ -91,7 +91,7 @@ function endGame() {
 		}
 	}
 
-	xmlreq.open("DELETE", central_server_uri+"/"+game_id, true);
+	xmlreq.open("DELETE", central_server_uri+"/"+game_id+"/"+fen, true);
 	xmlreq.send();
 }
 
