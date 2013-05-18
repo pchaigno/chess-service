@@ -1,5 +1,6 @@
 package core;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -41,8 +42,15 @@ public class StatsManager {
 			try {
 				conf.load(new FileInputStream(CONFIG_FILE));
 			} catch(FileNotFoundException e) {
-				// TODO Generate the file.
-				System.err.println("Config file ("+CONFIG_FILE+") not found.");
+				// If no stat file exist, we create one
+				System.err.println("Config file ("+CONFIG_FILE+") not found. Creating an new one");
+				File fileConfig = new File(CONFIG_FILE);
+				try {
+					fileConfig.createNewFile();
+					init();
+				} catch (IOException e1) {
+					System.err.println("Unable to create the config file ("+CONFIG_FILE+").");
+				}
 			} catch(IOException e) {
 				System.err.println("Unable to load the config file.");
 				System.err.println(e.getMessage());
