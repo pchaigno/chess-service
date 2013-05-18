@@ -72,11 +72,11 @@ public class ResourcesManager extends DatabaseManager {
 			while(results.next()) {
 				Resource resource;
 				if(results.getInt(RESOURCE_TYPE)==Resource.OPENINGS_DATABASE) {
-					resource = new OpeningsDatabase(results.getString(RESOURCE_URI), results.getString(RESOURCE_NAME), results.getInt(RESOURCE_TRUST), results.getBoolean(RESOURCE_ACTIVE));
+					resource = new OpeningsDatabase(results.getString(RESOURCE_URI), results.getString(RESOURCE_NAME), results.getInt(RESOURCE_TRUST), results.getBoolean(RESOURCE_ACTIVE), results.getInt(RESOURCE_ID));
 				} else if(results.getInt(RESOURCE_TYPE)==Resource.ENDINGS_DATABASE) {
-					resource = new EndingsDatabase(results.getString(RESOURCE_URI), results.getString(RESOURCE_NAME), results.getInt(RESOURCE_TRUST), results.getBoolean(RESOURCE_ACTIVE));
+					resource = new EndingsDatabase(results.getString(RESOURCE_URI), results.getString(RESOURCE_NAME), results.getInt(RESOURCE_TRUST), results.getBoolean(RESOURCE_ACTIVE), results.getInt(RESOURCE_ID));
 				} else {
-					resource = new Bot(results.getString(RESOURCE_URI), results.getString(RESOURCE_NAME), results.getInt(RESOURCE_TRUST), results.getBoolean(RESOURCE_ACTIVE));
+					resource = new Bot(results.getString(RESOURCE_URI), results.getString(RESOURCE_NAME), results.getInt(RESOURCE_TRUST), results.getBoolean(RESOURCE_ACTIVE), results.getInt(RESOURCE_ID));
 				}
 				resource.setId(results.getInt(RESOURCE_ID));
 				resources.add(resource);
@@ -96,9 +96,9 @@ public class ResourcesManager extends DatabaseManager {
 	/**
 	 * Add a resource to the database and set the resource id with the one used in the sql table
 	 * @param resource The resource to add.
-	 * @return True if the operation succeed, false otherwise.
+	 * @return The resource added with the id set or null if an error occurred.
 	 */
-	public static boolean addResource(Resource resource) {
+	public static Resource addResource(Resource resource) {
 		Connection dbConnect = getConnection();
 		String query = "INSERT INTO "+RESOURCES+"("+RESOURCE_TYPE+", "+RESOURCE_NAME+", "+RESOURCE_URI+", "+RESOURCE_TRUST+", "+RESOURCE_ACTIVE+") VALUES(?, ?, ?, ?, 1)";
 		try {
@@ -116,23 +116,24 @@ public class ResourcesManager extends DatabaseManager {
 			statement.setInt(4, resource.getTrust());
 			if(statement.executeUpdate()!=1) {
 				dbConnect.close();
-				return false;
+				return null;
 			} else {
 				String queryLastId = "SELECT last_insert_rowid() AS last_id";
 				statement = dbConnect.prepareStatement(queryLastId);
 				ResultSet res = statement.executeQuery();
-				res.next();
-				resource.setId(res.getInt("last_id"));
-				
-				// Notify the database listeners about the operation.
-				fireResourceAdded(resource);
-				
-				return true;
+				if(res.next()) {
+					resource.setId(res.getInt("last_id"));
+					
+					// Notify the database listeners about the operation.
+					fireResourceAdded(resource);
+					
+					return resource;
+				}
 			}
 		} catch(SQLException e) {
 			System.err.println("addResource: "+e.getMessage());
 		}
-		return false;
+		return null;
 	}
 	
 	/**
@@ -201,22 +202,24 @@ public class ResourcesManager extends DatabaseManager {
 	 */
 	public static boolean updateResource(Resource resource) {
 		Connection dbConnect = getConnection();
-		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_NAME+" = ?, "+RESOURCE_TRUST+" = ?, "+RESOURCE_TYPE+" = ?, "+RESOURCE_ACTIVE+" = ? WHERE "+RESOURCE_ID+" = ?";
+		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_URI+" = ?, "+RESOURCE_NAME+" = ?, "+RESOURCE_TRUST+" = ?, "+RESOURCE_TYPE+" = ?, "+RESOURCE_ACTIVE+" = ? WHERE "+RESOURCE_ID+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
-			statement.setString(1, resource.getName());
-			statement.setInt(2, resource.getTrust());
+			statement.setString(1, resource.getURI());
+			statement.setString(2, resource.getName());
+			statement.setInt(3, resource.getTrust());
 			int type = Resource.BOT;
 			if(resource.getClass()==OpeningsDatabase.class) {
 				type = Resource.OPENINGS_DATABASE;
 			} else if(resource.getClass()==EndingsDatabase.class) {
 				type = Resource.ENDINGS_DATABASE;
 			}
-			statement.setInt(3, type);
-			statement.setBoolean(4, resource.isActive());
-			statement.setInt(5, resource.getId());
+			statement.setInt(4, type);
+			statement.setBoolean(5, resource.isActive());
+			statement.setInt(6, resource.getId());
 			if(statement.executeUpdate()!=1) {
 				dbConnect.close();
+				System.out.println("ResourcesManager.updateResource()");
 				return false;
 			}
 			dbConnect.close();

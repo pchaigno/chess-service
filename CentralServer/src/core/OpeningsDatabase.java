@@ -26,9 +26,10 @@ public class OpeningsDatabase extends Resource {
 	 * @param name The name.
 	 * @param trust The trust in this database.
 	 * @param active True if the resource is active.
+	 * @param id The resource id.
 	 */
-	public OpeningsDatabase(String uri, String name, int trust, boolean active) {
-		super(uri, name, trust, active);
+	public OpeningsDatabase(String uri, String name, int trust, boolean active, int id) {
+		super(uri, name, trust, active, id);
 		this.moves = new LinkedList<OpeningSuggestion>();
 	}
 
@@ -65,13 +66,4 @@ public class OpeningsDatabase extends Resource {
 	protected void clearSuggestions() {
 		this.moves.clear();
 	}
-	
-	/**
-	 * For testing (maybe another class after)
-	 * @param args Unused
-	 */
-	public static void main(String[] args) {
-		OpeningsDatabase db1 = new OpeningsDatabase("http://localhost/1.0/rest/openings/", "Db1", 1, true);
-		db1.query("rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR%20w%20KQkq%20-%200%20");
-    }
 }

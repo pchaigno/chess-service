@@ -24,9 +24,10 @@ public class EndingsDatabase extends Resource {
 	 * @param name The name.
 	 * @param trust The trust in this database.
 	 * @param active True if the resource is active.
+	 * @param id The resource id.
 	 */
-	public EndingsDatabase(String uri, String name, int trust, boolean active) {
-		super(uri, name, trust, active);
+	public EndingsDatabase(String uri, String name, int trust, boolean active, int id) {
+		super(uri, name, trust, active, id);
 		this.moves = new LinkedList<EndingSuggestion>();
 	}
 

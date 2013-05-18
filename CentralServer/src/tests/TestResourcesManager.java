@@ -23,22 +23,22 @@ public class TestResourcesManager extends TestCase {
 		Set<Resource> oldResources = ResourcesManager.getResources(false);
 
 		// Add a new bot:
-		Resource bot = new Bot("test123.com", "TestBot", 50, true);
-		ResourcesManager.addResource(bot);
+		Resource bot = new Bot("test123.com", "TestBot", 50, true, -1);
+		bot = ResourcesManager.addResource(bot);
 		Set<Resource> resources = ResourcesManager.getResources(false);
 		assertTrue(resources.containsAll(oldResources));
 		assertTrue(resources.contains(bot));
 		
 		// Add a new database:
-		Resource database = new OpeningsDatabase("test321.com", "TestDatabase", 60, true);
-		ResourcesManager.addResource(database);
+		Resource database = new OpeningsDatabase("test321.com", "TestDatabase", 60, true, -1);
+		database = ResourcesManager.addResource(database);
 		resources = ResourcesManager.getResources(false);
 		assertTrue(resources.containsAll(oldResources));
 		assertTrue(resources.contains(bot));
 		assertTrue(resources.contains(database));
 		
 		// Update the bot:
-		bot = new Bot("test123.com", "Test Bot", 10, true);
+		bot = new Bot("test123.com", "Test Bot", 10, true, -1);
 		ResourcesManager.updateResource(bot);
 		resources = ResourcesManager.getResources(false);
 		assertTrue(resources.contains(bot));
@@ -52,7 +52,7 @@ public class TestResourcesManager extends TestCase {
 		assertTrue(found);
 		
 		// Update the database:
-		database = new OpeningsDatabase("test321.com", "Test Database", 0, true);
+		database = new OpeningsDatabase("test321.com", "Test Database", 0, true, database.getId());
 		ResourcesManager.updateResource(database);
 		resources = ResourcesManager.getResources(false);
 		assertTrue(resources.contains(database));
@@ -82,10 +82,13 @@ public class TestResourcesManager extends TestCase {
 	 * Test the primary key of the database.
 	 */
 	public void testPrimaryKey() {
-		ResourcesManager.addResource(new Bot("test123.com", "TestBot", 50, true));
-		assertFalse(ResourcesManager.addResource(new OpeningsDatabase("test123.com", "TestDatabase", 50, true)));
-		assertFalse(ResourcesManager.addResource(new Bot("test123.com", "TestBot", 50, true)));
-		ResourcesManager.removeResource(new Bot("test123.com", "TestBot", 50, true));
+		Bot bot = new Bot("test123.com", "TestBot", 50, true, -1);
+		bot = (Bot)ResourcesManager.addResource(bot);
+		OpeningsDatabase database = new OpeningsDatabase("test123.com", "TestDatabase", 50, true, -1);
+		assertEquals(null, ResourcesManager.addResource(database));
+		Bot bot2 = new Bot("test123.com", "TestBot", 50, true, -1);
+		assertEquals(null, ResourcesManager.addResource(bot2));
+		ResourcesManager.removeResource(bot);
 	}
 	
 	/**
@@ -102,17 +105,18 @@ public class TestResourcesManager extends TestCase {
 			
 			@Override
 			public void run() {
-				if(ResourcesManager.addResource(this.resource)) {
-					System.out.println(this.resource+" added successfully!");
-				} else {
+				this.resource = ResourcesManager.addResource(this.resource);
+				if(this.resource==null) {
 					System.out.println(this.resource+" failed to be added.");
+				} else {
+					System.out.println(this.resource+" added successfully!");
 				}
 			}
 		}
 		
 		Set<Resource> resources = new HashSet<Resource>();
 		for(int i=0 ; i<30 ; i++) {
-			resources.add(new Bot("uri"+i+".com", "bot"+i, 1, true));
+			resources.add(new Bot("uri"+i+".com", "bot"+i, 1, true, -1));
 		}
 		
 		Set<MyThread> threads = new HashSet<MyThread>();

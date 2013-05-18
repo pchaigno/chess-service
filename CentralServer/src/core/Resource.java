@@ -73,8 +73,9 @@ public abstract class Resource {
 	 * @param name The name of the resource.
 	 * @param trust The trust in the resource.
 	 * @param active True if the resource is active.
+	 * @param id The resource id.
 	 */
-	public Resource(String uri, String name, int trust, boolean active) {
+	public Resource(String uri, String name, int trust, boolean active, int id) {
 		this.uri = uri;
 		if(!this.uri.endsWith("/")) {
 			this.uri += "/";
@@ -85,7 +86,7 @@ public abstract class Resource {
 		this.name = name;
 		this.changed = false;
 		this.trust = trust;
-		this.id = -1;
+		this.id = id;
 		this.active = active;
 	}
 
