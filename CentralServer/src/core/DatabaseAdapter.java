@@ -27,10 +27,10 @@ public class DatabaseAdapter implements DatabaseListener {
 	public void onResourceUpdated(Resource resource) {}
 
 	@Override
-	public void onResourcesTrustUpdated(Resource resource) {}
+	public void onResourcesTrustUpdated(Map<Integer, Double> resourceInvolvements, int gameResult) {}
 
 	@Override
-	public void onResourcesActiveUpdated(Resource resource) {}
+	public void onResourcesActiveUpdated(Set<Resource> resources) {}
 
 	@Override
 	public void onGameRemoved(int gameId) {}

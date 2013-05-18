@@ -1,11 +1,13 @@
 package core;
 
+import java.util.EventListener;
+
 /**
  * The listener interface for receiving the events from the central server.
  * A central server event is generated when a request is received or when a response is sent.
  * @author Paul Chaignon
  */
-public interface CentralServerListener {
+public interface CentralServerListener extends EventListener {
 
 	/**
 	 * Called when a debug request has been received.
@@ -15,7 +17,7 @@ public interface CentralServerListener {
 	
 	/**
 	 * Called when a Start Game request has been received.
-	 * @param san
+	 * @param san True if the client want to receive SAN moves.
 	 */
 	public void onStartGameRequest(boolean san);
 	
@@ -45,4 +47,10 @@ public interface CentralServerListener {
 	 * @param debug The debug information sent as an HTML document.
 	 */
 	public void onDebugInformationSent(String debug);
+	
+	/**
+	 * Called when a response has been sent after a Start Game request.
+	 * @param gameId The game id sent.
+	 */
+	public void onGameIdSent(int gameId);
 }

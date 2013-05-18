@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.swing.event.EventListenerList;
+
 import parser.ChessParser;
 import parser.IncorrectFENException;
 
@@ -26,6 +28,28 @@ public class GamesManager extends DatabaseManager {
 	private static final String MOVE_RESOURCE = "resource";
 	private static final String MOVE_NUMBER = "num_move"; // The number of the move in the game
 	private static final String MOVE_TRUST = "move_trust";
+
+	/**
+	 * The list of event listener for the database.
+	 * EventListenerList is used for a better multithread safety.
+	 */
+	private static final EventListenerList listeners = new EventListenerList();
+
+	/**
+	 * Add a database listener to the listeners.
+	 * @param listener The new listener.
+	 */
+	public void addDatabaseListener(DatabaseListener listener) {
+		listeners.add(DatabaseListener.class, listener);
+	}
+	
+	/**
+	 * Remove a database listener from the listeners.
+	 * @param listener The new listener.
+	 */
+	public void removeDatabaseListener(DatabaseListener listener) {
+		listeners.remove(DatabaseListener.class, listener);
+	}
 	
 	/**
 	 * Remove all traces of the game id_game.
@@ -196,16 +220,16 @@ public class GamesManager extends DatabaseManager {
 	/**
 	 * Add a new move for reward.
 	 * @param gameId The id of the game.
-	 * @param resourcesId The id of the resource.
+	 * @param resourcesConfidence The confidence of each resources in the move.
 	 * @param moveNumber The move number.
 	 * @return True if added, false otherwise.
 	 */
-	public static boolean addMoves(int gameId, Map<Integer, Double> resourcesConfidence, int moveNumber) {
+	public static boolean addMove(int gameId, Map<Integer, Double> resourcesConfidence, int moveNumber) {
 		Connection dbConnect = getConnection();
 		String query = "INSERT INTO "+MOVES+" ("+MOVE_GAME+", "+MOVE_RESOURCE+", "+MOVE_NUMBER+", "+MOVE_TRUST+") VALUES(?, ?, ?, ?)";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
-			for(Entry<Integer, Double> resourceConfidence : resourcesConfidence.entrySet()) {
+			for(Entry<Integer, Double> resourceConfidence: resourcesConfidence.entrySet()) {
 				statement.setInt(1, gameId);
 				statement.setInt(2, resourceConfidence.getKey());
 				statement.setInt(3, moveNumber);
@@ -234,12 +258,12 @@ public class GamesManager extends DatabaseManager {
 	 * @param gameId The id of the game to scan.
 	 * @return The map or null if an error occurred.
 	 */
-	public static Map<Integer, Double> getResourcesInvolvement(int gameId) {
-		Map<Integer, Double> stats = new HashMap<Integer, Double>();
+	public static Map<Integer, Double> getResourceInvolvements(int gameId) {
+		Map<Integer, Double> resourceInvolvements = new HashMap<Integer, Double>();
 		// TODO Isn't it possible to get that info after?
 		int nbTotalMoves = getNumberOfMoves(gameId);
 		if(nbTotalMoves<=0) {
-			return stats;
+			return resourceInvolvements;
 		}
 		if(exist(gameId)) {
 			Connection dbConnect = getConnection();
@@ -249,12 +273,12 @@ public class GamesManager extends DatabaseManager {
 				statement.setInt(1, gameId);
 				ResultSet set = statement.executeQuery();
 				while(set.next()) {
-					stats.put(set.getInt(MOVE_RESOURCE), set.getDouble("totalTrust"));
+					resourceInvolvements.put(set.getInt(MOVE_RESOURCE), set.getDouble("totalTrust"));
 				}
 				dbConnect.close();
-				return stats;
+				return resourceInvolvements;
 			} catch(SQLException e) {
-				System.err.println("getResourcesInvolvement: "+e.getMessage());
+				System.err.println("getResourceInvolvements: "+e.getMessage());
 			}
 		}
 		return null;

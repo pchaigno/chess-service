@@ -1,5 +1,6 @@
 package core;
 
+import javax.swing.event.EventListenerList;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -28,6 +29,35 @@ public class CentralServerResource {
 	protected CentralServer server = new CentralServer();
 	
 	/**
+	 * The list of event listener for the central server.
+	 * EventListenerList is used for a better multithread safety.
+	 */
+	private static final EventListenerList listeners = new EventListenerList();
+
+	/**
+	 * Add a central server listener to the listeners.
+	 * @param listener The new listener.
+	 */
+	public static void addCentralServerListener(CentralServerListener listener) {
+		listeners.add(CentralServerListener.class, listener);
+	}
+	
+	/**
+	 * Remove a central server listener from the listeners.
+	 * @param listener The new listener.
+	 */
+	public static void removeCentralServerListener(CentralServerListener listener) {
+		listeners.remove(CentralServerListener.class, listener);
+	}
+	
+	/**
+	 * @return The central server listeners.
+	 */
+	public static CentralServerListener[] getCentralServerListeners() {
+		return listeners.getListeners(CentralServerListener.class);
+	}
+	
+	/**
 	 * Receive a FEN from a client and return the best move corresponding after
 	 * requesting all the resources.
 	 * The client calls this method with an HTTP GET request on /rest/{fen}.
@@ -39,14 +69,17 @@ public class CentralServerResource {
 	@Produces("text/plain")
 	public Response getBestMove(@PathParam("fen")String fen) {
 		fen = fen.replaceAll("\\$", "/");
+		
+		// Notify the central server listeners about the request.
+		fireGetBestMoveRequest(-1, fen);
+		
 		if(!ChessParser.isCorrectFEN(fen)) {
 			return respondBadRequest("FEN incorrect.");
 		}
 		
 		if(!fen.endsWith("-")) {
-			ChessParser parser;
 			try {
-				parser = new ChessParser(fen);
+				ChessParser parser = new ChessParser(fen);
 				parser.checkEnPassant();
 			} catch (IncorrectFENException e) {
 				// Shouldn't happen !
@@ -59,6 +92,10 @@ public class CentralServerResource {
 		if(move==null) {
 			move = NO_RESULT;
 		}
+		
+		// Notify the central server listeners about the response sent.
+		fireBestMoveSent(move);
+		
 		return respondOK(move);
 	}
 	
@@ -73,18 +110,31 @@ public class CentralServerResource {
 	@Path("/{gameId: [0-9]+}/{fen}")
 	@DELETE
 	public Response endOfGame(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
+		fen = fen.replaceAll("\\$", "/");
+		
+		// Notify the central server listeners about the request.
+		fireEndOfGameRequest(gameId, fen);
+		
+		if(!GamesManager.exist(gameId)) {
+			return respondNotFound("Game id not found in the database.");
+		}
+		
+		if(!ChessParser.isCorrectFEN(fen)) {
+			return respondBadRequest("FEN incorrect.");
+		}
+		
+		int reward;
 		try {
-			int reward;
 			reward = ChessParser.result(fen, GamesManager.getColor(gameId));
-			server.rewardResources(gameId, reward);
-			GamesManager.removeGame(gameId);
-			ResponseBuilder builder = Response.ok();
-			builder.header("Access-Control-Allow-Origin", "*");
-			return builder.build();
 		} catch(IncorrectFENException ife) {
 			System.err.println(ife.getMessage());
 			return respondBadRequest(ife.getMessage());
 		}
+		
+		this.server.rewardResources(gameId, reward);
+		GamesManager.removeGame(gameId);
+		
+		return respondOK("");
 	}
 	
 	/**
@@ -100,11 +150,14 @@ public class CentralServerResource {
 	@GET
 	@Produces("text/plain")
 	public Response getBestMove(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
+		fen = fen.replaceAll("\\$", "/");
+		
+		// Notify the central server listeners about the request.
+		fireGetBestMoveRequest(gameId, fen);
+		
 		if(!GamesManager.exist(gameId)) {
 			return respondNotFound("Game id not found in the database.");
 		}
-		
-		fen = fen.replaceAll("\\$", "/");
 		
 		if(!ChessParser.isCorrectFEN(fen)) {
 			return respondBadRequest("FEN incorrect.");
@@ -143,6 +196,9 @@ public class CentralServerResource {
 				}	
 			}
 		}
+		
+		// Notify the central server listeners about the response sent.
+		fireBestMoveSent(move);
 
 		return respondOK(move);
 	}
@@ -159,6 +215,9 @@ public class CentralServerResource {
 	@Produces("text/html")
 	public Response debug(@PathParam("fen")String fen) {
 		fen = fen.replaceAll("\\$", "/");
+		
+		// Notify the central server listeners about the request.
+		fireDebugRequest(fen);
 		
 		if(!ChessParser.isCorrectFEN(fen)) {
 			return respondBadRequest("FEN incorrect.");
@@ -178,6 +237,9 @@ public class CentralServerResource {
 		}
 		
 		String debug = this.server.getDebugInformation(fen);
+		
+		// Notify the central server listeners about the debug information sent.
+		fireDebugInformationSent(debug);
 
 		return respondOK(debug);
 	}
@@ -192,7 +254,14 @@ public class CentralServerResource {
 	@POST
 	@Produces("text/plain")
 	public Response startGame(@DefaultValue("true")@FormParam("san")boolean san) {
+		// Notify the central server listeners about the request.
+		fireStartGameRequest(san);
+		
 		int gameId = GamesManager.addNewGame(san);
+		
+		// Notify the central server listeners about the game id sent.
+		fireGameIdSent(gameId);
+		
 		return respondOK(String.valueOf(gameId));
 	}
 	
@@ -245,5 +314,77 @@ public class CentralServerResource {
 		builder.header("Access-Control-Allow-Origin", "*");
 		builder.entity(message);
 		return builder.build();
+	}
+	
+	/**
+	 * Fire the debug request event for all central server listeners.
+	 * @param fen The FEN received.
+	 */
+	private static void fireDebugRequest(String fen) {
+		for(CentralServerListener listener: getCentralServerListeners()) {
+			listener.onDebugRequest(fen);
+		}
+	}
+	
+	/**
+	 * Fire a Start Game request event for all central server listeners.
+	 * @param san True if the client want to receive SAN moves.
+	 */
+	private static void fireStartGameRequest(boolean san) {
+		for(CentralServerListener listener: getCentralServerListeners()) {
+			listener.onStartGameRequest(san);
+		}
+	}
+	
+	/**
+	 * Fire a End Of Game request event for all central server listeners.
+	 * @param gameId The id of the game in question.
+	 * @param fen The FEN received.
+	 */
+	private static void fireEndOfGameRequest(int gameId, String fen) {
+		for(CentralServerListener listener: getCentralServerListeners()) {
+			listener.onEndOfGameRequest(gameId, fen);
+		}
+	}
+	
+	/**
+	 * Fire a Get Best Move request event for all central server listeners.
+	 * @param gameId The id of the game in question.
+	 * @param fen The FEN received.
+	 */
+	private static void fireGetBestMoveRequest(int gameId, String fen) {
+		for(CentralServerListener listener: getCentralServerListeners()) {
+			listener.onGetBestMoveRequest(gameId, fen);
+		}
+	}
+	
+	/**
+	 * Fire a Best Move sent event for all central server listeners.
+	 * @param bestMove The best move sent.
+	 */
+	private static void fireBestMoveSent(String bestMove) {
+		for(CentralServerListener listener: getCentralServerListeners()) {
+			listener.onBestMoveSent(bestMove);
+		}
+	}
+	
+	/**
+	 * Fire a debug information sent event for all central server listeners.
+	 * @param debug The debug information sent as an HTML document.
+	 */
+	private static void fireDebugInformationSent(String debug) {
+		for(CentralServerListener listener: getCentralServerListeners()) {
+			listener.onDebugInformationSent(debug);
+		}
+	}
+	
+	/**
+	 * Fire a game id sent event for all central server listeners.
+	 * @param gameId The game id sent.
+	 */
+	private static void fireGameIdSent(int gameId) {
+		for(CentralServerListener listener: getCentralServerListeners()) {
+			listener.onGameIdSent(gameId);
+		}
 	}
 }

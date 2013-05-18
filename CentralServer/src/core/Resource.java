@@ -3,6 +3,7 @@ package core;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import javax.swing.event.EventListenerList;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.core.runtime.URIUtil;
@@ -35,6 +36,35 @@ public abstract class Resource {
 	protected boolean connected;
 	protected boolean active;
 	protected static final String JSON_MOVE = "move";
+	
+	/**
+	 * The list of event listener for the central server.
+	 * EventListenerList is used for a better multithread safety.
+	 */
+	private static final EventListenerList listeners = new EventListenerList();
+
+	/**
+	 * Add a resource listener to the listeners.
+	 * @param listener The new listener.
+	 */
+	public static void addResourceListener(ResourceListener listener) {
+		listeners.add(ResourceListener.class, listener);
+	}
+	
+	/**
+	 * Remove a resource listener from the listeners.
+	 * @param listener The new listener.
+	 */
+	public static void removeResourceListener(ResourceListener listener) {
+		listeners.remove(ResourceListener.class, listener);
+	}
+	
+	/**
+	 * @return The resource listeners.
+	 */
+	public static ResourceListener[] getResourceListeners() {
+		return listeners.getListeners(ResourceListener.class);
+	}
 
 	/**
 	 * Constructor
@@ -95,6 +125,9 @@ public abstract class Resource {
 	 * @param fen The FEN representing the current position of the chessboard.
 	 */
 	public void query(String fen) {
+		// Notify the resource listeners about the request.
+		this.fireQueryRequest(fen);
+		
 		this.clearSuggestions();
 
 		// Replace the slashes in the FEN by dollars.
@@ -117,7 +150,14 @@ public abstract class Resource {
 		// Launch the request and parse the result:
 		try {
 			String response = r.accept(MediaType.APPLICATION_JSON_TYPE).get(String.class);
+			
+			// Notify the resource listeners about the response received.
+			this.fireSuggestionsReceived(response);
+			
 			this.parseJSONMove(response, fen);
+			
+			// Notify the resource listeners about the suggestions update.
+			this.fireSuggestionsUpdated();
 		} catch(ClientHandlerException e) {
 			// It just do nothing if the resource isn't connected.
 		}
@@ -212,6 +252,9 @@ public abstract class Resource {
 	 * Complete the version and the san parameters by calling the resource.
 	 */
 	public void checkVersion() {
+		// Notify the resource listeners about the request.
+		this.fireVersionRequest();
+		
 		// Prepare the request:
 		Client client = Client.create();
 		WebResource webresource = client.resource(this.uri + "/version");
@@ -221,18 +264,25 @@ public abstract class Resource {
 		// Launch the request and complete the params:
 		try {
 			ClientResponse clientresponse = webresource.get(ClientResponse.class);
+			String response = clientresponse.getEntity(String.class);
 			int status = clientresponse.getStatus();
+			
+			// Notify the resource listeners about the response received.
+			this.fireVersionReceived(status, response);
+			
 			if(status != 200) {
 				this.connected = false;
 			} else {
 				this.connected = true;
-				String response = clientresponse.getEntity(String.class);
 				this.san = ('s' == response.charAt(response.length()-1));
 				this.version = response.substring(0, response.length()-1);
 			}
 		} catch(ClientHandlerException e) {
 			this.connected = false;
 		}
+		
+		// Notify the resource listeners that the version is updated.
+		this.fireVersionUpdated();
 	}
 
 	/**
@@ -268,5 +318,63 @@ public abstract class Resource {
 			return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * Fire a query request event for all resource listeners.
+	 * @param fen The FEN sent.
+	 */
+	private void fireQueryRequest(String fen) {
+		for(ResourceListener listener: getResourceListeners()) {
+			listener.onQueryRequest(this, fen);
+		}
+	}
+
+	/**
+	 * Fire a suggestions received event for all resource listeners.
+	 * @param suggestions The suggestions received as a JSON document.
+	 */
+	private void fireSuggestionsReceived(String suggestions) {
+		for(ResourceListener listener: getResourceListeners()) {
+			listener.onSuggestionsReceived(this, suggestions);
+		}
+	}
+
+	/**
+	 * Fire a suggestions updated event for all resource listeners.
+	 */
+	private void fireSuggestionsUpdated() {
+		for(ResourceListener listener: getResourceListeners()) {
+			listener.onSuggestionsUpdated(this);
+		}
+	}
+
+	/**
+	 * Fire a version request event for all resource listeners.
+	 */
+	private void fireVersionRequest() {
+		for(ResourceListener listener: getResourceListeners()) {
+			listener.onVersionRequest(this);
+		}
+	}
+
+	/**
+	 * Fire a version received event for all resource listeners.
+	 * @param status The response status, a HTTP code.
+	 * @param response The response body.
+	 */
+	private  void fireVersionReceived(int status, String response) {
+		for(ResourceListener listener: getResourceListeners()) {
+			listener.onVersionReceived(this, status, response);
+		}
+	}
+
+	/**
+	 * Fire a version updated event for all resource listeners.
+	 */
+	private void fireVersionUpdated() {
+		for(ResourceListener listener: getResourceListeners()) {
+			listener.onVersionUpdated(this);
+		}
 	}
 }

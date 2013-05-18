@@ -1,11 +1,13 @@
 package core;
 
+import java.util.EventListener;
+
 /**
  * The listener interface for receiving events from the resources.
  * A resource event is generated when a request is sent to the resource or when a response is received.
  * @author Paul Chaignon
  */
-public interface ResourcesListener {
+public interface ResourceListener extends EventListener {
 
 	/**
 	 * Called when a query has been sent to the resource to get a suggestions list.

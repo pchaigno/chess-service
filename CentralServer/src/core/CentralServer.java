@@ -92,7 +92,7 @@ public class CentralServer {
 		String bestMove = this.bestMove(scores, ends);
 		
 		if(gameId>0) {
-			GamesManager.addMoves(gameId, getMoveResourcesConfidence(bestMove), GamesManager.getNumberOfMoves(gameId)+1);
+			GamesManager.addMove(gameId, getMoveResourcesConfidence(bestMove), GamesManager.getNumberOfMoves(gameId)+1);
 		}
 		
 		StatsManager.updateStatistics(getSuggestions());
@@ -252,8 +252,8 @@ public class CentralServer {
 	 */
 	public void rewardResources(int gameId, int gameResult) {
 		if(gameResult!=EndingSuggestion.DRAW_RESULT) {
-			Map<Integer, Double> resourcesInvolvement = GamesManager.getResourcesInvolvement(gameId);
-			ResourcesManager.updateResourcesTrust(resourcesInvolvement, gameResult);
+			Map<Integer, Double> resourceInvolvements = GamesManager.getResourceInvolvements(gameId);
+			ResourcesManager.updateResourcesTrust(resourceInvolvements, gameResult);
 		}
 	}
 

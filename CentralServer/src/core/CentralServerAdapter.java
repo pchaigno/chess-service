@@ -25,4 +25,7 @@ public class CentralServerAdapter implements CentralServerListener {
 
 	@Override
 	public void onDebugInformationSent(String debug) {}
+
+	@Override
+	public void onGameIdSent(int gameId) {}
 }

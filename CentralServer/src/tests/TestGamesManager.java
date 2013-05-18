@@ -35,15 +35,15 @@ public class TestGamesManager extends TestCase {
 		resourcesMove4.put(1, (double)1);
 		resourcesMove4.put(3, 0.4);
 		
-		assertTrue(GamesManager.addMoves(games.get(0), resourcesMove1, 1));
-		assertTrue(GamesManager.addMoves(games.get(0), resourcesMove2, 2));
-		assertTrue(GamesManager.addMoves(games.get(0), resourcesMove3, 3));
-		assertTrue(GamesManager.addMoves(games.get(0), resourcesMove4, 4));
+		assertTrue(GamesManager.addMove(games.get(0), resourcesMove1, 1));
+		assertTrue(GamesManager.addMove(games.get(0), resourcesMove2, 2));
+		assertTrue(GamesManager.addMove(games.get(0), resourcesMove3, 3));
+		assertTrue(GamesManager.addMove(games.get(0), resourcesMove4, 4));
 		
 		assertTrue(GamesManager.updateGame(games.get(0), "fen3coups"));
 		
-		assertTrue(GamesManager.getResourcesInvolvement(games.get(0)).get(1)==3);
-		assertTrue(GamesManager.getResourcesInvolvement(games.get(0)).get(3)==1.1);
+		assertTrue(GamesManager.getResourceInvolvements(games.get(0)).get(1)==3);
+		assertTrue(GamesManager.getResourceInvolvements(games.get(0)).get(3)==1.1);
 		
 		assertTrue(GamesManager.removeGame(games.get(0)));
 	}

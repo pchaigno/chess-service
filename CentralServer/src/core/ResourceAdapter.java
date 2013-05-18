@@ -6,7 +6,7 @@ package core;
  * This class exists as convenience for creating listener objects.
  * @author Paul Chaignon
  */
-public class ResourcesAdapter implements ResourcesListener {
+public class ResourceAdapter implements ResourceListener {
 
 	@Override
 	public void onQueryRequest(Resource resource, String fen) {}

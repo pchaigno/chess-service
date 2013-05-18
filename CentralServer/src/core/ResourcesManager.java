@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.event.EventListenerList;
+
 /**
  * Handle all the accesses to the SQLite database for the resources.
  * @author Paul Chaignon
@@ -22,6 +24,35 @@ public class ResourcesManager extends DatabaseManager {
 	private static final String RESOURCE_TRUST = "trust";
 	private static final String RESOURCE_TYPE = "type";
 	private static final String RESOURCE_ACTIVE = "active";
+	
+	/**
+	 * The list of event listener for the database.
+	 * EventListenerList is used for a better multithread safety.
+	 */
+	private static final EventListenerList listeners = new EventListenerList();
+
+	/**
+	 * Add a database listener to the listeners.
+	 * @param listener The new listener.
+	 */
+	public static void addDatabaseListener(DatabaseListener listener) {
+		listeners.add(DatabaseListener.class, listener);
+	}
+	
+	/**
+	 * Remove a database listener from the listeners.
+	 * @param listener The new listener.
+	 */
+	public static void removeDatabaseListener(DatabaseListener listener) {
+		listeners.remove(DatabaseListener.class, listener);
+	}
+	
+	/**
+	 * @return The database listeners.
+	 */
+	public static DatabaseListener[] getDatabaseListeners() {
+		return listeners.getListeners(DatabaseListener.class);
+	}
 	
 	/**
 	 * Get the resources from the database.
@@ -50,6 +81,10 @@ public class ResourcesManager extends DatabaseManager {
 				resource.setId(results.getInt(RESOURCE_ID));
 				resources.add(resource);
 			}
+			
+			// Notify the database listeners about the operation.
+			fireResourcesRecovery(active, resources);
+			
 			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("getResources: "+e.getMessage());
@@ -88,6 +123,10 @@ public class ResourcesManager extends DatabaseManager {
 				ResultSet res = statement.executeQuery();
 				res.next();
 				resource.setId(res.getInt("last_id"));
+				
+				// Notify the database listeners about the operation.
+				fireResourceAdded(resource);
+				
 				return true;
 			}
 		} catch(SQLException e) {
@@ -112,6 +151,10 @@ public class ResourcesManager extends DatabaseManager {
 				return false;
 			}
 			dbConnect.close();
+			
+			// Notify the database listeners that the resource has been removed.
+			fireResourceRemoved(resource);
+			
 			return true;
 		} catch(SQLException e) {
 			System.err.println("removeResource: "+e.getMessage());
@@ -138,6 +181,11 @@ public class ResourcesManager extends DatabaseManager {
 			}
 			int[] results = statement.executeBatch();
 			notRemoved = computeResourceResults(resourcesToRemove, results);
+			
+			// Notify the database listeners about the operation:
+			resources.removeAll(notRemoved);
+			fireResourcesRemoved(resources);
+			
 			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("removeResources: "+e.getMessage());
@@ -172,6 +220,10 @@ public class ResourcesManager extends DatabaseManager {
 				return false;
 			}
 			dbConnect.close();
+			
+			// Notify the database listeners about the operation.
+			fireResourceUpdated(resource);
+			
 			return true;
 		} catch(SQLException e) {
 			System.err.println("updateResource: "+e.getMessage());
@@ -181,27 +233,34 @@ public class ResourcesManager extends DatabaseManager {
 	
 	/**
 	 * Update the trust parameter of resources.
-	 * @param resourcesInvolvement A map with the id of the resources as key and the value that need to be add to the trust of the resource.
+	 * @param resourceInvolvements A map with the id of the resources as key and the value that need to be add to the trust of the resource.
 	 * @param gameResult The result of the game: -1 for lose, 1 for win, 0 for draw.
 	 * @return The id of the resources that weren't updated.
 	 */
-	public static Set<Integer> updateResourcesTrust(Map<Integer, Double> resourcesInvolvement, int gameResult) {
+	public static Set<Integer> updateResourcesTrust(Map<Integer, Double> resourceInvolvements, int gameResult) {
 		Set<Integer> notUpdated = new HashSet<Integer>();
 		List<Integer> resourcesToUpdate = new ArrayList<Integer>();
-		resourcesToUpdate.addAll(resourcesInvolvement.keySet());
+		resourcesToUpdate.addAll(resourceInvolvements.keySet());
 		Connection dbConnect = getConnection();
 		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_TRUST+" += ? WHERE "+RESOURCE_ID+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			for(int resourceId: resourcesToUpdate) {
-				double reward = gameResult*resourcesInvolvement.get(resourceId);
+				double reward = gameResult*resourceInvolvements.get(resourceId);
 				statement.setInt(1, (int)reward);
 				statement.setInt(2, resourceId);
 				statement.addBatch();
 			}
 			int[] results = statement.executeBatch();
-			notUpdated = computeIdResults(resourcesToUpdate, results);
 			dbConnect.close();
+			
+			notUpdated = computeIdResults(resourcesToUpdate, results);
+			
+			// Notify the database listeners about the operation:
+			for(int resource: notUpdated) {
+				resourceInvolvements.remove(resource);
+			}
+			fireResourcesTrustUpdated(resourceInvolvements, gameResult);
 		} catch(SQLException e) {
 			System.err.println("updateResourcesTrust: "+e.getMessage());
 		}
@@ -227,8 +286,13 @@ public class ResourcesManager extends DatabaseManager {
 				statement.addBatch();
 			}
 			int[] results = statement.executeBatch();
-			notUpdated = computeResourceResults(resourcesToUpdate, results);
 			dbConnect.close();
+			
+			notUpdated = computeResourceResults(resourcesToUpdate, results);
+			
+			// Notify the database listeners about the operation:
+			resources.removeAll(notUpdated);
+			fireResourcesActiveUpdated(resources);
 		} catch(SQLException e) {
 			System.err.println("updateResourcesActive: "+e.getMessage());
 		}
@@ -267,5 +331,77 @@ public class ResourcesManager extends DatabaseManager {
 			}
 		}
 		return notSubmitted;
+	}
+	
+	/**
+	 * Fire a resources recovery event for all database listeners.
+	 * @param active True if only the active resources have been recovered.
+	 * @param resources The resources recovered.
+	 */
+	private static void fireResourcesRecovery(boolean active, Set<Resource> resources) {
+		for(DatabaseListener listener: getDatabaseListeners()) {
+			listener.onResourcesRecovery(active, resources);
+		}
+	}
+
+	/**
+	 * Fire a resource added event for all database listeners.
+	 * @param resource The resource added.
+	 */
+	private static void fireResourceAdded(Resource resource) {
+		for(DatabaseListener listener: getDatabaseListeners()) {
+			listener.onResourceAdded(resource);
+		}
+	}
+
+	/**
+	 * Fire a Resources Active Updated event for all database listeners.
+	 * @param resource The resource removed.
+	 */
+	private static void fireResourceRemoved(Resource resource) {
+		for(DatabaseListener listener: getDatabaseListeners()) {
+			listener.onResourceRemoved(resource);
+		}
+	}
+
+	/**
+	 * Fire a resources removed event for all database listeners.
+	 * @param resources The resources removed.
+	 */
+	private static void fireResourcesRemoved(Set<Resource> resources) {
+		for(DatabaseListener listener: getDatabaseListeners()) {
+			listener.onResourcesRemoved(resources);
+		}
+	}
+
+	/**
+	 * Fire a resource updated event for all database listeners.
+	 * @param resource The resource updated.
+	 */
+	private static void fireResourceUpdated(Resource resource) {
+		for(DatabaseListener listener: getDatabaseListeners()) {
+			listener.onResourceUpdated(resource);
+		}
+	}
+
+	/**
+	 * Fire a resources trust updated event for all database listeners.
+	 * @param resourceInvolvements Involvement in the game for each resources updated.
+	 * @param gameResult The result of the game.
+	 */
+	private static void fireResourcesTrustUpdated(Map<Integer, Double> resourceInvolvements, int gameResult) {
+		for(DatabaseListener listener: getDatabaseListeners()) {
+			listener.onResourcesTrustUpdated(resourceInvolvements, gameResult);
+		}
+	}
+
+	/**
+	 * Fire a Resources Active Updated event for all database listeners.
+	 * @param resources The resources whose active parameters have been updated.
+	 */
+	private static void fireResourcesActiveUpdated(Set<Resource> resources) {
+		for(DatabaseListener listener: getDatabaseListeners()) {
+			listener.onResourcesActiveUpdated(resources);
+		}
 	}
 }

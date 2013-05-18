@@ -1,5 +1,6 @@
 package core;
 
+import java.util.EventListener;
 import java.util.Map;
 import java.util.Set;
 
@@ -8,7 +9,7 @@ import java.util.Set;
  * A database event is generated when the file is changed or when data is recovered from it.
  * @author Paul Chaignon
  */
-public interface DatabaseListener {
+public interface DatabaseListener extends EventListener {
 	
 	/**
 	 * Called when resources have been recovered from the database.
@@ -43,15 +44,16 @@ public interface DatabaseListener {
 	
 	/**
 	 * Called when the trust in resources has been updated.
-	 * @param resource The resources whose trust has been updated.
+	 * @param resourceInvolvements Involvement in the game for each resources updated.
+	 * @param gameResult The result of the game.
 	 */
-	public void onResourcesTrustUpdated(Resource resource);
+	public void onResourcesTrustUpdated(Map<Integer, Double> resourceInvolvements, int gameResult);
 	
 	/**
 	 * Called when the active parameters of resources have been updated.
-	 * @param resource The resources whose active parameter has been updated.
+	 * @param resources The resources whose active parameters have been updated.
 	 */
-	public void onResourcesActiveUpdated(Resource resource);
+	public void onResourcesActiveUpdated(Set<Resource> resources);
 	
 	/**
 	 * Called when a game has been removed from the database along with all its moves.
