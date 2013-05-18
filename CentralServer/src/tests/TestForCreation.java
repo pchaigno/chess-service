@@ -14,7 +14,7 @@ import junit.framework.TestCase;
 public class TestForCreation extends TestCase {
 
 	public void testCreateResources() {
-		fail();
+		//fail();
 		Connection dbConnect = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -25,7 +25,7 @@ public class TestForCreation extends TestCase {
 		} catch (ClassNotFoundException e) {
 			System.err.println("Driver missing for SQLite JDBC.");
 		}
-		String query = "CREATE TABLE resources(id INTEGER PRIMARY KEY, name TEXT NOT NULL, uri TEXT NOT NULL, trust INTEGER, type INTEGER, active INTEGER);";
+		String query = "CREATE TABLE resources(id INTEGER PRIMARY KEY, name TEXT NOT NULL, uri TEXT NOT NULL UNIQUE, trust INTEGER, type INTEGER, active INTEGER);";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.executeUpdate();
