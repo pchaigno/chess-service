@@ -16,14 +16,14 @@ import java.util.Set;
  */
 public class StatsManager {
 	private static Properties conf = null;
-	private static final String CONFIG_FILE = "stats1.properties";
+	private static final String CONFIG_FILE = "stats.properties";
 	// List of properties' name
 	public static final String STATS_NB_PLAY = "nb_play";
 	public static final String STATS_PROBAW = "proba_win";
 	public static final String STATS_BOT_DEPTH = "bot_depth";
 	public static final String STATS_BOT_SCORE = "bot_score";
 	
-	// TODO mieux gerer les parametres avec un "structure" commune (un nom et un rang par param) pour plus de généricite
+	// TODO mieux gerer les parametres avec un "structure" commune (un nom et un rang par param) pour plus de gï¿½nï¿½ricite
 	private static final int NB_PARAMS_OPENINGS = 2;
 	private static final int RANGE_NB_PLAY = 0;
 	private static final int RANGE_PROBAW = 1;
