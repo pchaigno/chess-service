@@ -21,7 +21,6 @@ public class StatsManager {
 	public static final String STATS_PROBAW = "proba_win";
 	public static final String STATS_BOT_DEPTH = "bot_depth";
 	public static final String STATS_BOT_SCORE = "bot_score";
-	
 	/**
 	 * @return The object containing the configuration.
 	 */
