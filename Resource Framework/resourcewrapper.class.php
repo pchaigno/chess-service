@@ -1,7 +1,9 @@
 <?php
 
 class ResourceWrapper {
-	private $complete_fen; // False to remove the end of the FEN before submit.
+	private $complete_fen_openings; // False to remove the end of the FEN before submit.
+	private $complete_fen_middle; // False to remove the end of the FEN before submit.
+	private $complete_fen_endings; // False to remove the end of the FEN before submit.
 	
 	private $openings; // True to support opengings.
 	private $open_version; // Version of the openings' code.
@@ -23,17 +25,20 @@ class ResourceWrapper {
 	
 
 	// Constructor.
-	public function __construct($complete_fen = true) {
-		$this->complete_fen = $complete_fen;
+	public function __construct() {
+		$this->complete_fen_openings = false;
+		$this->complete_fen_middle = false;
+		$this->complete_fen_endings = false;
 		$this->openings = false;
 		$this->endings = false;
 		$this->middle = false;
 	}
 	
 	// Configure the openings part for typical database requests.
-	public function setDatabaseOpenings($url, $version, $san, $parser = null) {
+	public function setDatabaseOpenings($url, $version, $san, $parser = null, $complete_fen) {
 		$this->openings = true;
 		$this->open_version = $version;
+		$this->complete_fen_openings = $complete_fen;
 		if($san) {
 			$this->open_version .= 's'; // SAN version.
 		} else {
@@ -46,9 +51,10 @@ class ResourceWrapper {
 	}
 	
 	// Configure the openings part with a custom function.
-	public function setCustomOpenings($function, $version, $san) {
+	public function setCustomOpenings($function, $version, $san, $complete_fen) {
 		$this->openings = true;
 		$this->open_version = $version;
+		$this->complete_fen_openings = $complete_fen;
 		if($san) {
 			$this->open_version .= 's'; // SAN version.
 		} else {
@@ -59,9 +65,10 @@ class ResourceWrapper {
 	}
 	
 	// Configure the endings part for typical database requests.
-	public function setDatabaseEndings($url, $version, $san, $parser = null) {
+	public function setDatabaseEndings($url, $version, $san, $parser = null, $complete_fen) {
 		$this->endings = true;
 		$this->end_version = $version;
+		$this->complete_fen_endings = $complete_fen;
 		if($san) {
 			$this->end_version .= 's'; // SAN version.
 		} else {
@@ -74,9 +81,10 @@ class ResourceWrapper {
 	}
 	
 	// Configure the openings part with a custom function.
-	public function setCustomEndings($function, $version, $san) {
+	public function setCustomEndings($function, $version, $san, $complete_fen) {
 		$this->endings = true;
 		$this->end_version = $version;
+		$this->complete_fen_endings = $complete_fen;
 		if($san) {
 			$this->end_version .= 's'; // SAN version.
 		} else {
@@ -87,9 +95,10 @@ class ResourceWrapper {
 	}
 	
 	// Configure the middle game part with a custom function.
-	public function setMiddleGame($function, $version, $san) {
+	public function setMiddleGame($function, $version, $san, $complete_fen) {
 		$this->middle = true;
 		$this->middle_version = $version;
+		$this->complete_fen_middle = $complete_fen;
 		if($san) {
 			$this->middle_version .= 's'; // SAN version.
 		} else {
