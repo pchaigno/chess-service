@@ -3,7 +3,7 @@
 require('resourcewrapper.class.php');
 
 $wrapper = new ResourceWrapper();
-$wrapper->setMiddleGame('getMiddle', '1.0', true);
+$wrapper->setMiddleGame('getMiddle', '1.0', true, true);
 $wrapper->rest();
 
 // Variables
