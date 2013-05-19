@@ -110,33 +110,22 @@ public class StatsManager {
 		Set<Double> scoreValues = new HashSet<Double>();
 		
 		//We loop through the moves and add the right value in sets, depending on the entity chosen
-		for(MoveSuggestion move : moves){
-			if(move instanceof BotSuggestion){
-				switch(propertyEntity){
-				case STATS_BOT_DEPTH:
+		for(MoveSuggestion move : moves) {
+			if(move instanceof BotSuggestion) {
+				if(STATS_BOT_DEPTH.equals(propertyEntity)) {
 					values.add((double)((BotSuggestion)move).getDepth());
 					scoreValues.add(((BotSuggestion)move).computeScoreDepth());
-					break;
-				case STATS_BOT_SCORE:
+				} else if(STATS_BOT_SCORE.equals(propertyEntity)) {
 					values.add(((BotSuggestion)move).getEngineScore());
 					scoreValues.add(((BotSuggestion)move).computeScoreEngineScore());
-					break;
-				default :
-					break;
 				}
-			}
-			else if (move instanceof OpeningSuggestion){
-				switch(propertyEntity){
-				case STATS_NB_PLAY:
+			} else if (move instanceof OpeningSuggestion) {
+				if(STATS_NB_PLAY.equals(propertyEntity)) {
 					values.add((double)((OpeningSuggestion)move).getNbPlay());
 					scoreValues.add(((OpeningSuggestion)move).getScoreNbPlay());
-					break;
-				case STATS_PROBAW:
+				} else if(STATS_PROBAW.equals(propertyEntity)) {
 					values.add((double)((OpeningSuggestion)move).getProbaWin());
 					scoreValues.add(((OpeningSuggestion)move).getScoreProbaWin());
-					break;
-				default:
-					break;
 				}
 			}
 		}
@@ -145,10 +134,10 @@ public class StatsManager {
 		Statistic stats = computeStats(values, scoreValues);
 		
 		//We compute the new stats, using the one compute above and the one store in the stats properties file
-		double newMean = computeMean(propertyEntity, stats.getMean(), values.size(), false);
-		double newVariance = computeVariance(propertyEntity, stats.getMean(), stats.getVariance(), values.size(), false);
-		double newNormalizationMean = computeMean(propertyEntity, stats.getNormalization_mean(), scoreValues.size(), true);
-		double newNormalizationVariance = computeVariance(propertyEntity, stats.getNormalization_mean(), stats.getNormalization_variance(), scoreValues.size(), true);
+		double newMean = computeMean(propertyEntity, stats.mean, values.size(), false);
+		double newVariance = computeVariance(propertyEntity, stats.mean, stats.variance, values.size(), false);
+		double newNormalizationMean = computeMean(propertyEntity, stats.normalizationMean, scoreValues.size(), true);
+		double newNormalizationVariance = computeVariance(propertyEntity, stats.normalizationMean, stats.normalizationVariance, scoreValues.size(), true);
 		int newWeight = computeWeight(propertyEntity, values.size());
 		
 		//We save the new properties in the stats properties file
@@ -167,26 +156,26 @@ public class StatsManager {
 	 * @param scoreValues The values used to compute normalization_mean and normalization_variance.
 	 * @return The computed statistics.
 	 */
-	private static Statistic computeStats(Set<Double> values, Set<Double> scoreValues){
-		double mean=0, variance=0, normalization_mean=0, normalization_variance=0;
+	private static Statistic computeStats(Set<Double> values, Set<Double> scoreValues) {
+		double mean = 0, variance = 0, normalization_mean = 0, normalization_variance = 0;
 		
 		//We compute mean and variance for the values
-		for(double value : values){
-			mean+=value;
-			variance+=Math.pow(value,2);
+		for(double value: values) {
+			mean += value;
+			variance += Math.pow(value, 2);
 		}
-		mean/=values.size();
-		variance/=values.size();
-		variance-=Math.pow(mean, 2);
+		mean /= values.size();
+		variance /= values.size();
+		variance -= Math.pow(mean, 2);
 		
 		//We compute mean and variance for the values' score (used for normalization)
-		for(double score : scoreValues){
-			normalization_mean+=score;
-			normalization_variance+=Math.pow(score,2);
+		for(double score: scoreValues) {
+			normalization_mean += score;
+			normalization_variance += Math.pow(score, 2);
 		}
-		normalization_mean/=scoreValues.size();
-		normalization_variance/=scoreValues.size();
-		normalization_variance-=Math.pow(normalization_mean, 2);
+		normalization_mean /= scoreValues.size();
+		normalization_variance /= scoreValues.size();
+		normalization_variance -= Math.pow(normalization_mean, 2);
 		
 		return new Statistic(mean, variance, normalization_mean, normalization_variance);
 	}
