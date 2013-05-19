@@ -4,3 +4,8 @@ CentralServer/libs/swt.jar
 CentralServer/resources.db
 CentralServer/conf.properties
 CentralServer/stats.properties
+Documentations/*.log
+Documentations/*.bbl
+Documentations/*.blg
+Documentations/*.aux
+Documentations/*.pdf

@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt]{article}
+\documentclass[a4paper,11pt]{report}
 \usepackage[utf8]{inputenc}
 \usepackage[french]{babel}
 \usepackage{listings}
@@ -7,25 +7,6 @@
 \author{P. Chaignon, C. Gautrais, T. François, D. Le Guen, B. Travers}
 \date{INSA Rennes - 2012-2013} 
 
-% Style listing Java
-\lstnewenvironment{java}[1][]{\lstset{tabsize=4,
-	language=matlab,
-        basicstyle=\scriptsize,
-        %upquote=true,
-        aboveskip={1.5\baselineskip},
-        columns=fixed,
-        showstringspaces=false,
-        extendedchars=true,
-        breaklines=true,
-        prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
-	frame=single,
-        showtabs=false,
-        showspaces=false,
-        showstringspaces=false,
-        identifierstyle=\ttfamily,
-	language=Java,
-	label={#1},caption={#1},%avec nom du listing}
-}}{}
 
 \begin{document}
 \maketitle{}
@@ -42,11 +23,17 @@
 [placer ici un schéma global de l’archi]
 
 
-\section{Interfaçage client et serveur central}
+\chapter{Déployer le serveur central}
+
+[TODO: Les étapes basiques pour lancer le serveur central et lui ajouter les trois ressources qu'on a développé : lancer le serveur central, déployer les ressources déjà existantes et les ajouter au serveur central.]
+
+
+
+\chapter{Interfaçage client et serveur central}
         On supposera l'existence préalable du programme capable de gérer la logique et les règles du jeu d'échecs (déplacement correct des différentes pièces, connaissance du joueur devant jouer le prochain coup, reconnaissance des situtaions particulières telles que l'échec et l'échec et mat...) ainsi que de l'aspect graphique du plateau. Prenons le cas d'un logiciel sachant déjà gérer une partie d'échecs entre deux joueurs humains en local. L'ajout d'un mode humain contre ordinateur s'effectuera en remplaçant la logique de jeu du deuxième joueur par l'envoi de requêtes au serveur central via une adresse respectant l’architecture REST. 
 
 
-\subsection{Création d’une partie}
+\section{Création d’une partie}
         Au démarrage de la partie, il est nécessaire d’envoyer au serveur une première requête visant à authentifier le jeu et lui allouer un identificateur (GameID) unique. Il y a deux intérêts à effectuer cette requête. Le premier est de pouvoir ainsi suivre et enregistrer le déroulement de la partie du côté serveur et pouvoir établir en fin de partie des statistiques sur les ressources ayant donné les meilleurs résultats. Le deuxième intérêt est qu’il est possible de paramétrer le format de réception des coups à jouer. En effet, certains clients préfèrent recevoir le coup en notation algébrique longue (LAN), par exemple {\tt e2e4} pour un pion ou {\tt b1c3} pour un cavalier ; tandis que d’autres attendent une notation alébrique courte (SAN), les exemples précédents deviennent {\tt e4} et {\tt Nc3}.
 
 
@@ -56,7 +43,7 @@ PostData : {\em san=false}\\
 Return : Integer {\em (par exemple : 1234)} }\\
 
 
-\subsection{Obtenir le prochain coup à jouer}
+\section{Obtenir le prochain coup à jouer}
         Dès que le joueur humain aura effectué son déplacement de pièce, une requête GET doit alors être envoyé au serveur. Cette URI nécessite deux informations : le GameID obtenu par la première requête POST et l'état actuel de l'échiquier au format normalisé FEN (pour Forsyth-Edwards Notation). Prenons ici par exemple ce code FEN: 
 \\{\tt rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR {\bf b} KQkq - 0 1}\\
 Celui-ci est divisé en trois sections principales :
@@ -65,47 +52,25 @@ Celui-ci est divisé en trois sections principales :
    \item Le '{\bf b}' indique que c'est aux noirs (black) de jouer.
    \item Les derniers caractères contiennent plusieurs informations propres aux règles specifiques des échecs (tels que le roque ou le coup du pion en passant) et ne seront pas détaillés dans ce guide. Pour plus de détails sur le système FEN, des liens sont disponibles en fin de guide 
 \end{itemize}
-        Pour un envoi correct, les slashes '/' et les espaces présents dans le code FEN devront être modifiés respectivement par des symboles dollars '\$' et le code HTML de l'espace '\%20'. Ainsi le FEN précédent devra être modifié de la façon suivante :
+        Pour un envoi correct, les slashes '/' et les espaces présents dans le code FEN devront être modifiés respectivement par des symboles dollars '\$' et par le code HTML de l'espace, '\%20'. Ainsi le FEN précédent devra être modifié de la façon suivante :
 \\{\tt rnbqkbnr\$pppppppp\$8\$8\$4P34\$8\$PPPP1PPP\$RNBQKBNR\%20b\%20KQkq\%20-\%200\%201}
         
-        Comme nous l’avons vu précedemment, la réponse du serveur est reçu en notation algébrique longue ou courte (LAN ou SAN) selon le paramétrage effectué. Ainsi, avancer de deux cases le pion blanc placé en e4 s'écrira {\tt e4e6}. Vous pourrez trouver en annexe ci-dessous un exemple d'appel en Java utilisant la classe java.net.URL pour lancer la requête et recevoir le coup à jouer.
+        Comme nous l’avons vu précedemment, la réponse du serveur est reçu en notation algébrique longue ou courte (LAN ou SAN) selon le paramétrage effectué. Ainsi, avancer de deux cases le pion blanc placé en e4 s'écrira {\tt e4e6}.
 \\{\tt GET http://localhost:9998/rest/{\em GameID}/{\em FEN}\\
 Return : String {\em (par exemple : "e4e6")} }\\
         
 
 
-\subsection{Fin de partie}
+\section{Fin de partie}
         Une fois la partie d’échecs terminée, il est important d’envoyer une requête DELETE afin que le serveur puisse effectuer en interne des valorisations ou dévaluations des ressources ayant influé en bien ou en mal sur l’issue de la partie et effacer l’ID de la base de données. Cette requête DELETE attend les mêmes informations que la requête GET précédente : 
 \\{\tt DELETE http://localhost:9998/rest/{\em GameID}/{\em FENfinal}}
 
 
-\section{Ajout de ressources au serveur central}
+\chapter{Ajout de ressources au serveur central}
          Dans le cadre d'un jeu d'échecs, il est rapidement possible d’être amené à vouloir déployer et modifier ses propres ressources (bots et bases de données de coups) afin de paramétrer au mieux le choix des coups par le serveur.
         
-         [Todo]
+[TODO: Comment déployer de nouvelles ressources : utilisation du framework et parseur vers JSON.]
         
         
-        
-\section{Annexes}
-
-\begin{java}[{Java}]
-import java.net.*;
-import java.io.*;
-
-public class URLReader {
-    public static void main(String[] args) throws Exception {
-		String fen = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b";
-		
-        URL coreserver = new URL("http://www.mychessserver.com/?fen=" + fen);
-        BufferedReader in = new BufferedReader(
-        new InputStreamReader(coreserver.openStream()));
-
-        String nextMove;
-        while ((nextMove = in.readLine()) != null)
-            System.out.println(nextMove);
-        in.close();
-    }
-}
-\end{java}
 
 \end{document}
