@@ -24,6 +24,18 @@ public class OpeningsDatabase extends Resource {
 	 * Constructor
 	 * @param uri The URI.
 	 * @param name The name.
+	 * @param active True if the resource is active.
+	 * @param id The resource id.
+	 */
+	public OpeningsDatabase(String uri, String name, boolean active, int id) {
+		super(uri, name, DEFAULT_TRUST, active, id);
+		this.moves = new LinkedList<OpeningSuggestion>();
+	}
+	
+	/**
+	 * Constructor
+	 * @param uri The URI.
+	 * @param name The name.
 	 * @param trust The trust in this database.
 	 * @param active True if the resource is active.
 	 * @param id The resource id.

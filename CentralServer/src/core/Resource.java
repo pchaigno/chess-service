@@ -26,6 +26,7 @@ public abstract class Resource {
 	public final static int ENDINGS_DATABASE = 2;
 	protected final static int CONNECT_TIMEOUT = Integer.parseInt(PropertiesManager.getProperty(PropertiesManager.PROPERTY_CONNECT_TIMEOUT));
 	protected final static int READ_TIMEOUT = Integer.parseInt(PropertiesManager.getProperty(PropertiesManager.PROPERTY_READ_TIMEOUT));
+	protected final static int DEFAULT_TRUST = 1;
 	protected Integer id;
 	protected String uri;
 	protected String name;
