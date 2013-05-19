@@ -3,7 +3,7 @@
 require('resourcewrapper.class.php');
 
 $wrapper = new ResourceWrapper();
-$wrapper->setMiddleGame('getMiddle', '1.0', true);
+$wrapper->setMiddleGame('getMiddle', '1.0', true, true);
 $wrapper->rest();
 
 // Variables
@@ -46,14 +46,19 @@ function getMiddle($fen) {
 
 		foreach($lines as $line){
 			preg_match('#1\.\s\.\.\.\s*(.*?)\s#', $line, $match); // move
-			$move = $match[1];
-			$moves[$move]['move'] = $move;
-			preg_match('#\d+\.\d{2}.*?(-?\d+\.\d{2})#', $line, $match); // score
-			$moves[$move]['score'] = $match[1];
-			preg_match('#\d+\.\d{2}.*?(-?)Mate#', $line, $match); // score when mate
-			$moves[$move]['score'] = $match[1] + "1000";
-			preg_match('#\s(\d+)\s#', $line, $match); // depth
-			$moves[$move]['depth'] = $match[1];
+			if($match!=null){
+				$move = $match[1];
+				$moves[$move]['move'] = $move;
+				preg_match('#\d+\.\d{2}.*?(-?\d+\.\d{2})#', $line, $match); // score
+				if($match!=null)
+					$moves[$move]['score'] = $match[1];
+				preg_match('#\d+\.\d{2}.*?(-?)Mate#', $line, $match); // score when mate
+				if($match!=null)
+					$moves[$move]['score'] = $match[1] + "1000";
+				preg_match('#\s(\d+)\s#', $line, $match); // depth
+				if($match!=null)
+					$moves[$move]['depth'] = $match[1];
+			}
 		}
 
 		fclose($outputfile);

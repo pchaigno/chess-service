@@ -42,7 +42,7 @@ public class BotSuggestion extends MoveSuggestion {
 	 * @return TODO
 	 */
 	public double computeScoreDepth() {
-		return this.depth - Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_DEPTH, Statistic.MEAN));
+		return this.depth - Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_DEPTH, Statistic.Stat.MEAN));
 	}
 	
 	/**
@@ -50,18 +50,18 @@ public class BotSuggestion extends MoveSuggestion {
 	 * @return TODO
 	 */
 	public double computeScoreEngineScore() {
-		return this.engineScore - Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_SCORE, Statistic.MEAN));
+		return this.engineScore - Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_SCORE, Statistic.Stat.MEAN));
 	}
 
 	@Override
 	protected void computeScore() {
-		double variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_DEPTH, Statistic.NORMALIZATION_VARIANCE));
+		double variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_DEPTH, Statistic.Stat.NORMALIZATION_VARIANCE));
 		if(variance!=0) {
 			this.score = WEIGHT_DEPTH * this.computeScoreDepth() / Math.sqrt(variance);
 		} else {
 			this.score = WEIGHT_DEPTH * this.computeScoreDepth();
 		}
-		variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_SCORE, Statistic.NORMALIZATION_VARIANCE));
+		variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_SCORE, Statistic.Stat.NORMALIZATION_VARIANCE));
 		if(variance!=0) {
 			this.score += WEIGHT_ENGINE_SCORE * this.computeScoreEngineScore() / Math.sqrt(variance);
 		} else {

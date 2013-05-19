@@ -30,7 +30,7 @@ public class OpeningSuggestion extends MoveSuggestion {
 	 * TODO
 	 */
 	public double getScoreNbPlay() {
-		return this.nbPlay - Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.MEAN));
+		return this.nbPlay - Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.Stat.MEAN));
 	}
 	
 	/**
@@ -70,13 +70,13 @@ public class OpeningSuggestion extends MoveSuggestion {
 
 	@Override
 	protected void computeScore() {
-		double variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.NORMALIZATION_VARIANCE));
+		double variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.Stat.NORMALIZATION_VARIANCE));
 		if(variance!=0) {
 			this.score = WEIGHT_NB_PLAY * this.getScoreNbPlay() / Math.sqrt(variance);
 		} else {
 			this.score = WEIGHT_NB_PLAY * this.getScoreNbPlay();
 		}
-		variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.NORMALIZATION_VARIANCE));
+		variance = Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_PROBAW, Statistic.Stat.NORMALIZATION_VARIANCE));
 		if(variance!=0) {
 			this.score += WEIGHT_PROBA_WIN * this.getScoreProbaWin() / Math.sqrt(variance);
 		} else {

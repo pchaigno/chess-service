@@ -1,31 +1,40 @@
 package core;
 
 /**
- * Enumeration of statistics used by StatsManager.
+ * Contain the statistics used by StatsManager.
+ * Contain the enumeration of all Statistics accessible.
  * @author Clement Gautrais
  */
-public enum Statistic {
-	MEAN (0),
-	VARIANCE (1),
-	WEIGHT (2),
-	NORMALIZATION_MEAN (3),
-	NORMALIZATION_VARIANCE (4);
+public class Statistic {
 	
-	private int value;
-	
-	/**
-	 * Constructor
-	 * @param value The numeric value corresponding to the type of statistic.
-	 */
-	Statistic(int value) {
-		this.value = value;
+	enum Stat {
+		WEIGHT,
+		MEAN,
+		VARIANCE,
+		NORMALIZATION_MEAN,
+		NORMALIZATION_VARIANCE;
 	}
 	
-	/**
-	 * @return The value corresponding to the type of statistic.
-	 */
-	public int getValue() {
-		return this.value;
+	double mean;
+	double variance;
+	double normalizationMean;
+	double normalizationVariance;
+	
+	public Statistic() {
+		init();
 	}
 	
+	public Statistic(double mean, double variance, double normalizationMean, double normalizationVariance) {
+		this.mean = mean;
+		this.variance = variance;
+		this.normalizationMean = normalizationMean;
+		this.normalizationVariance = normalizationVariance;
+	}
+	
+	public void init() {
+		this.mean = 0;
+		this.variance = 0;
+		this.normalizationMean = 0;
+		this.normalizationVariance = 0;
+	}
 }
