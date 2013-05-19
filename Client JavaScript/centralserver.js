@@ -91,6 +91,7 @@ function endGame(fen) {
 		}
 	}
 
+	fen = fen.replace(/\//g, '$');
 	xmlreq.open("DELETE", central_server_uri+"/"+game_id+"/"+fen, true);
 	xmlreq.send();
 }

@@ -42,7 +42,7 @@ function getMiddle($fen) {
 		$moves = array();
 		
 		while($lines[] = fgets($outputfile));
-		$lines = preg_grep('#^\s*(\d+)\s*(\d+\.\d{2})\s*(-?\d+\.\d{2})\s*1\.\s\.\.\.\s(.)+\s#', $lines); //lines /depth time score variation/
+		$lines = preg_grep('#^\s*(\d+)\s*(\d+\.\d{2})\s*(-?(\d+\.\d{2}|Mate))\s*1\.\s\.\.\.\s(.)+\s#', $lines); //lines /depth time score variation/
 
 		foreach($lines as $line){
 			preg_match('#1\.\s\.\.\.\s*(.*?)\s#', $line, $match); // move
@@ -50,6 +50,8 @@ function getMiddle($fen) {
 			$moves[$move]['move'] = $move;
 			preg_match('#\d+\.\d{2}.*?(-?\d+\.\d{2})#', $line, $match); // score
 			$moves[$move]['score'] = $match[1];
+			preg_match('#\d+\.\d{2}.*?(-?)Mate#', $line, $match); // score when mate
+			$moves[$move]['score'] = $match[1] + "1000";
 			preg_match('#\s(\d+)\s#', $line, $match); // depth
 			$moves[$move]['depth'] = $match[1];
 		}

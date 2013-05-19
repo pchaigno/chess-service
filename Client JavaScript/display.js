@@ -92,6 +92,9 @@ _p4d_proto.move = function(start, end, promotion){
     if(move_result.ok){
         this.display_move_text(state.moveno, move_result.string);
         this.refresh();
+        if ((move_result.flags & P4_MOVE_FLAG_MATE) || (move_result.flags & P4_MOVE_FLAG_DRAW)){
+            endGame(p4_state2fen(state, false));
+        }
         if (! (move_result.flags & P4_MOVE_FLAG_MATE)){
             this.next_move_timeout = window.setTimeout(
                 function(p4d){
@@ -125,11 +128,7 @@ _p4d_proto.computer_move = function(){
 	var fen;
     this.auto_play_timeout = undefined;
 	for(fen in this.board_state.position_counts) {}
-    if (P4_MOVE_FLAG_MATE || P4_MOVE_FLAG_DRAW){
-        endGame(fen);
-    } else{
-    	getNextMove(this, fen);
-    }
+    getNextMove(this, fen);
 	return;
 	
 	
