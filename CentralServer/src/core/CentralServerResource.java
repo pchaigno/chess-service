@@ -126,10 +126,12 @@ public class CentralServerResource {
 		
 		int reward;
 		try {
-			reward = ChessParser.result(fen, GamesManager.getColor(gameId));
-		} catch(IncorrectFENException ife) {
-			System.err.println(ife.getMessage());
-			return respondBadRequest(ife.getMessage());
+			ChessParser parser = new ChessParser(fen);
+			reward = parser.result(GamesManager.getColor(gameId));
+		} catch (IncorrectFENException e) {
+			// Shouldn't happen !
+			System.err.println(e.getMessage());
+			return respondBadRequest(e.getMessage());
 		}
 		
 		this.server.rewardResources(gameId, reward);

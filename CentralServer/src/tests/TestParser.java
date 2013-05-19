@@ -69,6 +69,19 @@ public class TestParser extends TestCase {
 	}
 	
 	/**
+	 * Test if the current color is check.
+	 * @throws IncorrectFENException
+	 */
+	public void testCheck() throws IncorrectFENException {
+		ChessParser parser1 = new ChessParser("k7/8/1Q6/2K5/8/8/8/8 b - - 0 1"); // black are stalemate
+		ChessParser parser2 = new ChessParser("k7/8/P1N3p1/2K3Pp/7P/8/8/8 b - - 0 1"); // black are stalemate
+		ChessParser parser3 = new ChessParser("8/r7/8/K1k5/5b2/8/8/8 w - - 0 1"); // white lose
+		assertFalse(parser1.getRules().check(parser1.getBoard(), false));
+		assertFalse(parser2.getRules().check(parser2.getBoard(), false));
+		assertTrue(parser3.getRules().check(parser3.getBoard(), false));
+	}
+	
+	/**
 	 * Test a conversion from SAN to LAN.
 	 * @param fen The FEN.
 	 * @param san The Short Algebraic Notation.
@@ -125,4 +138,5 @@ public class TestParser extends TestCase {
 		ChessParser parser = new ChessParser(fen);
 		assertEquals(fen, parser.getFEN(false));
 	}
+	
 }

@@ -367,7 +367,7 @@ public class ChessRules {
 				// be under check if we do;
 				board.makeMove(pieceX, pieceY, toX, toY, capture);
 				board.switchMove();
-				if(!this.check(board)) {
+				if(!this.check(board,true)) {
 					result = new BoardSquare(pieceX, pieceY);
 					board.loadFEN(saveFEN);
 					break;
@@ -384,10 +384,11 @@ public class ChessRules {
 	/**
 	 * Sees if board is in check state for the current player.
 	 * @param board The chess board.
+	 * @param current True for the current color.
 	 * @return True if the board is in check state.
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
-	private boolean check(ChessBoard board) throws IncorrectFENException {
+	public boolean check(ChessBoard board, boolean current) throws IncorrectFENException {
 		BoardSquare attackArray;
 		PieceColor kingColor;
 		BoardPiece king;
@@ -395,8 +396,18 @@ public class ChessRules {
 		int kingY;
 		char fromX;
 		int fromY;
+		PieceColor color;
+		if(current){
+			color = board.currentMove;
+		}else{
+			if(board.currentMove == PieceColor.BLACK){
+				color = PieceColor.WHITE;
+			}else{
+				color = PieceColor.BLACK;
+			}
+		}
 
-		if(board.currentMove == PieceColor.WHITE) {
+		if(color == PieceColor.WHITE) {
 			kingColor = PieceColor.BLACK;
 		} else {
 			kingColor = PieceColor.WHITE;
@@ -408,7 +419,7 @@ public class ChessRules {
 			kingX = king.square.x;
 			kingY = king.square.y;
 			for(int i=0 ; i<board.pieces.size() ; i++) {
-				if(board.pieces.get(i).color == board.currentMove) {
+				if(board.pieces.get(i).color == color) {
 					fromX = board.pieces.get(i).square.x;
 					fromY = board.pieces.get(i).square.y;
 					// We simply check if any of the pieces can "capture" enemy

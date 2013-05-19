@@ -44,6 +44,20 @@ public class ChessParser {
 		this.board = new ChessBoard();
 		this.board.loadFEN(this.fen);
 	}
+	
+	/**
+	 * @return The rules.
+	 */
+	public ChessRules getRules() {
+		return rules;
+	}
+	
+	/**
+	 * @return The board.
+	 */
+	public ChessBoard getBoard() {
+		return board;
+	}
 
 	/**
 	 * Convert a LAN to a SAN.
@@ -297,32 +311,37 @@ public class ChessParser {
 	 * @return 0 for a draw, 1 for a win or -1 for a lose.
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
-	public static int result(String fen, PlayerColor gameColor) throws IncorrectFENException {
+	public int result(PlayerColor gameColor) throws IncorrectFENException {
 		int reward = 0;
 		String[] fenInfos = fen.split(" ");
-		
-		if(fenInfos.length == 6) {
-			int nb;
-			try {
-				nb = Integer.parseInt(fenInfos[4]);
-			} catch(NumberFormatException e) {
-				throw new IncorrectFENException("Number of half moves incorrect.");
-			}
+
+		if(fenInfos.length != 6) {
+			throw new IncorrectFENException("Number of argument incorrect.");
+		}
+
+		int nb = board.halfMoves;
+
+		if(nb<50) {
+			boolean echec = rules.check(board,false);
 			
-			if(nb<50) {
+			if(echec){
 				PlayerColor color = null;
 				color = ChessParser.getColor(fen);
 				if(color==gameColor) {
-					reward = EndingSuggestion.WIN_RESULT;
-				} else {
 					reward = EndingSuggestion.LOOSE_RESULT;
+					System.out.println("lose");
+				} else {
+					reward = EndingSuggestion.WIN_RESULT;
+					System.out.println("win");
 				}
-			} else {
+			}else{
 				reward = EndingSuggestion.DRAW_RESULT;
+				System.out.println("draw 1");
 			}
 			
 		} else {
-			throw new IncorrectFENException("Number of argument incorrect.");
+			reward = EndingSuggestion.DRAW_RESULT;
+			System.out.println("draw 2");
 		}
 
 		return reward;
