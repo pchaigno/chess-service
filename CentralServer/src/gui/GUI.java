@@ -507,12 +507,6 @@ public class GUI {
 		uriLabel.setText("URI: ");
 		final Text uri = new Text(shell, SWT.BORDER);
 		uri.setLayoutData(new GridData(100, 13));
-
-		// Trust field:
-		Label trustLabel = new Label(shell, SWT.NONE);
-		trustLabel.setText("Trust: ");
-		final Text trust = new Text(shell, SWT.BORDER);
-		trust.setLayoutData(new GridData(100, 13));
 		
 		// Button submit:
 		Button submit = new Button(shell, SWT.PUSH);
@@ -525,11 +519,11 @@ public class GUI {
 			public void widgetSelected(SelectionEvent e) {
 				Resource resource = null;
 				if(type.getText().equals("Openings Database")) {
-					resource = new OpeningsDatabase(uri.getText(), name.getText(), Integer.parseInt(trust.getText()), true, -1);
+					resource = new OpeningsDatabase(uri.getText(), name.getText(), true, -1);
 				} else if(type.getText().equals("Endings Database")) {
-					resource = new EndingsDatabase(uri.getText(), name.getText(), Integer.parseInt(trust.getText()), true, -1);
+					resource = new EndingsDatabase(uri.getText(), name.getText(), true, -1);
 				} else {
-					resource = new Bot(uri.getText(), name.getText(), Integer.parseInt(trust.getText()), true, -1);
+					resource = new Bot(uri.getText(), name.getText(), true, -1);
 				}
 				resource = ResourcesManager.addResource(resource);
 				if(resource!=null) {
@@ -590,13 +584,6 @@ public class GUI {
 		final Text uri = new Text(shell, SWT.BORDER);
 		uri.setText(resource.getURI());
 		uri.setLayoutData(new GridData(100, 13));
-
-		// Trust field:
-		Label trustLabel = new Label(shell, SWT.NONE);
-		trustLabel.setText("Trust: ");
-		final Text trust = new Text(shell, SWT.BORDER);
-		trust.setText(""+resource.getTrust());
-		trust.setLayoutData(new GridData(100, 13));
 		
 		// Button submit:
 		Button submit = new Button(shell, SWT.PUSH);
@@ -609,11 +596,11 @@ public class GUI {
 			public void widgetSelected(SelectionEvent e) {
 				Resource newResource = null;
 				if(type.getText().equals("Openings Database")) {
-					newResource = new OpeningsDatabase(uri.getText(), name.getText(), Integer.parseInt(trust.getText()), true, resource.getId());
+					newResource = new OpeningsDatabase(uri.getText(), name.getText(), true, resource.getId());
 				} else if(type.getText().equals("Endings Database")) {
-					newResource = new EndingsDatabase(uri.getText(), name.getText(), Integer.parseInt(trust.getText()), true, resource.getId());
+					newResource = new EndingsDatabase(uri.getText(), name.getText(), true, resource.getId());
 				} else {
-					newResource = new Bot(uri.getText(), name.getText(), Integer.parseInt(trust.getText()), true, resource.getId());
+					newResource = new Bot(uri.getText(), name.getText(), true, resource.getId());
 				}
 				if(ResourcesManager.updateResource(newResource)) {
 					removeResourceItem(resource);
