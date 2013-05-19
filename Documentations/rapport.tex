@@ -1,0 +1,53 @@
+\documentclass[a4paper,11pt]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{listings}
+
+\title{Distributed Chess Services - Rapport}
+\author{P. Chaignon, T. François, C. Gautrais, D. Le Guen, B. Travers}
+\date{INSA Rennes - 2012-2013} 
+
+
+\begin{document}
+\maketitle{}
+
+\chapter{Cahier des charges}
+
+\section{Attentes du client}
+[TODO: Attentes de Loic Helouet.]
+
+\section{Spécifications}
+[TODO: Spécifications en boîte noire.]
+
+
+\chapter{Architecture}
+
+\section{Interfaces intermédiaires pour les ressources distantes}
+[TODO: PHP Wrappers : Appel cURL, parsing et structure.]
+
+\section{Utilisation des ressources côté serveur}
+[TODO: UML, query, version et parsing JSON.]
+
+\section{Base de données SQLite}
+[TODO: Schémas de conception, justification du choix de SQLite.]
+
+\section{Parallélisation des appels aux ressources}
+[TODO: Justification du choix des multithreads.]
+
+\section{Interface RESTful du serveur central}
+[TODO: Interface Jersey : les requêtes HTTP requises.]
+
+
+\chapter{Classement des suggestions de coups}
+
+\section{Calcul d'un score}
+[TODO: Formule générale avec somme pour différentes suggestions.]
+
+\section{Statistiques}
+[TODO: Amélioration de la formule avec variance et moeynne (centrée réduite).]
+
+\section{Evolutuion des pondérations}
+[TODO: Evolution automatique des pondérations.]
+
+
+\end{document}
