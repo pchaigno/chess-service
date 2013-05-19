@@ -127,9 +127,9 @@ class ResourceWrapper {
 					if($this->open_function!=null) {
 						$result = call_user_func($this->open_function, $fen);
 					} else if($this->open_post) {
-						$result = $this->curlPost($this->open_url, $fen);
+						$result = $this->curlPost($this->open_url, $fen, $this->complete_fen_openings);
 					} else {
-						$result = $this->curlGet($this->open_url, $fen);
+						$result = $this->curlGet($this->open_url, $fen, $this->complete_fen_openings);
 					}
 					
 					// Display the result as a JSON document:
@@ -153,9 +153,9 @@ class ResourceWrapper {
 					if($this->end_function!=null) {
 						$result = call_user_func($this->end_function, $fen);
 					} else if($this->end_post) {
-						$result = $this->curlPost($this->end_url, $fen);
+						$result = $this->curlPost($this->end_url, $fen, $this->complete_fen_endings);
 					} else {
-						$result = $this->curlGet($this->end_url, $fen);
+						$result = $this->curlGet($this->end_url, $fen, $this->complete_fen_endings);
 					}
 					
 					// Display the result as a JSON document:
@@ -193,8 +193,8 @@ class ResourceWrapper {
 	}
 
 	// Make an HTTP GET request using cURL.
-	private function curlGet($url, $fen) {
-		if(!$this->complete_fen) {
+	private function curlGet($url, $fen, $complete_fen) {
+		if(!$complete_fen) {
 			//On enlève les deux derniers chiffres du fen
 			preg_match("#^(.+)((\s[0-9]+){2})$#", $fen, $matches);
 			if(count($matches)>0){
@@ -213,8 +213,8 @@ class ResourceWrapper {
 	}
 	
 	// Make an HTTP POST request using cURL.
-	private function curlPost($url, $fen) {
-		if(!$this->complete_fen) {
+	private function curlPost($url, $fen, $complete_fen) {
+		if(!$complete_fen) {
 		//On enlève les deux derniers chiffres du fen
 			preg_match("#^(.+)((\s[0-9]+){2})$#", $fen, $matches);
 			if(count($matches)>0){
