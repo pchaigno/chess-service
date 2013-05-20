@@ -153,10 +153,16 @@ public class GUI {
 			}
 		});
 		
-		// Option "options":
+		// Menu "options":
 		MenuItem optionOptions = new MenuItem(menu, SWT.CASCADE);
+		Menu menuOptions = new Menu(shell, SWT.DROP_DOWN);
+		optionOptions.setMenu(menuOptions);
 		optionOptions.setText("Options");
-		optionOptions.addSelectionListener(new SelectionAdapter() {
+		
+		// Option "SetOptions"
+		MenuItem optionSetOptions = new MenuItem(menuOptions, SWT.CASCADE);
+		optionSetOptions.setText("Set options");
+		optionSetOptions.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				buildOptionsShell();

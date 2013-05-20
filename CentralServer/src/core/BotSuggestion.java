@@ -38,16 +38,18 @@ public class BotSuggestion extends MoveSuggestion {
 	}
 	
 	/**
-	 * TODO
-	 * @return TODO
+	 * Compute the score associated to the depth.
+	 * Formula:score=depth-E[depth]
+	 * @return The score.
 	 */
 	public double computeScoreDepth() {
 		return this.depth - Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_DEPTH, Statistic.Stat.MEAN));
 	}
 	
 	/**
-	 * TODO
-	 * @return TODO
+	 * Compute the score associated to the engine score.
+	 * Formula:score=engineScore-E[engineScore]
+	 * @return The score.
 	 */
 	public double computeScoreEngineScore() {
 		return this.engineScore - Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_BOT_SCORE, Statistic.Stat.MEAN));

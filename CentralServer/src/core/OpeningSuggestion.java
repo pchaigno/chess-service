@@ -27,15 +27,18 @@ public class OpeningSuggestion extends MoveSuggestion {
 	}
 	
 	/**
-	 * TODO
+	 * Compute the score associated to nbPlay.
+	 * Formula:score=nbPlay-E[nbPlay]
+	 * @return The score.
 	 */
 	public double getScoreNbPlay() {
 		return this.nbPlay - Double.parseDouble(StatsManager.getProperty(StatsManager.STATS_NB_PLAY, Statistic.Stat.MEAN));
 	}
 	
 	/**
-	 * TODO
-	 * @return TODO
+	 * Compute the score associated to probaWin.
+	 * Formula:score=probaWin-0.5
+	 * @return The score.
 	 */
 	public double getScoreProbaWin() {
 		return this.probaWin - 0.5;
