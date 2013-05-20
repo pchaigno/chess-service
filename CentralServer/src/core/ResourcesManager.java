@@ -97,10 +97,10 @@ public class ResourcesManager extends DatabaseManager {
 			String queryLastId = "SELECT last_insert_rowid() AS last_id";
 			statement = dbConnect.prepareStatement(queryLastId);
 			ResultSet res = statement.executeQuery();
-			statement.close();
 			if(res.next()) {
 				resource.setId(res.getInt("last_id"));
 				res.close();
+				statement.close();
 				
 				// Notify the database listeners about the operation.
 				fireResourceAdded(resource);
@@ -108,6 +108,7 @@ public class ResourcesManager extends DatabaseManager {
 				return resource;
 			}
 			res.close();
+			statement.close();
 		} catch(SQLException e) {
 			System.err.println("addResource: "+e.getMessage());
 			fireQueryError(e);
