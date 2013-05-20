@@ -19,15 +19,32 @@
         
         Déléguer cette partie du jeu d'échecs à un service tiers peut constituer une solution élégante. Ce service distant fait office de serveur centralisant toutes les opérations de recherche et de calculs. Un jeu d'échecs (ici en position de client) pourra envoyer à ce serveur une requête web et obtenir en retour le meilleur coup à jouer. En plus de libérer le client de la lourde tâche de calculs (permettant ainsi le portage théorique sur toute plateforme disposant d'une simple connexion Internet), cela permet aussi de garder un certain contôle sur l'accès des joueurs aux données. Et ainsi tirer des statistiques sur la performance des algorithmes mis en place.
 
-
 [placer ici un schéma global de l’archi]
 
 
 \chapter{Déployer le serveur central}
+		Afin de pouvoir tester le serveur central, il est au préalable nécessaire de le lier à des ressources (bases de données et bots) placées sur des serveurs.
 
-[TODO: Les étapes basiques pour lancer le serveur central et lui ajouter les trois ressources qu'on a développé : lancer le serveur central, déployer les ressources déjà existantes et les ajouter au serveur central.]
-
-
+\section{Déployer les ressources existantes}
+		Rendre une ressource accessible à distance nécessitera de pouvoir lancer un serveur Apache et PHP sur la machine hôte. Nous prendrons ici l'exemple de déployer la ressource Chessok fourni avec le code du serveur et contenant une base d'ouverture de parties d'échecs. Nous nous placerons ici dans le cas d'utilisation d'un serveur local à l'aide de Wamp. Avant de démarrer, il est indispensable de vérifier que l'extension Apache {\tt Redirect} et l'extension PHP {\tt cURL} ont bien été activés dans les options de Wamp.
+		
+		Dans le cas de Chessok, seuls deux fichiers sont à copier dans le répertoire {\tt www} de Wamp : chessok.php et resourcewrapper.class.php (ce dernier fichier sera expliqué en détail dans la dernière partie de ce guide). Il faut ensuite activer la redirection Apache vers le fichier chessok.php, en ajoutant dans le fichier httpd.conf :
+\\{\tt	RewriteEngine On\\
+RewriteCond \%{REQUEST\_URI} \^/chessok/.*\$ [NC]\\
+RewriteRule \^(.*)\$ /chessok.php [L] }\\
+		Une fois le serveur Wamp relancé, Chessok sera alors accessible par le serveur central à l'adresse {\tt http://localhost/chessok/}. Il est tout à fait possible de déployer une ressource supplémentaire sur le même serveur en accordant les règles de réécriture Apache avec la nouvelle ressource.
+		
+\section{Utilisation de l'outil graphique de configuration}
+		La méthode recommandé pour référencer les ressources déployées auprès du serveur central est de passer par l'outil graphique fourni avec le projet. En lançant l'interface CentralServer.gui, vous aurez alors accès à plusieurs actions de configurations du serveur :
+\begin{itemize}
+	\item {\tt Set options} : la configuration propre au serveur central est modifiable depuis cette fenêtre. Sont notamment modifiables : le port d'accès et les délais d'attentes maximums de réponse des ressources autorisés par le serveur central.
+	\item {\tt Change database} : depuis cette boîte de dialogue, il est possible de définir la base de données qui contiendra les informations concernant l'accès aux ressources. Cette base de données sera placée dans le répertoire indiqué dans lfenêtre Set options. En indiquant un nom de base inexistant, celle-ci sera automatiquement générée et prête pour ajouter de nouvelles ressources. Il est aussi possible de définir une ressource comme celle étant à utiiser par défaut au démarrage du serveur.
+   \item {\tt Table des ressources} : cette table occupant la majeure partie de l'interface iste toutes les ressources accessibles par le serveur. En faisant un clic-droit sur cette table, un menu contextuel apparaît, permettant d'ajouter, d'éditer ou de supprimer des ressources.
+   \item {\tt Etat du serveur} : une fois toutes les ressources nécessaires ajoutées, il est possible de lancer et de stopper le serveur central depuis le menu File.
+\end{itemize}
+\section{Lancer le serveur central}
+		Pour lancer le serveur, deux méthodes sont disponibles. La première est, nous l'avons vu précédemment, de passer par l'outil de configuration.
+		...[TODO]
 
 \chapter{Interfaçage client et serveur central}
         On supposera l'existence préalable du programme capable de gérer la logique et les règles du jeu d'échecs (déplacement correct des différentes pièces, connaissance du joueur devant jouer le prochain coup, reconnaissance des situtaions particulières telles que l'échec et l'échec et mat...) ainsi que de l'aspect graphique du plateau. Prenons le cas d'un logiciel sachant déjà gérer une partie d'échecs entre deux joueurs humains en local. L'ajout d'un mode humain contre ordinateur s'effectuera en remplaçant la logique de jeu du deuxième joueur par l'envoi de requêtes au serveur central via une adresse respectant l’architecture REST. 
