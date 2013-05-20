@@ -135,12 +135,12 @@ public class GamesManager extends DatabaseManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, gameId);
 			ResultSet set = statement.executeQuery();
-			statement.close();
 			int nbMoves = -1;
 			if(set.next()) {
 				nbMoves = set.getInt("max");
 			}
 			set.close();
+			statement.close();
 			dbConnect.close();
 			return nbMoves;
 		} catch(SQLException e) {
@@ -165,13 +165,13 @@ public class GamesManager extends DatabaseManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, gameId);
 			ResultSet set = statement.executeQuery();
-			statement.close();
 			PlayerColor color = null;
 			if(set.next()) {
 				String fen = set.getString(GAME_FEN);
 				color = ChessParser.getColor(fen);
 			}
 			set.close();
+			statement.close();
 			dbConnect.close();
 			return color;
 		} catch(SQLException e) {
@@ -206,10 +206,10 @@ public class GamesManager extends DatabaseManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, gameId);
 			ResultSet set = statement.executeQuery();
-			statement.close();
 			dbConnect.close();
 			boolean exist = set.next();
 			set.close();
+			statement.close();
 			return exist;
 		} catch(SQLException e) {
 			System.err.println("exist: "+e.getMessage());
@@ -277,11 +277,11 @@ public class GamesManager extends DatabaseManager {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
 				statement.setInt(1, gameId);
 				ResultSet set = statement.executeQuery();
-				statement.close();
 				while(set.next()) {
 					resourceInvolvements.put(set.getInt(MOVE_RESOURCE), set.getDouble("totalTrust"));
 				}
 				set.close();
+				statement.close();
 				dbConnect.close();
 				return resourceInvolvements;
 			} catch(SQLException e) {
@@ -305,12 +305,12 @@ public class GamesManager extends DatabaseManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, gameId);
 			ResultSet set = statement.executeQuery();
-			statement.close();
 			Boolean san = null;
 			if(set.next()) {
 				san = set.getBoolean(GAME_SAN);
 			}
 			set.close();
+			statement.close();
 			dbConnect.close();
 			return san;
 		} catch(SQLException e) {

@@ -39,7 +39,6 @@ public class ResourcesManager extends DatabaseManager {
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			ResultSet results = statement.executeQuery();
-			statement.close();
 			while(results.next()) {
 				Resource resource;
 				if(results.getInt(RESOURCE_TYPE)==Resource.OPENINGS_DATABASE) {
@@ -52,6 +51,7 @@ public class ResourcesManager extends DatabaseManager {
 				resource.setId(results.getInt(RESOURCE_ID));
 				resources.add(resource);
 			}
+			statement.close();
 			results.close();
 			
 			// Notify the database listeners about the operation.
