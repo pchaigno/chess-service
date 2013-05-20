@@ -89,6 +89,18 @@ public class BoardPiece {
 				return "w";
 			}
 		}
+		
+		/**
+		 * Invert the color.
+		 * @param color The color.
+		 * @return The other color.
+		 */
+		static PieceColor invert(PieceColor color) {
+			if(color==BLACK) {
+				return WHITE;
+			}
+			return BLACK;
+		}
 	}
 	
 	/**

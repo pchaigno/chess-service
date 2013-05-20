@@ -1,5 +1,6 @@
 package tests;
 
+import core.PlayerColor;
 import parser.ChessParser;
 import parser.IncorrectFENException;
 import junit.framework.TestCase;
@@ -19,7 +20,7 @@ public class TestParser extends TestCase {
 		this.testLANToSAN("rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", "b1c3");
 		this.testLANToSAN("rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", "d2d4");
 		this.testLANToSAN("rnbqkbnr/ppp1pp1p/6p1/3p4/5P2/3P1N2/PPP1P1PP/RNBQKB1R b KQkq - 1 3", "f8g7", "Bg7");
-		this.testLANToSAN("rnbqkbnr/pp2pppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3", "0-0", "O-O");
+		this.testLANToSAN("rnbqkbnr/pp2pppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3", "O-O", "O-O");
 	}
 	
 	/**
@@ -35,7 +36,7 @@ public class TestParser extends TestCase {
 		this.testSANToLAN("rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2", "Nc3");
 		this.testSANToLAN("rnbqkbnr/pp1ppppp/2p5/8/2P1P3/8/PP1P1PPP/RNBQKBNR b KQkq - 0 2", "d5");
 		this.testSANToLAN("rnbqkbnr/ppp1pp1p/6p1/3p4/5P2/3P1N2/PPP1P1PP/RNBQKB1R b KQkq - 1 3", "Bg7");
-		this.testSANToLAN("rnbqkbnr/pp2pppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3", "O-O", "0-0");
+		this.testSANToLAN("rnbqkbnr/pp2pppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3", "O-O", "O-O");
 	}
 	
 	/**
@@ -54,9 +55,9 @@ public class TestParser extends TestCase {
 	 * @throws IncorrectFENException An IncorrectFENException
 	 */
 	public void testGetColor() throws IncorrectFENException {
-		assertEquals('w', ChessParser.getColor("rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"));
-		assertEquals('b', ChessParser.getColor("rnbqkbnr/pp2pppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3"));
-		assertEquals('b', ChessParser.getColor("rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -"));
+		assertEquals(PlayerColor.WHITE, ChessParser.getColor("rnbqkbnr/pppp1ppp/4p3/8/4P3/8/PPPP1PPP/RNBQKBNR w KQkq - 0 2"));
+		assertEquals(PlayerColor.BLACK, ChessParser.getColor("rnbqkbnr/pp2pppp/3p4/1Bp5/4P3/5N2/PPPP1PPP/RNBQK2R b KQkq - 1 3"));
+		assertEquals(PlayerColor.BLACK, ChessParser.getColor("rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq -"));
 	}
 	
 	/**
@@ -73,12 +74,14 @@ public class TestParser extends TestCase {
 	 * @throws IncorrectFENException
 	 */
 	public void testCheck() throws IncorrectFENException {
+		ChessParser parser0 = new ChessParser("k7/8/1Q2n3/2K5/8/8/8/8 w - - 0 1"); // white king is in check
 		ChessParser parser1 = new ChessParser("k7/8/1Q6/2K5/8/8/8/8 b - - 0 1"); // black are stalemate
 		ChessParser parser2 = new ChessParser("k7/8/P1N3p1/2K3Pp/7P/8/8/8 b - - 0 1"); // black are stalemate
 		ChessParser parser3 = new ChessParser("8/r7/8/K1k5/5b2/8/8/8 w - - 0 1"); // white lose
+		assertTrue(parser0.check(true));
 		assertFalse(parser1.check(false));
 		assertFalse(parser2.check(false));
-		assertTrue(parser3.check(false));
+		assertTrue(parser3.check(true));
 	}
 	
 	/**
