@@ -21,7 +21,10 @@ public class Statistic {
 	double normalizationVariance;
 	
 	public Statistic() {
-		init();
+		this.mean = 0;
+		this.variance = 0;
+		this.normalizationMean = 0;
+		this.normalizationVariance = 0;
 	}
 	
 	public Statistic(double mean, double variance, double normalizationMean, double normalizationVariance) {
@@ -29,12 +32,5 @@ public class Statistic {
 		this.variance = variance;
 		this.normalizationMean = normalizationMean;
 		this.normalizationVariance = normalizationVariance;
-	}
-	
-	public void init() {
-		this.mean = 0;
-		this.variance = 0;
-		this.normalizationMean = 0;
-		this.normalizationVariance = 0;
 	}
 }
