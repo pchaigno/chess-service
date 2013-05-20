@@ -3,7 +3,6 @@ package tests;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 
 import junit.framework.TestCase;
 
@@ -13,41 +12,23 @@ import junit.framework.TestCase;
  */
 public class TestForCreation extends TestCase {
 
-	public void testCreateResources() {
+	public static void testCreateResources() throws Exception {
 		//fail();
 		Connection dbConnect = null;
-		try {
-			Class.forName("org.sqlite.JDBC");
-			dbConnect = DriverManager.getConnection("jdbc:sqlite:resources.db");
-		} catch (SQLException e) {
-			System.err.println("Impossible to connect to the database resources.db.");
-			System.err.println(e.getMessage());
-		} catch (ClassNotFoundException e) {
-			System.err.println("Driver missing for SQLite JDBC.");
-		}
+		Class.forName("org.sqlite.JDBC");
+		dbConnect = DriverManager.getConnection("jdbc:sqlite:resources.db");
 		String query = "CREATE TABLE resources(id INTEGER PRIMARY KEY, name TEXT NOT NULL, uri TEXT NOT NULL UNIQUE, trust INTEGER, type INTEGER, active INTEGER);";
-		try {
-			PreparedStatement statement = dbConnect.prepareStatement(query);
-			statement.executeUpdate();
-			//dbConnect.close();
-		} catch (SQLException e) {
-			System.err.println("SQLException: "+e.getMessage());
-		}
+		PreparedStatement statement = dbConnect.prepareStatement(query);
+		statement.executeUpdate();
+		statement.close();
 		query = "CREATE TABLE games(id INTEGER PRIMARY KEY, fen TEXT, san INTEGER);";
-		try {
-			PreparedStatement statement = dbConnect.prepareStatement(query);
-			statement.executeUpdate();
-			//dbConnect.close();
-		} catch (SQLException e) {
-			System.err.println("SQLException: "+e.getMessage());
-		}
+		statement = dbConnect.prepareStatement(query);
+		statement.executeUpdate();
+		statement.close();
 		query = "CREATE TABLE moves(resource INTEGER REFERENCES resources(id), game INTEGER REFERENCES games(id), num_move INTEGER, move_trust DOUBLE, PRIMARY KEY(resource, game, num_move))";
-		try {
-			PreparedStatement statement = dbConnect.prepareStatement(query);
-			statement.executeUpdate();
-			dbConnect.close();
-		} catch (SQLException e) {
-			System.err.println("SQLException: "+e.getMessage());
-		}
+		statement = dbConnect.prepareStatement(query);
+		statement.executeUpdate();
+		statement.close();
+		dbConnect.close();
 	}
 }

@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Text;
 
 import core.Bot;
 import core.CentralServerResourceDeployer;
+import core.DatabaseManager;
 import core.EndingsDatabase;
 import core.OpeningsDatabase;
 import core.PropertiesManager;
@@ -46,8 +47,8 @@ import core.ResourcesManager;
  */
 public class GUI {
 	private static Display display;
-	private static Shell shell;
-	private static Table resourcesTable;
+	static Shell shell;
+	static Table resourcesTable;
 
 	/**
 	 * Main constructor.
@@ -55,7 +56,7 @@ public class GUI {
 	public static Shell buildInterface() {
 		display = new Display();
 		shell = new Shell(display, SWT.SHELL_TRIM);
-		shell.setText("Central Server (working db:"+ResourcesManager.getDatabaseFile()+")");
+		shell.setText("Central Server (working db:"+DatabaseManager.getDatabaseFile()+")");
 		shell.setImage(new Image(display, "chess.ico"));
 		shell.setLayout(new FillLayout());
 		buildMenu();
@@ -84,8 +85,8 @@ public class GUI {
 				InputDialog dialogDatabase = new InputDialog(Display.getCurrent().getActiveShell(),
 						"Change database", "Enter the name of you want to work on", "", null);
 				if(dialogDatabase.open() == Window.OK) {
-					ResourcesManager.changeDatabase(dialogDatabase.getValue());
-					shell.setText("Central Server (working db:"+ResourcesManager.getDatabaseFile()+")");
+					DatabaseManager.changeDatabase(dialogDatabase.getValue());
+					shell.setText("Central Server (working db:"+DatabaseManager.getDatabaseFile()+")");
 					resourcesTable.removeAll();
 					Set<Resource> resources = ResourcesManager.getResources(false);
 					for(Resource resource: resources) {
@@ -101,7 +102,7 @@ public class GUI {
 		optionSetWorkingDbAsDefault.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				PropertiesManager.setProperty(PropertiesManager.PROPERTY_DATABASE, ResourcesManager.getDatabaseFile());
+				PropertiesManager.setProperty(PropertiesManager.PROPERTY_DATABASE, DatabaseManager.getDatabaseFile());
 				PropertiesManager.saveProperties();
 			}
 		});
@@ -200,7 +201,7 @@ public class GUI {
 	 * Build the option shell.
 	 * The window allow the user to change the settings.
 	 */
-	private static void buildOptionsShell() {
+	static void buildOptionsShell() {
 		final Shell shell = new Shell();
 		shell.setText("Options");
 		shell.setImage(new Image(display, "chess.ico"));
@@ -323,7 +324,7 @@ public class GUI {
 	 * Add an item representing a resource to the resources table.
 	 * @param resource The new resource to add.
 	 */
-	private static void addResourceItem(Resource resource) {
+	static void addResourceItem(Resource resource) {
 		TableItem resourceItem = new TableItem(resourcesTable, SWT.NONE);
 		String type = "Bot";
 		if(resource.getClass()==OpeningsDatabase.class) {
@@ -341,7 +342,7 @@ public class GUI {
 	 * Remove an item representing a resource from the resources table.
 	 * @param resource The resource to remove.
 	 */
-	private static void removeResourceItem(Resource resource) {
+	static void removeResourceItem(Resource resource) {
 		TableItem[] items = resourcesTable.getItems();
 		for(TableItem item: items) {
 			if(resource.equals(item.getData())) {
@@ -420,7 +421,7 @@ public class GUI {
 	 * Enable the resources selected.
 	 * Update the resources table.
 	 */
-	private static void enableResources() {
+	static void enableResources() {
 		TableItem[] resourceItems = resourcesTable.getSelection();
 		Set<Resource> resources = new HashSet<Resource>();
 		for(TableItem resourceItem: resourceItems) {
@@ -436,7 +437,7 @@ public class GUI {
 	 * Disable the resources selected.
 	 * Update the resources table.
 	 */
-	private static void disableResources() {
+	static void disableResources() {
 		TableItem[] resourceItems = resourcesTable.getSelection();
 		Set<Resource> resources = new HashSet<Resource>();
 		for(TableItem resourceItem: resourceItems) {
@@ -453,7 +454,7 @@ public class GUI {
 	 * a quick confirmation from the user.
 	 * Update the resources table.
 	 */
-	private static void removeResources() {
+	static void removeResources() {
 		TableItem[] resourceItems = resourcesTable.getSelection();
 		if(resourceItems.length>0) {
 			String message = resourceItems.length>1? "Do you really want to remove those resources?" : "Do you really want to remove this resource?";
@@ -482,7 +483,7 @@ public class GUI {
 	 * Build the window to add a new resource.
 	 * Simply a small form.
 	 */
-	private static void buildAddShell() {
+	static void buildAddShell() {
 		// Configuration of the window:
 		final Shell shell = new Shell();
 		shell.setText("Add a new resource");
@@ -550,7 +551,7 @@ public class GUI {
 	 * The URI field can't be changed.
 	 * @param resource The resource to be editing.
 	 */
-	private static void buildEditShell(final Resource resource) {
+	static void buildEditShell(final Resource resource) {
 		// Configuration of the window:
 		final Shell shell = new Shell();
 		shell.setText("Edit "+resource.getName());

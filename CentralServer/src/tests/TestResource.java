@@ -14,7 +14,7 @@ public class TestResource extends TestCase {
 	/**
 	 * Test the equals method.
 	 */
-	public void testEquals() {
+	public static void testEquals() {
 		Resource bot1 = new Bot("test12.com", "TestBot", 50, true, 15487);
 		Bot bot2 = new Bot("test123.com", "Test Bot", 70, true, 15487);
 		Resource bot3 = new Bot("test12.com", "Test Bot", 70, true, 48756);

@@ -52,7 +52,7 @@ public class ChessParser {
 		if(lan.matches("(O-O-O|O-O)\\+?")) {
 			return lan;
 		}
-		return this.UCItoPGN(lan, this.board);
+		return UCItoPGN(lan, this.board);
 	}
 	
 	/**
@@ -68,7 +68,7 @@ public class ChessParser {
 		}
 		// Regular move:
 		if(san.matches("[RBQKPN]?[a-h]?[1-8]?[x]?[a-h][1-8][=]?[QNRB]?[+#]?")) {
-			return this.parseMove(this.board, san);
+			return parseMove(this.board, san);
 		}
 		throw new IllegalArgumentException("Illegal SAN: "+san);
 	}
@@ -80,7 +80,7 @@ public class ChessParser {
 	 * @return The Short Algebraic Notation.
 	 * @throws IncorrectFENException An IncorrectFENException
 	 */
-	private String UCItoPGN(String ucimove, ChessBoard board) throws IncorrectFENException {
+	private static String UCItoPGN(String ucimove, ChessBoard board) throws IncorrectFENException {
 		char fromX = ucimove.charAt(0);
 		int fromY = Integer.parseInt(String.valueOf(ucimove.charAt(1)));
 		char toX = ucimove.charAt(2);
@@ -96,9 +96,8 @@ public class ChessParser {
 		if(piece==PieceType.KING && Math.abs(letter.get(fromX)-letter.get(toX))==2) {
 			if(toX == 'g') {
 				return "O-O";
-			} else {
-				return "O-O-O";
 			}
+			return "O-O-O";
 		}
 
 		String pgnfromX = "";
@@ -145,7 +144,7 @@ public class ChessParser {
 	 * @return The Long Algebraic Notation.
 	 * @throws IncorrectFENException An IncorrectFENException
 	 */
-	private String parseMove(ChessBoard board, String token) throws IncorrectFENException {
+	private static String parseMove(ChessBoard board, String token) throws IncorrectFENException {
 		Matcher matcher = Pattern.compile("([RBQKPN])?([a-h])?([1-8])?([x])?([a-h])([1-8])([=]?)([QNRB]?)([+#]?)").matcher(token);
 		char[] moveArray = new char[6];
 		if(matcher.find()) {
@@ -285,9 +284,8 @@ public class ChessParser {
 				throw new IncorrectFENException("Color of the player to move next incorrect.");
 			}
 			return color;
-		} else {
-			throw new IncorrectFENException("Number of arguments incorrect.");
 		}
+		throw new IncorrectFENException("Number of arguments incorrect.");
 	}
 	
 	/**
@@ -349,9 +347,8 @@ public class ChessParser {
 		String[] boardArray = fenArray[0].split("/");
 		if(boardArray.length==8) {
 			return true;
-		} else {
-			return false;
 		}
+		return false;
 	}
 	
 	/**

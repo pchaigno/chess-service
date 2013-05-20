@@ -14,7 +14,7 @@ import junit.framework.TestCase;
  */
 public class TestJSONParser extends TestCase {
 
-	public void test() {
+	public static void test() {
 		String response = "[{\"move\":\"d5\",\"probatowin\":0,\"probatonull\":0.667,\"nb\":3},{\"move\":\"h6\",\"probatowin\":0.667,\"probatonull\":0,\"nb\":3},{\"move\":\"Qa5\",\"probatowin\":0.25,\"probatonull\":0.5,\"nb\":8},{\"move\":\"Qb6\",\"probatowin\":0,\"probatonull\":0,\"nb\":2}]";
 		JSONArray jsonArray = new JSONArray(response);
 		for(int i=0 ; i<jsonArray.length() ; i++) {

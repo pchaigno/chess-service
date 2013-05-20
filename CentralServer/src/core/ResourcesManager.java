@@ -28,6 +28,7 @@ public class ResourcesManager extends DatabaseManager {
 	 * @param active If true then this method will only return the active resources.
 	 * @return All resources from the database.
 	 */
+	@SuppressWarnings("resource")
 	public static Set<Resource> getResources(boolean active) {
 		Set<Resource> resources = new HashSet<Resource>();
 		Connection dbConnect = getConnection();
@@ -38,6 +39,7 @@ public class ResourcesManager extends DatabaseManager {
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			ResultSet results = statement.executeQuery();
+			statement.close();
 			while(results.next()) {
 				Resource resource;
 				if(results.getInt(RESOURCE_TYPE)==Resource.OPENINGS_DATABASE) {
@@ -50,6 +52,7 @@ public class ResourcesManager extends DatabaseManager {
 				resource.setId(results.getInt(RESOURCE_ID));
 				resources.add(resource);
 			}
+			results.close();
 			
 			// Notify the database listeners about the operation.
 			fireResourcesRecovery(active, resources);
@@ -68,6 +71,7 @@ public class ResourcesManager extends DatabaseManager {
 	 * @param resource The resource to add.
 	 * @return The resource added with the id set or null if an error occurred.
 	 */
+	@SuppressWarnings("resource")
 	public static Resource addResource(Resource resource) {
 		Connection dbConnect = getConnection();
 		String query = "INSERT INTO "+RESOURCES+"("+RESOURCE_TYPE+", "+RESOURCE_NAME+", "+RESOURCE_URI+", "+RESOURCE_TRUST+", "+RESOURCE_ACTIVE+") VALUES(?, ?, ?, ?, 1)";
@@ -85,21 +89,25 @@ public class ResourcesManager extends DatabaseManager {
 			statement.setString(3, resource.getURI());
 			statement.setInt(4, resource.getTrust());
 			if(statement.executeUpdate()!=1) {
+				statement.close();
 				dbConnect.close();
 				return null;
-			} else {
-				String queryLastId = "SELECT last_insert_rowid() AS last_id";
-				statement = dbConnect.prepareStatement(queryLastId);
-				ResultSet res = statement.executeQuery();
-				if(res.next()) {
-					resource.setId(res.getInt("last_id"));
-					
-					// Notify the database listeners about the operation.
-					fireResourceAdded(resource);
-					
-					return resource;
-				}
 			}
+			statement.close();
+			String queryLastId = "SELECT last_insert_rowid() AS last_id";
+			statement = dbConnect.prepareStatement(queryLastId);
+			ResultSet res = statement.executeQuery();
+			statement.close();
+			if(res.next()) {
+				resource.setId(res.getInt("last_id"));
+				res.close();
+				
+				// Notify the database listeners about the operation.
+				fireResourceAdded(resource);
+				
+				return resource;
+			}
+			res.close();
 		} catch(SQLException e) {
 			System.err.println("addResource: "+e.getMessage());
 			fireQueryError(e);
@@ -112,6 +120,7 @@ public class ResourcesManager extends DatabaseManager {
 	 * @param resource The resource to remove.
 	 * @return True if the operation succeed, false otherwise.
 	 */
+	@SuppressWarnings("resource")
 	public static boolean removeResource(Resource resource) {
 		Connection dbConnect = getConnection();
 		String query = "DELETE FROM "+RESOURCES+" WHERE "+RESOURCE_ID+" = ?";
@@ -119,9 +128,11 @@ public class ResourcesManager extends DatabaseManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, resource.getId());
 			if(statement.executeUpdate()!=1) {
+				statement.close();
 				dbConnect.close();
 				return false;
 			}
+			statement.close();
 			dbConnect.close();
 			
 			// Notify the database listeners that the resource has been removed.
@@ -140,6 +151,7 @@ public class ResourcesManager extends DatabaseManager {
 	 * @param resources The resources to remove.
 	 * @return The resources that weren't removed.
 	 */
+	@SuppressWarnings("resource")
 	public static Set<Resource> removeResources(Set<Resource> resources) {
 		List<Resource> resourcesToRemove = new ArrayList<Resource>();
 		resourcesToRemove.addAll(resources);
@@ -153,6 +165,7 @@ public class ResourcesManager extends DatabaseManager {
 				statement.addBatch();
 			}
 			int[] results = statement.executeBatch();
+			statement.close();
 			notRemoved = computeResourceResults(resourcesToRemove, results);
 			
 			// Notify the database listeners about the operation:
@@ -173,6 +186,7 @@ public class ResourcesManager extends DatabaseManager {
 	 * @param resource The resource to update.
 	 * @return True if the update succeed, false otherwise.
 	 */
+	@SuppressWarnings("resource")
 	public static boolean updateResource(Resource resource) {
 		Connection dbConnect = getConnection();
 		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_URI+" = ?, "+RESOURCE_NAME+" = ?, "+RESOURCE_TRUST+" = ?, "+RESOURCE_TYPE+" = ?, "+RESOURCE_ACTIVE+" = ? WHERE "+RESOURCE_ID+" = ?";
@@ -191,10 +205,12 @@ public class ResourcesManager extends DatabaseManager {
 			statement.setBoolean(5, resource.isActive());
 			statement.setInt(6, resource.getId());
 			if(statement.executeUpdate()!=1) {
+				statement.close();
 				dbConnect.close();
 				System.out.println("ResourcesManager.updateResource()");
 				return false;
 			}
+			statement.close();
 			dbConnect.close();
 			
 			// Notify the database listeners about the operation.
@@ -214,6 +230,7 @@ public class ResourcesManager extends DatabaseManager {
 	 * @param gameResult The result of the game: -1 for lose, 1 for win, 0 for draw.
 	 * @return The id of the resources that weren't updated.
 	 */
+	@SuppressWarnings("resource")
 	public static Set<Integer> updateResourcesTrust(Map<Integer, Double> resourceInvolvements, int gameResult) {
 		Set<Integer> notUpdated = new HashSet<Integer>();
 		List<Integer> resourcesToUpdate = new ArrayList<Integer>();
@@ -229,6 +246,7 @@ public class ResourcesManager extends DatabaseManager {
 				statement.addBatch();
 			}
 			int[] results = statement.executeBatch();
+			statement.close();
 			dbConnect.close();
 			
 			notUpdated = computeIdResults(resourcesToUpdate, results);
@@ -250,6 +268,7 @@ public class ResourcesManager extends DatabaseManager {
 	 * @param resources The resources whose active parameter is to update.
 	 * @return The resources that weren't updated.
 	 */
+	@SuppressWarnings("resource")
 	public static Set<Resource> updateResourcesActive(Set<Resource> resources) {
 		Set<Resource> notUpdated = new HashSet<Resource>();
 		List<Resource> resourcesToUpdate = new ArrayList<Resource>();
@@ -264,6 +283,7 @@ public class ResourcesManager extends DatabaseManager {
 				statement.addBatch();
 			}
 			int[] results = statement.executeBatch();
+			statement.close();
 			dbConnect.close();
 			
 			notUpdated = computeResourceResults(resourcesToUpdate, results);

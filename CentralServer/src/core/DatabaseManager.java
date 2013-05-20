@@ -29,7 +29,7 @@ public class DatabaseManager {
 	 * Add a database listener to the listeners.
 	 * @param listener The new listener.
 	 */
-	public void addDatabaseListener(DatabaseListener listener) {
+	public static void addDatabaseListener(DatabaseListener listener) {
 		listeners.add(DatabaseListener.class, listener);
 	}
 	
@@ -37,7 +37,7 @@ public class DatabaseManager {
 	 * Remove a database listener from the listeners.
 	 * @param listener The new listener.
 	 */
-	public void removeDatabaseListener(DatabaseListener listener) {
+	public static void removeDatabaseListener(DatabaseListener listener) {
 		listeners.remove(DatabaseListener.class, listener);
 	}
 	
@@ -111,12 +111,15 @@ public class DatabaseManager {
 		String query = "CREATE TABLE resources(id INTEGER PRIMARY KEY, name TEXT NOT NULL, uri TEXT NOT NULL UNIQUE, trust INTEGER, type INTEGER, active INTEGER);";
 		PreparedStatement statement = dbConnect.prepareStatement(query);
 		statement.executeUpdate();
+		statement.close();
 		query = "CREATE TABLE games(id INTEGER PRIMARY KEY, fen TEXT, san INTEGER);";
 		statement = dbConnect.prepareStatement(query);
 		statement.executeUpdate();
+		statement.close();
 		query = "CREATE TABLE moves(resource INTEGER REFERENCES resources(id), game INTEGER REFERENCES games(id), num_move INTEGER, move_trust DOUBLE, PRIMARY KEY(resource, game, num_move))";
 		statement = dbConnect.prepareStatement(query);
 		statement.executeUpdate();
+		statement.close();
 		dbConnect.close();
 	}
 

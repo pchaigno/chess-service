@@ -124,7 +124,7 @@ public class StatsManager {
 					values.add((double)((OpeningSuggestion)move).getNbPlay());
 					scoreValues.add(((OpeningSuggestion)move).getScoreNbPlay());
 				} else if(STATS_PROBAW.equals(propertyName)) {
-					values.add((double)((OpeningSuggestion)move).getProbaWin());
+					values.add(((OpeningSuggestion)move).getProbaWin());
 					scoreValues.add(((OpeningSuggestion)move).getScoreProbaWin());
 				}
 			}
@@ -239,9 +239,8 @@ public class StatsManager {
 		}
 		if(weight+currentWeight > 0) {
 			return (currentMean*currentWeight+mean*weight) / (currentWeight+weight);
-		} else {
-			return 0;
 		}
+		return 0;
 	}
 	
 	/**

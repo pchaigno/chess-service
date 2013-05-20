@@ -23,9 +23,8 @@ public class EndingSuggestion extends MoveSuggestion {
 		this.nbMoves = nbMoves;
 		if(result!=WIN_RESULT && result!=LOOSE_RESULT && result!=DRAW_RESULT) {
 			throw new IllegalArgumentException("The result must be one of the result's constants.");
-		} else {
-			this.result = result;
 		}
+		this.result = result;
 		this.computeScore();
 	}
 	

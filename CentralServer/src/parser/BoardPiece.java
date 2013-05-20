@@ -85,9 +85,8 @@ public class BoardPiece {
 		static String getLetter(PieceColor color) {
 			if(color==PieceColor.BLACK) {
 				return "b";
-			} else {
-				return "w";
 			}
+			return "w";
 		}
 		
 		/**

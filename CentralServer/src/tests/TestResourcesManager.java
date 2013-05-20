@@ -18,7 +18,7 @@ public class TestResourcesManager extends TestCase {
 	/**
 	 * Test the methods of ResourcesManager.
 	 */
-	public void test() {
+	public static void test() {
 		// Backup to compare after.
 		Set<Resource> oldResources = ResourcesManager.getResources(false);
 
@@ -81,7 +81,7 @@ public class TestResourcesManager extends TestCase {
 	/**
 	 * Test the primary key of the database.
 	 */
-	public void testPrimaryKey() {
+	public static void testPrimaryKey() {
 		Bot bot = new Bot("test123.com", "TestBot", 50, true, -1);
 		bot = (Bot)ResourcesManager.addResource(bot);
 		OpeningsDatabase database = new OpeningsDatabase("test123.com", "TestDatabase", 50, true, -1);
@@ -95,7 +95,7 @@ public class TestResourcesManager extends TestCase {
 	 * Test the concurrency by doing a lot of simultaneous write actions.
 	 * @throws InterruptedException 
 	 */
-	public void testConcurrency() throws InterruptedException {
+	public static void testConcurrency() throws InterruptedException {
 		class MyThread extends Thread {
 			private Resource resource;
 			

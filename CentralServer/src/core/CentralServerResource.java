@@ -25,8 +25,8 @@ import parser.IncorrectFENException;
  */
 @Path("/rest") // Shared path.
 public class CentralServerResource {
-	protected static final String NO_RESULT = "NULL";
-	protected CentralServer server = new CentralServer();
+	private static final String NO_RESULT = "NULL";
+	private CentralServer server = new CentralServer();
 	
 	/**
 	 * The list of event listener for the central server.
@@ -109,7 +109,7 @@ public class CentralServerResource {
 	 */
 	@Path("/{gameId: [0-9]+}/{fen}")
 	@DELETE
-	public Response endOfGame(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
+	public static Response endOfGame(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
 		fen = fen.replaceAll("\\$", "/");
 		
 		System.out.println("endOfGame: " + fen);
@@ -134,7 +134,7 @@ public class CentralServerResource {
 			return respondBadRequest(e.getMessage());
 		}
 		
-		this.server.rewardResources(gameId, reward);
+		CentralServer.rewardResources(gameId, reward);
 		GamesManager.removeGame(gameId);
 		
 		return respondOK("");
@@ -256,7 +256,7 @@ public class CentralServerResource {
 	 */
 	@POST
 	@Produces("text/plain")
-	public Response startGame(@DefaultValue("true")@FormParam("san")boolean san) {
+	public static Response startGame(@DefaultValue("true")@FormParam("san")boolean san) {
 		// Notify the central server listeners about the request.
 		fireStartGameRequest(san);
 		
@@ -276,7 +276,7 @@ public class CentralServerResource {
 	 */
 	@OPTIONS
 	@Produces("text/plain")
-	public Response preflightStartGame(@HeaderParam("Access-Control-Request-Headers") String requestH) {
+	public static Response preflightStartGame(@HeaderParam("Access-Control-Request-Headers") String requestH) {
 		ResponseBuilder builder = Response.ok();
 		builder.header("Access-Control-Allow-Origin", "*");
 		builder.header("Access-Control-Allow-Headers", requestH);
@@ -292,7 +292,7 @@ public class CentralServerResource {
 	@Path("/{gameId: [0-9]+}/{fen}")
 	@OPTIONS
 	@Produces("text/plain")
-	public Response preflightEndOfGame(@HeaderParam("Access-Control-Request-Headers") String requestH) {
+	public static Response preflightEndOfGame(@HeaderParam("Access-Control-Request-Headers") String requestH) {
 		ResponseBuilder builder = Response.ok();
 		builder.header("Access-Control-Allow-Origin", "*");
 		builder.header("Access-Control-Allow-Methods", "DELETE, GET, OPTIONS");

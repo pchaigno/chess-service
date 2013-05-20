@@ -89,7 +89,7 @@ public class CentralServer {
 			}
 		}
 		
-		String bestMove = this.bestMove(scores, ends);
+		String bestMove = bestMove(scores, ends);
 		
 		if(gameId>0) {
 			GamesManager.addMove(gameId, getMoveResourcesConfidence(bestMove), GamesManager.getNumberOfMoves(gameId)+1);
@@ -155,7 +155,7 @@ public class CentralServer {
 		}
 		
 		// Get the best move suggestion:
-		String bestMove = this.bestMove(scores, ends);
+		String bestMove = bestMove(scores, ends);
 		if(bestMove==null) {
 			bestMove = "Nothing to propose.";
 		}
@@ -170,7 +170,7 @@ public class CentralServer {
 	 * @param ends The map containing all the ending moves and their scores.
 	 * @return The best move among all moves or null if no suggestion.
 	 */
-	private String bestMove(Map<String, Double> moves, Map<String, Double> ends) {
+	private static String bestMove(Map<String, Double> moves, Map<String, Double> ends) {
 		String move = null;
 		if(ends.size()>0) {
 			double min = Double.MAX_VALUE;
@@ -250,7 +250,7 @@ public class CentralServer {
 	 * @param gameId The game id.
 	 * @param gameResult The game result: -1 for lose, 1 for win, 0 for draw.
 	 */
-	public void rewardResources(int gameId, int gameResult) {
+	public static void rewardResources(int gameId, int gameResult) {
 		if(gameResult!=EndingSuggestion.DRAW_RESULT) {
 			Map<Integer, Double> resourceInvolvements = GamesManager.getResourceInvolvements(gameId);
 			ResourcesManager.updateResourcesTrust(resourceInvolvements, gameResult);

@@ -32,6 +32,7 @@ public class GamesManager extends DatabaseManager {
 	 * @param gameId The id of the game to remove.
 	 * @return True if the game has been removed, false otherwise.
 	 */
+	@SuppressWarnings("resource")
 	public static boolean removeGame(int gameId) {
 		Connection dbConnect = getConnection();
 		String queryMoves = "DELETE FROM "+MOVES+" WHERE "+MOVE_GAME+" = ?";
@@ -39,6 +40,7 @@ public class GamesManager extends DatabaseManager {
 			PreparedStatement statement = dbConnect.prepareStatement(queryMoves);
 			statement.setInt(1, gameId);
 			statement.executeUpdate();
+			statement.close();
 		} catch(SQLException e) {
 			System.err.println("removeGame: "+e.getMessage());
 			return false;
@@ -49,9 +51,11 @@ public class GamesManager extends DatabaseManager {
 			PreparedStatement statement = dbConnect.prepareStatement(queryGames);
 			statement.setInt(1, gameId);
 			if(statement.executeUpdate()!=1) {
+				statement.close();
 				dbConnect.close();
 				return false;
 			}
+			statement.close();
 			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("removeGame: "+e.getMessage());
@@ -75,9 +79,11 @@ public class GamesManager extends DatabaseManager {
 			statement.setString(2, FIRST_FEN);
 			statement.setBoolean(3, san);
 			if(statement.executeUpdate()!=1) {
+				statement.close();
 				dbConnect.close();
 				return -1;
 			}
+			statement.close();
 			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("addNewGame: "+e.getMessage());
@@ -93,6 +99,7 @@ public class GamesManager extends DatabaseManager {
 	 * @param fen The new fen.
 	 * @return True if the update succeed. It can fail if the game doesn't exist in the database.
 	 */
+	@SuppressWarnings("resource")
 	public static boolean updateGame(int gameId, String fen) {
 		Connection dbConnect = getConnection();
 		String query = "UPDATE "+GAMES+" SET "+GAME_FEN+" = ? WHERE "+GAME_ID+" = ?";
@@ -102,8 +109,10 @@ public class GamesManager extends DatabaseManager {
 			statement.setInt(2, gameId);
 			if(statement.executeUpdate()!=1) {
 				dbConnect.close();
+				statement.close();
 				return false;
 			}
+			statement.close();
 			dbConnect.close();
 			return true;
 		} catch(SQLException e) {
@@ -118,6 +127,7 @@ public class GamesManager extends DatabaseManager {
 	 * @param gameId The id of the game concerned.
 	 * @return The number of moves, -1 if an error occurred.
 	 */
+	@SuppressWarnings("resource")
 	public static int getNumberOfMoves(int gameId) {
 		Connection dbConnect = getConnection();
 		String query = "SELECT MAX("+MOVE_NUMBER+") AS max FROM "+MOVES+" WHERE "+MOVE_GAME+" = ?";
@@ -125,10 +135,12 @@ public class GamesManager extends DatabaseManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, gameId);
 			ResultSet set = statement.executeQuery();
+			statement.close();
 			int nbMoves = -1;
 			if(set.next()) {
 				nbMoves = set.getInt("max");
 			}
+			set.close();
 			dbConnect.close();
 			return nbMoves;
 		} catch(SQLException e) {
@@ -145,6 +157,7 @@ public class GamesManager extends DatabaseManager {
 	 * @return The computer color for the game concerned, null if the game doesn't exist.
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
+	@SuppressWarnings("resource")
 	public static PlayerColor getColor(int gameId) throws IncorrectFENException {
 		Connection dbConnect = getConnection();
 		String query = "SELECT "+GAME_FEN+" FROM "+GAMES+" WHERE "+GAME_ID+" = ?";
@@ -152,11 +165,13 @@ public class GamesManager extends DatabaseManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, gameId);
 			ResultSet set = statement.executeQuery();
+			statement.close();
 			PlayerColor color = null;
 			if(set.next()) {
 				String fen = set.getString(GAME_FEN);
 				color = ChessParser.getColor(fen);
 			}
+			set.close();
 			dbConnect.close();
 			return color;
 		} catch(SQLException e) {
@@ -183,6 +198,7 @@ public class GamesManager extends DatabaseManager {
 	 * @param gameId The game id.
 	 * @return True if the game exists.
 	 */
+	@SuppressWarnings("resource")
 	public static boolean exist(int gameId) {
 		Connection dbConnect = getConnection();
 		String query = "SELECT "+GAME_ID+" FROM "+GAMES+" WHERE "+GAME_ID+" = ?";
@@ -190,8 +206,11 @@ public class GamesManager extends DatabaseManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, gameId);
 			ResultSet set = statement.executeQuery();
+			statement.close();
 			dbConnect.close();
-			return set.next();
+			boolean exist = set.next();
+			set.close();
+			return exist;
 		} catch(SQLException e) {
 			System.err.println("exist: "+e.getMessage());
 			fireQueryError(e);
@@ -206,6 +225,7 @@ public class GamesManager extends DatabaseManager {
 	 * @param moveNumber The move number.
 	 * @return True if added, false otherwise.
 	 */
+	@SuppressWarnings("resource")
 	public static boolean addMove(int gameId, Map<Integer, Double> resourcesConfidence, int moveNumber) {
 		Connection dbConnect = getConnection();
 		String query = "INSERT INTO "+MOVES+" ("+MOVE_GAME+", "+MOVE_RESOURCE+", "+MOVE_NUMBER+", "+MOVE_TRUST+") VALUES(?, ?, ?, ?)";
@@ -219,6 +239,7 @@ public class GamesManager extends DatabaseManager {
 				statement.addBatch();
 			}
 			int[] results = statement.executeBatch();
+			statement.close();
 			for(int i=0 ; i<results.length ; i++) {
 				if(results[i]!=1) {
 					dbConnect.close();
@@ -241,6 +262,7 @@ public class GamesManager extends DatabaseManager {
 	 * @param gameId The id of the game to scan.
 	 * @return The map or null if an error occurred.
 	 */
+	@SuppressWarnings("resource")
 	public static Map<Integer, Double> getResourceInvolvements(int gameId) {
 		Map<Integer, Double> resourceInvolvements = new HashMap<Integer, Double>();
 		// TODO Isn't it possible to get that info after?
@@ -255,9 +277,11 @@ public class GamesManager extends DatabaseManager {
 				PreparedStatement statement = dbConnect.prepareStatement(query);
 				statement.setInt(1, gameId);
 				ResultSet set = statement.executeQuery();
+				statement.close();
 				while(set.next()) {
 					resourceInvolvements.put(set.getInt(MOVE_RESOURCE), set.getDouble("totalTrust"));
 				}
+				set.close();
 				dbConnect.close();
 				return resourceInvolvements;
 			} catch(SQLException e) {
@@ -273,6 +297,7 @@ public class GamesManager extends DatabaseManager {
 	 * @param gameId The game id.
 	 * @return True if the server must return SAN for this game, null if the game doesn't exist.
 	 */
+	@SuppressWarnings("resource")
 	public static Boolean isSAN(int gameId) {
 		Connection dbConnect = getConnection();
 		String query = "SELECT "+GAME_SAN+" FROM "+GAMES+" WHERE "+GAME_ID+" = ?";
@@ -280,10 +305,12 @@ public class GamesManager extends DatabaseManager {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			statement.setInt(1, gameId);
 			ResultSet set = statement.executeQuery();
+			statement.close();
 			Boolean san = null;
 			if(set.next()) {
 				san = set.getBoolean(GAME_SAN);
 			}
+			set.close();
 			dbConnect.close();
 			return san;
 		} catch(SQLException e) {
