@@ -49,23 +49,23 @@ public class StatsManager {
 	}
 	
 	/**
-	 * Get a statictic from the property entity.
-	 * @param propertyEntity The entity to access the statistic about.
+	 * Get a statictic from the property name.
+	 * @param propertyName The name of the property we want to access.
 	 * @param stat The statistic asked.
 	 * @return The value of this statistic.
 	 */
-	public static String getProperty(String propertyEntity, Statistic.Stat stat) {
-		return getConfiguration().getProperty(propertyEntity+"."+stat);
+	public static String getProperty(String propertyName, Statistic.Stat stat) {
+		return getConfiguration().getProperty(propertyName+"."+stat);
 	}
 	
 	/**
 	 * Change the entity's stat to the value propertyValue.
-	 * @param propertyEntity The entity to change the stat about.
-	 * @param stat The stat asked @see Statistic.
+	 * @param propertyName The property to change the stat about.
+	 * @param stat The stat asked
 	 * @param propertyValue The new value.
 	 */
-	public static void setProperty(String propertyEntity, Statistic.Stat stat, String propertyValue) {
-		getConfiguration().setProperty(propertyEntity+"."+stat, propertyValue);
+	public static void setProperty(String propertyName, Statistic.Stat stat, String propertyValue) {
+		getConfiguration().setProperty(propertyName+"."+stat, propertyValue);
 	}
 	
 	/**
@@ -87,8 +87,8 @@ public class StatsManager {
 	}
 
 	/**
-	 * Update the statistics using the moves
-	 * @param moves The moves that will be played.
+	 * Update the statistics using the moves.
+	 * @param moves The moves on which we will compute the statistics.
 	 * @return True if stats are updated, false otherwise.
 	 */
 	public static boolean updateStatistics(Set<MoveSuggestion> moves) {
@@ -101,29 +101,29 @@ public class StatsManager {
 	}
 	
 	/**
-	 * @param propertyEntity The name of the property that will be updated.
+	 * @param propertyName The name of the property that will be updated.
 	 * @param moves The moves that will be used tu update the entity.
 	 * @return True if the entity has been updated, false otherwise.
 	 */
-	private static boolean updateEntity(String propertyEntity, Set<MoveSuggestion> moves) {
+	private static boolean updateEntity(String propertyName, Set<MoveSuggestion> moves) {
 		Set<Double> values = new HashSet<Double>();
 		Set<Double> scoreValues = new HashSet<Double>();
 		
-		//We loop through the moves and add the right value in sets, depending on the entity chosen
+		//We loop through the moves and add the right value in sets, depending on the property chosen
 		for(MoveSuggestion move : moves) {
 			if(move instanceof BotSuggestion) {
-				if(STATS_BOT_DEPTH.equals(propertyEntity)) {
+				if(STATS_BOT_DEPTH.equals(propertyName)) {
 					values.add((double)((BotSuggestion)move).getDepth());
 					scoreValues.add(((BotSuggestion)move).computeScoreDepth());
-				} else if(STATS_BOT_SCORE.equals(propertyEntity)) {
+				} else if(STATS_BOT_SCORE.equals(propertyName)) {
 					values.add(((BotSuggestion)move).getEngineScore());
 					scoreValues.add(((BotSuggestion)move).computeScoreEngineScore());
 				}
 			} else if (move instanceof OpeningSuggestion) {
-				if(STATS_NB_PLAY.equals(propertyEntity)) {
+				if(STATS_NB_PLAY.equals(propertyName)) {
 					values.add((double)((OpeningSuggestion)move).getNbPlay());
 					scoreValues.add(((OpeningSuggestion)move).getScoreNbPlay());
-				} else if(STATS_PROBAW.equals(propertyEntity)) {
+				} else if(STATS_PROBAW.equals(propertyName)) {
 					values.add((double)((OpeningSuggestion)move).getProbaWin());
 					scoreValues.add(((OpeningSuggestion)move).getScoreProbaWin());
 				}
@@ -134,18 +134,18 @@ public class StatsManager {
 		Statistic stats = computeStats(values, scoreValues);
 		
 		//We compute the new stats, using the one compute above and the one store in the stats properties file
-		double newMean = computeMean(propertyEntity, stats.mean, values.size(), false);
-		double newVariance = computeVariance(propertyEntity, stats.mean, stats.variance, values.size(), false);
-		double newNormalizationMean = computeMean(propertyEntity, stats.normalizationMean, scoreValues.size(), true);
-		double newNormalizationVariance = computeVariance(propertyEntity, stats.normalizationMean, stats.normalizationVariance, scoreValues.size(), true);
-		int newWeight = computeWeight(propertyEntity, values.size());
+		double newMean = computeMean(propertyName, stats.mean, values.size(), false);
+		double newVariance = computeVariance(propertyName, stats.mean, stats.variance, values.size(), false);
+		double newNormalizationMean = computeMean(propertyName, stats.normalizationMean, scoreValues.size(), true);
+		double newNormalizationVariance = computeVariance(propertyName, stats.normalizationMean, stats.normalizationVariance, scoreValues.size(), true);
+		int newWeight = computeWeight(propertyName, values.size());
 		
 		//We save the new properties in the stats properties file
-		setProperty(propertyEntity, Statistic.Stat.MEAN, newMean+"");
-		setProperty(propertyEntity, Statistic.Stat.VARIANCE, newVariance+"");
-		setProperty(propertyEntity, Statistic.Stat.WEIGHT, newWeight+"");
-		setProperty(propertyEntity, Statistic.Stat.NORMALIZATION_MEAN, newNormalizationMean+"");
-		setProperty(propertyEntity, Statistic.Stat.NORMALIZATION_VARIANCE, newNormalizationVariance+"");
+		setProperty(propertyName, Statistic.Stat.MEAN, newMean+"");
+		setProperty(propertyName, Statistic.Stat.VARIANCE, newVariance+"");
+		setProperty(propertyName, Statistic.Stat.WEIGHT, newWeight+"");
+		setProperty(propertyName, Statistic.Stat.NORMALIZATION_MEAN, newNormalizationMean+"");
+		setProperty(propertyName, Statistic.Stat.NORMALIZATION_VARIANCE, newNormalizationVariance+"");
 		
 		return saveProperties();
 	}
@@ -159,7 +159,7 @@ public class StatsManager {
 	private static Statistic computeStats(Set<Double> values, Set<Double> scoreValues) {
 		double mean = 0, variance = 0, normalization_mean = 0, normalization_variance = 0;
 		
-		//We compute mean and variance for the values
+		//We compute mean and variance(V(X)=E[X²]-(E[X])²) for the values
 		for(double value: values) {
 			mean += value;
 			variance += Math.pow(value, 2);
@@ -181,33 +181,35 @@ public class StatsManager {
 	}
 
 	/**
-	 * Compute the weight.
+	 * Compute the new weight for the property.
 	 * Add the new one to the old one.
-	 * @param propertyEntity The properties.
-	 * @param weight The old weight.
+	 * @param propertyName The property.
+	 * @param weight The weight used to compute the new one.
 	 * @return The new weight.
 	 */
-	private static int computeWeight(String propertyEntity, int weight) {
-		int currentWeight = Integer.parseInt(getProperty(propertyEntity, Statistic.Stat.WEIGHT));
+	private static int computeWeight(String propertyName, int weight) {
+		int currentWeight = Integer.parseInt(getProperty(propertyName, Statistic.Stat.WEIGHT));
 		return currentWeight+weight;		
 	}
 
 	/**
-	 * Compute the variance.
-	 * @param propertyEntity The properties.
-	 * @param mean TODO
-	 * @param variance The old variance.
-	 * @param weight TODO
+	 * Compute the new variance for the property.
+	 * X1 represent the n1 old values (stats on X1 stored in the stats properties file) and X2 represent the n2 new values (stats in parameters)
+	 * Formula:V((X1,X2))=1/(n1+n2)²*(n1²*V(X1)+n2²*V(X2)+n1n2(V(X1)+V(X2)+E[X1]²+E[X2]²)-2n1n2*E[X1]E[X2])
+	 * @param propertyName The property.
+	 * @param mean The mean used to compute the new variance.
+	 * @param variance The variance used to compute the new one.
+	 * @param weight The weight used to compute the new variance.
 	 * @return The new variance.
 	 */
-	private static double computeVariance(String propertyEntity, double mean, double variance, int weight, boolean normalization) {
-		int currentWeight = Integer.parseInt(getProperty(propertyEntity, Statistic.Stat.WEIGHT));
-		double currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.Stat.MEAN));
-		double currentVariance = Double.parseDouble(getProperty(propertyEntity, Statistic.Stat.VARIANCE));
+	private static double computeVariance(String propertyName, double mean, double variance, int weight, boolean normalization) {
+		int currentWeight = Integer.parseInt(getProperty(propertyName, Statistic.Stat.WEIGHT));
+		double currentMean = Double.parseDouble(getProperty(propertyName, Statistic.Stat.MEAN));
+		double currentVariance = Double.parseDouble(getProperty(propertyName, Statistic.Stat.VARIANCE));
 		
 		if(normalization) {
-			currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.Stat.NORMALIZATION_MEAN));
-			currentVariance = Double.parseDouble(getProperty(propertyEntity, Statistic.Stat.NORMALIZATION_VARIANCE));
+			currentMean = Double.parseDouble(getProperty(propertyName, Statistic.Stat.NORMALIZATION_MEAN));
+			currentVariance = Double.parseDouble(getProperty(propertyName, Statistic.Stat.NORMALIZATION_VARIANCE));
 		}
 		
 		if((weight+currentWeight)>0) {
@@ -221,17 +223,19 @@ public class StatsManager {
 	}
 
 	/**
-	 * Compute the mean.
-	 * @param propertyEntity The properties.
-	 * @param mean The old mean.
-	 * @param weight TODO
+	 * Compute the new mean.
+	 * X1 represent the n1 old values (stats on X1 stored in the stats properties file) and X2 represent the n2 new values (stats in parameters)
+	 * Formula:E[X1,X2]=(n1*E[X1]+n2*E[X2])/(n1+n2)
+	 * @param propertyName The properties.
+	 * @param mean The mean used to compute the new one.
+	 * @param weight The weight used to compute the new mean.
 	 * @return The new mean.
 	 */
-	private static double computeMean(String propertyEntity, double mean, int weight, boolean normalization) {
-		int currentWeight = Integer.parseInt(getProperty(propertyEntity, Statistic.Stat.WEIGHT));
-		double currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.Stat.MEAN));
+	private static double computeMean(String propertyName, double mean, int weight, boolean normalization) {
+		int currentWeight = Integer.parseInt(getProperty(propertyName, Statistic.Stat.WEIGHT));
+		double currentMean = Double.parseDouble(getProperty(propertyName, Statistic.Stat.MEAN));
 		if(normalization) {
-			currentMean = Double.parseDouble(getProperty(propertyEntity, Statistic.Stat.NORMALIZATION_MEAN));
+			currentMean = Double.parseDouble(getProperty(propertyName, Statistic.Stat.NORMALIZATION_MEAN));
 		}
 		if(weight+currentWeight > 0) {
 			return (currentMean*currentWeight+mean*weight) / (currentWeight+weight);

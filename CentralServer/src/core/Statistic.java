@@ -1,7 +1,7 @@
 package core;
 
 /**
- * Contain the statistics used by StatsManager.
+ * Container for the statistics used by StatsManager.
  * Contain the enumeration of all Statistics accessible.
  * @author Clement Gautrais
  */
@@ -20,6 +20,9 @@ public class Statistic {
 	double normalizationMean;
 	double normalizationVariance;
 	
+	/**
+	 * Constructor.
+	 */
 	public Statistic() {
 		this.mean = 0;
 		this.variance = 0;
@@ -27,6 +30,13 @@ public class Statistic {
 		this.normalizationVariance = 0;
 	}
 	
+	/**
+	 * Constructor.
+	 * @param mean The mean on values.
+	 * @param variance The variance on values.
+	 * @param normalizationMean The normalization mean (mean on score).
+	 * @param normalizationVariance The normalization variance (variance on score).
+	 */
 	public Statistic(double mean, double variance, double normalizationMean, double normalizationVariance) {
 		this.mean = mean;
 		this.variance = variance;
