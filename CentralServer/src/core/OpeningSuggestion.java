@@ -8,8 +8,8 @@ public class OpeningSuggestion extends MoveSuggestion {
 	protected int nbPlay;
 	protected double probaWin;
 	protected double probaDraw;
-	protected static final double WEIGHT_NB_PLAY = 0.8;
-	protected static final double WEIGHT_PROBA_WIN = 0.2;
+	protected static final double WEIGHT_NB_PLAY = Double.parseDouble(PropertiesManager.getProperty(PropertiesManager.PROPERTY_WEIGHT_NBPLAY));
+	protected static final double WEIGHT_PROBA_WIN = Double.parseDouble(PropertiesManager.getProperty(PropertiesManager.PROPERTY_WEIGHT_PROBAW));
 	
 	/**
 	 * Constructor
