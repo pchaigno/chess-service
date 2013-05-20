@@ -93,7 +93,7 @@ public class PropertiesManager {
 	private static void init() {
 		conf = new Properties();
 		setProperty(PROPERTY_CONNECT_TIMEOUT, "2000");
-		setProperty(PROPERTY_READ_TIMEOUT, "3000");
+		setProperty(PROPERTY_READ_TIMEOUT, "5000");
 		setProperty(PROPERTY_DATABASE, "resources.db");
 		setProperty(PROPERTY_PORT_LISTENER, "9998");
 		setProperty(PROPERTY_WEIGHT_NBPLAY, "0.8");
