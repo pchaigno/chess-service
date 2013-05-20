@@ -201,8 +201,9 @@ public class ChessParser {
 	
 	/**
 	 * Set enPassant parameter at - in fen if no pawn can play enPassant.
+	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
-	public void checkEnPassant() {
+	public void checkEnPassant() throws IncorrectFENException {
 		boolean needEnPassant = false;
 		if(!this.board.enPassant.equals("-")) {
 			int mod;
@@ -212,7 +213,12 @@ public class ChessParser {
 				mod = -1;
 			}
 			char enPassantX = this.board.enPassant.charAt(0);
-			int enPassantY = Integer.parseInt(""+this.board.enPassant.charAt(1));
+			int enPassantY;
+			try {
+				enPassantY = Integer.parseInt(""+this.board.enPassant.charAt(1));
+			} catch(NumberFormatException e) {
+				throw new IncorrectFENException("The FEN is incorrect.");
+			}
 			char enPassantGauche = enPassantX;
 			enPassantGauche -= 1;
 			char enPassantDroite = enPassantX;
@@ -238,14 +244,14 @@ public class ChessParser {
 				if(this.board.squares.get(enPassantGauche)[enPassantY-mod]!=null) {
 					if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece!=null) {
 						if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN && this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.color==board.currentMove) {
-							needEnPassant=true;
+							needEnPassant = true;
 						}
 					}
 				}
 				if(!needEnPassant && this.board.squares.get(enPassantDroite)[enPassantY-mod]!=null) {
 					if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece!=null) {
 						if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN && this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.color==board.currentMove) {
-							needEnPassant=true;
+							needEnPassant = true;
 						}
 					}
 				}
