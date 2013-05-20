@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -46,6 +47,7 @@ import core.ResourcesManager;
  * @author Paul Chaignon
  */
 public class GUI {
+	private static int WEIGHT_DIGITS=2;
 	private static Display display;
 	static Shell shell;
 	static Table resourcesTable;
@@ -214,22 +216,31 @@ public class GUI {
 		// Port field:
 		Label portLabel = new Label(shell, SWT.NONE);
 		portLabel.setText("Listening port: ");
-		final Text port = new Text(shell, SWT.BORDER);
-		port.setText(PropertiesManager.getProperty(PropertiesManager.PROPERTY_PORT_LISTENER));
+		final Spinner port = new Spinner(shell, SWT.BORDER);
+		port.setIncrement(1);
+		port.setMinimum(0);
+		port.setMaximum(Integer.MAX_VALUE);
+		port.setSelection(Integer.parseInt(PropertiesManager.getProperty(PropertiesManager.PROPERTY_PORT_LISTENER)));
 		port.setLayoutData(new GridData(150, 13));
 		
 		// Connect timeout field:
 		Label connectTimeoutLabel = new Label(shell, SWT.NONE);
 		connectTimeoutLabel.setText("Connect Timeout(ms): ");
-		final Text connectTimeout = new Text(shell, SWT.BORDER);
-		connectTimeout.setText(PropertiesManager.getProperty(PropertiesManager.PROPERTY_CONNECT_TIMEOUT));
+		final Spinner connectTimeout = new Spinner(shell, SWT.BORDER);
+		connectTimeout.setIncrement(100);
+		connectTimeout.setMinimum(0);
+		connectTimeout.setMaximum(Integer.MAX_VALUE);
+		connectTimeout.setSelection(Integer.parseInt(PropertiesManager.getProperty(PropertiesManager.PROPERTY_CONNECT_TIMEOUT)));
 		connectTimeout.setLayoutData(new GridData(150, 13));
 		
 		// Read timeout field:
 		Label readTimeoutLabel = new Label(shell, SWT.NONE);
 		readTimeoutLabel.setText("Read Timeout(ms): ");
-		final Text readTimeout = new Text(shell, SWT.BORDER);
-		readTimeout.setText(PropertiesManager.getProperty(PropertiesManager.PROPERTY_READ_TIMEOUT));
+		final Spinner readTimeout = new Spinner(shell, SWT.BORDER);
+		readTimeout.setIncrement(100);
+		readTimeout.setMinimum(0);
+		readTimeout.setMaximum(Integer.MAX_VALUE);
+		readTimeout.setSelection(Integer.parseInt(PropertiesManager.getProperty(PropertiesManager.PROPERTY_READ_TIMEOUT)));
 		readTimeout.setLayoutData(new GridData(150, 13));
 		
 		// Database field:
@@ -237,7 +248,59 @@ public class GUI {
 		databaseLabel.setText("Database used by central server: ");
 		final Text database = new Text(shell, SWT.BORDER);
 		database.setText(PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE));
-		database.setLayoutData(new GridData(150, 13));
+		database.setLayoutData(new GridData(300, 13));
+		
+		Label separatorOpenings1 = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
+		separatorOpenings1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		Label separatorOpenings2 = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
+		separatorOpenings2.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		// Weight nbPlay field
+		Label weightNbPlayLabel = new Label(shell, SWT.NONE);
+		weightNbPlayLabel.setText("Weight for number of play: ");
+		final Spinner weightNbPlay = new Spinner(shell, SWT.BORDER);
+		weightNbPlay.setDigits(WEIGHT_DIGITS);
+		weightNbPlay.setIncrement(10);
+		weightNbPlay.setMinimum(0);
+		weightNbPlay.setMaximum((int)Math.pow(10, WEIGHT_DIGITS));
+		weightNbPlay.setSelection((int)(Double.parseDouble(PropertiesManager.getProperty(PropertiesManager.PROPERTY_WEIGHT_NBPLAY))*Math.pow(10,WEIGHT_DIGITS)));
+		weightNbPlay.setLayoutData(new GridData(150, 13));
+		
+		// Weight probaW field
+		Label weightProbaWLabel = new Label(shell, SWT.NONE);
+		weightProbaWLabel.setText("Weight for proba of winning: ");
+		final Spinner weightProbaW = new Spinner(shell, SWT.BORDER);
+		weightProbaW.setDigits(WEIGHT_DIGITS);
+		weightProbaW.setIncrement(10);
+		weightProbaW.setMinimum(0);
+		weightProbaW.setMaximum((int)Math.pow(10, WEIGHT_DIGITS));
+		weightProbaW.setSelection((int)(Double.parseDouble(PropertiesManager.getProperty(PropertiesManager.PROPERTY_WEIGHT_PROBAW))*Math.pow(10,WEIGHT_DIGITS)));
+		weightProbaW.setLayoutData(new GridData(150, 13));
+		
+		Label separatorBots1 = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
+		separatorBots1.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		Label separatorBots2 = new Label(shell, SWT.SEPARATOR | SWT.HORIZONTAL);
+		separatorBots2.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		// Weight engineScore field
+		Label weightEngineScoreLabel = new Label(shell, SWT.NONE);
+		weightEngineScoreLabel.setText("Weight for engine score: ");
+		final Spinner weightEngineScore = new Spinner(shell, SWT.BORDER);
+		weightEngineScore.setDigits(WEIGHT_DIGITS);
+		weightEngineScore.setIncrement(10);
+		weightEngineScore.setMinimum(0);
+		weightEngineScore.setMaximum((int)Math.pow(10, WEIGHT_DIGITS));
+		weightEngineScore.setSelection((int)(Double.parseDouble(PropertiesManager.getProperty(PropertiesManager.PROPERTY_WEIGHT_ENGINESCORE))*Math.pow(10,WEIGHT_DIGITS)));
+		weightEngineScore.setLayoutData(new GridData(150, 13));
+
+		// Weight depth field
+		Label weightDepthLabel = new Label(shell, SWT.NONE);
+		weightDepthLabel.setText("Weight for proba of winning: ");
+		final Spinner weightDepth = new Spinner(shell, SWT.BORDER);
+		weightDepth.setDigits(WEIGHT_DIGITS);
+		weightDepth.setIncrement(10);
+		weightDepth.setMinimum(0);
+		weightDepth.setMaximum((int)Math.pow(10, WEIGHT_DIGITS));
+		weightDepth.setSelection((int)(Double.parseDouble(PropertiesManager.getProperty(PropertiesManager.PROPERTY_WEIGHT_DEPTH))*Math.pow(10,WEIGHT_DIGITS)));
+		weightDepth.setLayoutData(new GridData(150, 13));
 		
 		// Button submit:
 		Button submit = new Button(shell, SWT.PUSH);
@@ -248,15 +311,35 @@ public class GUI {
 		submit.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				PropertiesManager.setProperty(PropertiesManager.PROPERTY_PORT_LISTENER, port.getText());
-				PropertiesManager.setProperty(PropertiesManager.PROPERTY_CONNECT_TIMEOUT, connectTimeout.getText());
-				PropertiesManager.setProperty(PropertiesManager.PROPERTY_READ_TIMEOUT, readTimeout.getText());
-				PropertiesManager.setProperty(PropertiesManager.PROPERTY_DATABASE, database.getText());
-				if(!PropertiesManager.saveProperties()) {
-					MessageDialog.openError(shell, "Saving error", "Unable to save the new options.");
+				try{
+					Integer.parseInt(port.getText());
+					Integer.parseInt(connectTimeout.getText());
+					Integer.parseInt(readTimeout.getText());
+					int valueWeightNbPlay = weightNbPlay.getSelection();
+					int valueWeightProbaW = weightProbaW.getSelection();
+					int valueWeightEngineScore = weightEngineScore.getSelection();
+					int valueweightDepth = weightDepth.getSelection();
+					
+					if(((valueWeightNbPlay+valueWeightProbaW)!=Math.pow(10, WEIGHT_DIGITS)) || ((valueWeightEngineScore+valueweightDepth)!=Math.pow(10, WEIGHT_DIGITS))){
+						MessageDialog.openError(shell, "Weights error", "Sum of weights should equals to 1");
+					} else{
+						PropertiesManager.setProperty(PropertiesManager.PROPERTY_PORT_LISTENER, port.getText());
+						PropertiesManager.setProperty(PropertiesManager.PROPERTY_CONNECT_TIMEOUT, connectTimeout.getText());
+						PropertiesManager.setProperty(PropertiesManager.PROPERTY_READ_TIMEOUT, readTimeout.getText());
+						PropertiesManager.setProperty(PropertiesManager.PROPERTY_DATABASE, database.getText());
+						PropertiesManager.setProperty(PropertiesManager.PROPERTY_WEIGHT_NBPLAY, ""+valueWeightNbPlay/Math.pow(10,WEIGHT_DIGITS));
+						PropertiesManager.setProperty(PropertiesManager.PROPERTY_WEIGHT_PROBAW, ""+valueWeightProbaW/Math.pow(10,WEIGHT_DIGITS));
+						PropertiesManager.setProperty(PropertiesManager.PROPERTY_WEIGHT_ENGINESCORE, ""+valueWeightEngineScore/Math.pow(10,WEIGHT_DIGITS));
+						PropertiesManager.setProperty(PropertiesManager.PROPERTY_WEIGHT_DEPTH, ""+valueweightDepth/Math.pow(10,WEIGHT_DIGITS));
+						if(!PropertiesManager.saveProperties()) {
+							MessageDialog.openError(shell, "Saving error", "Unable to save the new options.");
+						}
+
+						shell.dispose();
+					}
+				} catch(NumberFormatException e1){
+					MessageDialog.openError(shell, "Format error", "Port, connect timeout, read timeout and weights should be integers");
 				}
-				
-				shell.dispose();
 			}
 		});
 		shell.setDefaultButton(submit);

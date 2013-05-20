@@ -112,7 +112,6 @@ public class CentralServerResource {
 	public static Response endOfGame(@PathParam("gameId")int gameId, @PathParam("fen")String fen) {
 		fen = fen.replaceAll("\\$", "/");
 		
-		System.out.println("endOfGame: " + fen);
 		// Notify the central server listeners about the request.
 		fireEndOfGameRequest(gameId, fen);
 		
@@ -128,7 +127,7 @@ public class CentralServerResource {
 		try {
 			ChessParser parser = new ChessParser(fen);
 			reward = parser.result(GamesManager.getColor(gameId));
-		} catch (IncorrectFENException e) {
+		} catch(IncorrectFENException e) {
 			// Shouldn't happen !
 			System.err.println(e.getMessage());
 			return respondBadRequest(e.getMessage());

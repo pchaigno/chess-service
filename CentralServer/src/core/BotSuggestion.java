@@ -7,8 +7,8 @@ package core;
 public class BotSuggestion extends MoveSuggestion {
 	protected int depth;
 	protected double engineScore;
-	protected static final double WEIGHT_ENGINE_SCORE = 0.7;
-	protected static final double WEIGHT_DEPTH = 0.3;
+	protected static final double WEIGHT_ENGINE_SCORE = Double.parseDouble(PropertiesManager.getProperty(PropertiesManager.PROPERTY_WEIGHT_ENGINESCORE));
+	protected static final double WEIGHT_DEPTH = Double.parseDouble(PropertiesManager.getProperty(PropertiesManager.PROPERTY_WEIGHT_DEPTH));
 	
 	/**
 	 * Constructor
