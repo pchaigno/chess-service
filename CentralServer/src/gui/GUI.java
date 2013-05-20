@@ -47,7 +47,7 @@ import core.ResourcesManager;
  * @author Paul Chaignon
  */
 public class GUI {
-	private static int WEIGHT_DIGITS=2;
+	static int WEIGHT_DIGITS = 2;
 	private static Display display;
 	static Shell shell;
 	static Table resourcesTable;
@@ -311,7 +311,7 @@ public class GUI {
 		submit.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				try{
+				try {
 					Integer.parseInt(port.getText());
 					Integer.parseInt(connectTimeout.getText());
 					Integer.parseInt(readTimeout.getText());
@@ -320,24 +320,24 @@ public class GUI {
 					int valueWeightEngineScore = weightEngineScore.getSelection();
 					int valueweightDepth = weightDepth.getSelection();
 					
-					if(((valueWeightNbPlay+valueWeightProbaW)!=Math.pow(10, WEIGHT_DIGITS)) || ((valueWeightEngineScore+valueweightDepth)!=Math.pow(10, WEIGHT_DIGITS))){
+					if(valueWeightNbPlay+valueWeightProbaW!=Math.pow(10, WEIGHT_DIGITS) || valueWeightEngineScore+valueweightDepth!=Math.pow(10, WEIGHT_DIGITS)) {
 						MessageDialog.openError(shell, "Weights error", "Sum of weights should equals to 1");
-					} else{
+					} else {
 						PropertiesManager.setProperty(PropertiesManager.PROPERTY_PORT_LISTENER, port.getText());
 						PropertiesManager.setProperty(PropertiesManager.PROPERTY_CONNECT_TIMEOUT, connectTimeout.getText());
 						PropertiesManager.setProperty(PropertiesManager.PROPERTY_READ_TIMEOUT, readTimeout.getText());
 						PropertiesManager.setProperty(PropertiesManager.PROPERTY_DATABASE, database.getText());
-						PropertiesManager.setProperty(PropertiesManager.PROPERTY_WEIGHT_NBPLAY, ""+valueWeightNbPlay/Math.pow(10,WEIGHT_DIGITS));
-						PropertiesManager.setProperty(PropertiesManager.PROPERTY_WEIGHT_PROBAW, ""+valueWeightProbaW/Math.pow(10,WEIGHT_DIGITS));
-						PropertiesManager.setProperty(PropertiesManager.PROPERTY_WEIGHT_ENGINESCORE, ""+valueWeightEngineScore/Math.pow(10,WEIGHT_DIGITS));
-						PropertiesManager.setProperty(PropertiesManager.PROPERTY_WEIGHT_DEPTH, ""+valueweightDepth/Math.pow(10,WEIGHT_DIGITS));
+						PropertiesManager.setProperty(PropertiesManager.PROPERTY_WEIGHT_NBPLAY, ""+valueWeightNbPlay/Math.pow(10, WEIGHT_DIGITS));
+						PropertiesManager.setProperty(PropertiesManager.PROPERTY_WEIGHT_PROBAW, ""+valueWeightProbaW/Math.pow(10, WEIGHT_DIGITS));
+						PropertiesManager.setProperty(PropertiesManager.PROPERTY_WEIGHT_ENGINESCORE, ""+valueWeightEngineScore/Math.pow(10, WEIGHT_DIGITS));
+						PropertiesManager.setProperty(PropertiesManager.PROPERTY_WEIGHT_DEPTH, ""+valueweightDepth/Math.pow(10, WEIGHT_DIGITS));
 						if(!PropertiesManager.saveProperties()) {
 							MessageDialog.openError(shell, "Saving error", "Unable to save the new options.");
 						}
 
 						shell.dispose();
 					}
-				} catch(NumberFormatException e1){
+				} catch(NumberFormatException e1) {
 					MessageDialog.openError(shell, "Format error", "Port, connect timeout, read timeout and weights should be integers");
 				}
 			}

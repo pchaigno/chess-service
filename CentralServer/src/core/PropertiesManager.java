@@ -19,10 +19,10 @@ public class PropertiesManager {
 	public static final String PROPERTY_CONNECT_TIMEOUT = "connect_timeout";
 	public static final String PROPERTY_READ_TIMEOUT = "read_timeout";
 	public static final String PROPERTY_DATABASE = "database";
-	public static final String PROPERTY_WEIGHT_NBPLAY="weight_nbPlay";
-	public static final String PROPERTY_WEIGHT_PROBAW="weight_probaW";
-	public static final String PROPERTY_WEIGHT_ENGINESCORE="weight_engineScore";
-	public static final String PROPERTY_WEIGHT_DEPTH="weight_depth";
+	public static final String PROPERTY_WEIGHT_NBPLAY = "weight_nbPlay";
+	public static final String PROPERTY_WEIGHT_PROBAW = "weight_probaW";
+	public static final String PROPERTY_WEIGHT_ENGINESCORE = "weight_engineScore";
+	public static final String PROPERTY_WEIGHT_DEPTH = "weight_depth";
 	
 	/**
 	 * Load the configuration properties.
@@ -41,7 +41,7 @@ public class PropertiesManager {
 				try {
 					fileConfig.createNewFile();
 					init();
-				} catch (IOException e1) {
+				} catch(IOException e1) {
 					System.err.println("Unable to create the config file ("+CONFIG_FILE+").");
 				}
 			} catch(IOException e) {
