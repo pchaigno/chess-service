@@ -237,7 +237,7 @@ public class ResourcesManager extends DatabaseManager {
 		List<Integer> resourcesToUpdate = new ArrayList<Integer>();
 		resourcesToUpdate.addAll(resourceInvolvements.keySet());
 		Connection dbConnect = getConnection();
-		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_TRUST+" += ? WHERE "+RESOURCE_ID+" = ?";
+		String query = "UPDATE "+RESOURCES+" SET "+RESOURCE_TRUST+" = "+RESOURCE_TRUST+" + ? WHERE "+RESOURCE_ID+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(query);
 			for(int resourceId: resourcesToUpdate) {
