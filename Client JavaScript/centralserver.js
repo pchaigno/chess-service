@@ -99,12 +99,12 @@ function endGame(fen) {
 /** Convert the LAN to a 4 digits number for p4d **/
 function convertToDigits(lan) {
 	var move = new Array();
-	if(lan=='O-O') {
+	if(lan=='O-O' || lan=='O-O+' || lan=='O-O#') {
 		move[0] = 95;
 		move[1] = 97;
 		return move;
 	}
-	if(lan=='O-O-O') {
+	if(lan=='O-O-O' || lan=='O-O-O+' || lan=='O-O-O#') {
 		move[0] = 95;
 		move[1] = 93;
 		return move;
