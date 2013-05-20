@@ -1,5 +1,6 @@
 package core;
 
+import java.sql.SQLException;
 import java.util.EventListener;
 import java.util.Map;
 import java.util.Set;
@@ -88,4 +89,29 @@ public interface DatabaseListener extends EventListener {
 	 * @param resourceInvolvements The resource involvements as a map.
 	 */
 	public void onResourceInvolvementsRecovery(int gameId, Map<Integer, Double> resourceInvolvements);
+	
+	/**
+	 * Called when an exception is raised while accessing the database.
+	 * Regroups the creation, connection and query cases.
+	 * @param e The exception raised.
+	 */
+	public void onDatabaseError(Exception e);
+	
+	/**
+	 * Called when an exception is raised while creating the database.
+	 * @param e The exception raised.
+	 */
+	public void onCreateDatabaseError(Exception e);
+	
+	/**
+	 * Called when an exception is raised while connecting to the database.
+	 * @param e The exception raised.
+	 */
+	public void onConnectionError(Exception e);
+	
+	/**
+	 * Called when an SQL exception is raised while querying the database.
+	 * @param e The SQL exception raised.
+	 */
+	public void onQueryError(SQLException e);
 }

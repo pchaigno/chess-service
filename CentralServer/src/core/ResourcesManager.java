@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.event.EventListenerList;
-
 /**
  * Handle all the accesses to the SQLite database for the resources.
  * @author Paul Chaignon
@@ -24,35 +22,6 @@ public class ResourcesManager extends DatabaseManager {
 	private static final String RESOURCE_TRUST = "trust";
 	private static final String RESOURCE_TYPE = "type";
 	private static final String RESOURCE_ACTIVE = "active";
-	
-	/**
-	 * The list of event listener for the database.
-	 * EventListenerList is used for a better multithread safety.
-	 */
-	private static final EventListenerList listeners = new EventListenerList();
-
-	/**
-	 * Add a database listener to the listeners.
-	 * @param listener The new listener.
-	 */
-	public static void addDatabaseListener(DatabaseListener listener) {
-		listeners.add(DatabaseListener.class, listener);
-	}
-	
-	/**
-	 * Remove a database listener from the listeners.
-	 * @param listener The new listener.
-	 */
-	public static void removeDatabaseListener(DatabaseListener listener) {
-		listeners.remove(DatabaseListener.class, listener);
-	}
-	
-	/**
-	 * @return The database listeners.
-	 */
-	public static DatabaseListener[] getDatabaseListeners() {
-		return listeners.getListeners(DatabaseListener.class);
-	}
 	
 	/**
 	 * Get the resources from the database.
@@ -88,6 +57,7 @@ public class ResourcesManager extends DatabaseManager {
 			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("getResources: "+e.getMessage());
+			fireQueryError(e);
 		}
 		
 		return resources;
@@ -132,6 +102,7 @@ public class ResourcesManager extends DatabaseManager {
 			}
 		} catch(SQLException e) {
 			System.err.println("addResource: "+e.getMessage());
+			fireQueryError(e);
 		}
 		return null;
 	}
@@ -159,6 +130,7 @@ public class ResourcesManager extends DatabaseManager {
 			return true;
 		} catch(SQLException e) {
 			System.err.println("removeResource: "+e.getMessage());
+			fireQueryError(e);
 		}
 		return false;
 	}
@@ -190,6 +162,7 @@ public class ResourcesManager extends DatabaseManager {
 			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("removeResources: "+e.getMessage());
+			fireQueryError(e);
 		}
 		return notRemoved;
 	}
@@ -230,6 +203,7 @@ public class ResourcesManager extends DatabaseManager {
 			return true;
 		} catch(SQLException e) {
 			System.err.println("updateResource: "+e.getMessage());
+			fireQueryError(e);
 		}
 		return false;
 	}
@@ -266,6 +240,7 @@ public class ResourcesManager extends DatabaseManager {
 			fireResourcesTrustUpdated(resourceInvolvements, gameResult);
 		} catch(SQLException e) {
 			System.err.println("updateResourcesTrust: "+e.getMessage());
+			fireQueryError(e);
 		}
 		return notUpdated;
 	}
@@ -298,6 +273,7 @@ public class ResourcesManager extends DatabaseManager {
 			fireResourcesActiveUpdated(resources);
 		} catch(SQLException e) {
 			System.err.println("updateResourcesActive: "+e.getMessage());
+			fireQueryError(e);
 		}
 		return notUpdated;
 	}

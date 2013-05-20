@@ -7,6 +7,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import javax.swing.event.EventListenerList;
+
 import org.sqlite.SQLiteConfig;
 
 /**
@@ -17,6 +19,35 @@ import org.sqlite.SQLiteConfig;
 public class DatabaseManager {
 	protected static String DATABASE_FILE = PropertiesManager.getProperty(PropertiesManager.PROPERTY_DATABASE);
 
+	/**
+	 * The list of event listener for the database.
+	 * EventListenerList is used for a better multithread safety.
+	 */
+	private static final EventListenerList listeners = new EventListenerList();
+
+	/**
+	 * Add a database listener to the listeners.
+	 * @param listener The new listener.
+	 */
+	public void addDatabaseListener(DatabaseListener listener) {
+		listeners.add(DatabaseListener.class, listener);
+	}
+	
+	/**
+	 * Remove a database listener from the listeners.
+	 * @param listener The new listener.
+	 */
+	public void removeDatabaseListener(DatabaseListener listener) {
+		listeners.remove(DatabaseListener.class, listener);
+	}
+	
+	/**
+	 * @return The database listeners.
+	 */
+	public static DatabaseListener[] getDatabaseListeners() {
+		return listeners.getListeners(DatabaseListener.class);
+	}
+	
 	/**
 	 * Change the location of the current database file.
 	 * @param newDatabase The new database file used.
@@ -46,8 +77,12 @@ public class DatabaseManager {
 			try {
 				databaseFile.createNewFile();
 				init();
-			} catch (IOException e) {
+			} catch(IOException e) {
 				System.err.println("Unable to create the database ("+DATABASE_FILE+")");
+				fireCreateDatabaseError(e);
+			} catch(SQLException e) {
+				System.err.println("SQLException: "+e.getMessage());
+				fireCreateDatabaseError(e);
 			}
 		}
 		
@@ -59,38 +94,62 @@ public class DatabaseManager {
 		} catch(SQLException e) {
 			System.err.println("Impossible to connect to the database "+DATABASE_FILE+".");
 			System.err.println(e.getMessage());
+			fireConnectionError(e);
 		} catch(ClassNotFoundException e) {
 			System.err.println("Driver missing for SQLite JDBC.");
+			fireConnectionError(e);
 		}
 		return dbConnect;
 	}
 	
 	/**
-	 * Create all the tables needed for the central server
+	 * Create all the tables needed for the central server.
+	 * @throws SQLException If an SQL exception happens, when the request is wrong.
 	 */
-	protected static void init(){
+	private static void init() throws SQLException {
 		Connection dbConnect = getConnection();
 		String query = "CREATE TABLE resources(id INTEGER PRIMARY KEY, name TEXT NOT NULL, uri TEXT NOT NULL UNIQUE, trust INTEGER, type INTEGER, active INTEGER);";
-		try {
-			PreparedStatement statement = dbConnect.prepareStatement(query);
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			System.err.println("SQLException: "+e.getMessage());
-		}
+		PreparedStatement statement = dbConnect.prepareStatement(query);
+		statement.executeUpdate();
 		query = "CREATE TABLE games(id INTEGER PRIMARY KEY, fen TEXT, san INTEGER);";
-		try {
-			PreparedStatement statement = dbConnect.prepareStatement(query);
-			statement.executeUpdate();
-		} catch (SQLException e) {
-			System.err.println("SQLException: "+e.getMessage());
-		}
+		statement = dbConnect.prepareStatement(query);
+		statement.executeUpdate();
 		query = "CREATE TABLE moves(resource INTEGER REFERENCES resources(id), game INTEGER REFERENCES games(id), num_move INTEGER, move_trust DOUBLE, PRIMARY KEY(resource, game, num_move))";
-		try {
-			PreparedStatement statement = dbConnect.prepareStatement(query);
-			statement.executeUpdate();
-			dbConnect.close();
-		} catch (SQLException e) {
-			System.err.println("SQLException: "+e.getMessage());
+		statement = dbConnect.prepareStatement(query);
+		statement.executeUpdate();
+		dbConnect.close();
+	}
+
+	/**
+	 * Fire a create database error event for all database listeners.
+	 * @param e The exception raised.
+	 */
+	private static void fireCreateDatabaseError(Exception e) {
+		for(DatabaseListener listener: getDatabaseListeners()) {
+			listener.onCreateDatabaseError(e);
+			listener.onDatabaseError(e);
+		}
+	}
+
+	/**
+	 * Fire a connection error event for all database listeners.
+	 * @param e The exception raised.
+	 */
+	private static void fireConnectionError(Exception e) {
+		for(DatabaseListener listener: getDatabaseListeners()) {
+			listener.onConnectionError(e);
+			listener.onDatabaseError(e);
+		}
+	}
+
+	/**
+	 * Fire a query error event for all database listeners.
+	 * @param e The SQL exception raised.
+	 */
+	protected static void fireQueryError(SQLException e) {
+		for(DatabaseListener listener: getDatabaseListeners()) {
+			listener.onQueryError(e);
+			listener.onDatabaseError(e);
 		}
 	}
 }

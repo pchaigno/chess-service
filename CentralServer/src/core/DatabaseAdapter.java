@@ -1,5 +1,6 @@
 package core;
 
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,4 +47,16 @@ public class DatabaseAdapter implements DatabaseListener {
 
 	@Override
 	public void onResourceInvolvementsRecovery(int gameId, Map<Integer, Double> resourceInvolvements) {}
+
+	@Override
+	public void onDatabaseError(Exception e) {}
+
+	@Override
+	public void onCreateDatabaseError(Exception e) {}
+
+	@Override
+	public void onConnectionError(Exception e) {}
+
+	@Override
+	public void onQueryError(SQLException e) {}
 }

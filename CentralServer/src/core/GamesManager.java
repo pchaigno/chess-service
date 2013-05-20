@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.swing.event.EventListenerList;
-
 import parser.ChessParser;
 import parser.IncorrectFENException;
 
@@ -28,28 +26,6 @@ public class GamesManager extends DatabaseManager {
 	private static final String MOVE_RESOURCE = "resource";
 	private static final String MOVE_NUMBER = "num_move"; // The number of the move in the game
 	private static final String MOVE_TRUST = "move_trust";
-
-	/**
-	 * The list of event listener for the database.
-	 * EventListenerList is used for a better multithread safety.
-	 */
-	private static final EventListenerList listeners = new EventListenerList();
-
-	/**
-	 * Add a database listener to the listeners.
-	 * @param listener The new listener.
-	 */
-	public void addDatabaseListener(DatabaseListener listener) {
-		listeners.add(DatabaseListener.class, listener);
-	}
-	
-	/**
-	 * Remove a database listener from the listeners.
-	 * @param listener The new listener.
-	 */
-	public void removeDatabaseListener(DatabaseListener listener) {
-		listeners.remove(DatabaseListener.class, listener);
-	}
 	
 	/**
 	 * Remove all traces of the game id_game.
@@ -79,6 +55,7 @@ public class GamesManager extends DatabaseManager {
 			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("removeGame: "+e.getMessage());
+			fireQueryError(e);
 			return false;
 		}
 		return true;
@@ -104,6 +81,7 @@ public class GamesManager extends DatabaseManager {
 			dbConnect.close();
 		} catch(SQLException e) {
 			System.err.println("addNewGame: "+e.getMessage());
+			fireQueryError(e);
 			return -1;
 		}
 		return id;
@@ -130,6 +108,7 @@ public class GamesManager extends DatabaseManager {
 			return true;
 		} catch(SQLException e) {
 			System.err.println("updateGame: "+e.getMessage());
+			fireQueryError(e);
 			return false;
 		}
 	}
@@ -154,6 +133,7 @@ public class GamesManager extends DatabaseManager {
 			return nbMoves;
 		} catch(SQLException e) {
 			System.err.println("getNumberOfMoves: "+e.getMessage());
+			fireQueryError(e);
 			return -1;
 		}
 	}
@@ -181,6 +161,7 @@ public class GamesManager extends DatabaseManager {
 			return color;
 		} catch(SQLException e) {
 			System.err.println("getColor: "+e.getMessage());
+			fireQueryError(e);
 		}
 		return null;
 	}
@@ -213,7 +194,8 @@ public class GamesManager extends DatabaseManager {
 			return set.next();
 		} catch(SQLException e) {
 			System.err.println("exist: "+e.getMessage());
-			return false; // TODO That's kind of dangerous...
+			fireQueryError(e);
+			return true; // TODO That's kind of dangerous...
 		}
 	}
 	
@@ -247,6 +229,7 @@ public class GamesManager extends DatabaseManager {
 			return true;
 		} catch(SQLException e) {
 			System.err.println("addMoves: "+e.getMessage());
+			fireQueryError(e);
 			return false;
 		}
 	}
@@ -279,6 +262,7 @@ public class GamesManager extends DatabaseManager {
 				return resourceInvolvements;
 			} catch(SQLException e) {
 				System.err.println("getResourceInvolvements: "+e.getMessage());
+				fireQueryError(e);
 			}
 		}
 		return null;
@@ -304,6 +288,7 @@ public class GamesManager extends DatabaseManager {
 			return san;
 		} catch(SQLException e) {
 			System.err.println("isSAN: "+e.getMessage());
+			fireQueryError(e);
 		}
 		return null;
 	}
