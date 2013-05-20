@@ -76,9 +76,9 @@ public class TestParser extends TestCase {
 		ChessParser parser1 = new ChessParser("k7/8/1Q6/2K5/8/8/8/8 b - - 0 1"); // black are stalemate
 		ChessParser parser2 = new ChessParser("k7/8/P1N3p1/2K3Pp/7P/8/8/8 b - - 0 1"); // black are stalemate
 		ChessParser parser3 = new ChessParser("8/r7/8/K1k5/5b2/8/8/8 w - - 0 1"); // white lose
-		assertFalse(parser1.getRules().check(parser1.getBoard(), false));
-		assertFalse(parser2.getRules().check(parser2.getBoard(), false));
-		assertTrue(parser3.getRules().check(parser3.getBoard(), false));
+		assertFalse(parser1.check(false));
+		assertFalse(parser2.check(false));
+		assertTrue(parser3.check(false));
 	}
 	
 	/**

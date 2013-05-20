@@ -39,7 +39,7 @@ public class ChessRules {
 	 * @param capture True if there is a capture.
 	 * @return The position of the piece on the board.
 	 */
-	private BoardSquare pawn(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private static BoardSquare pawn(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		List<BoardPiece> legalPawns = new LinkedList<BoardPiece>();
 		BoardSquare result = null;
 		int toXnum = letter.get(toX);
@@ -91,7 +91,7 @@ public class ChessRules {
 	 * @return The position of the piece on the board.
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
-	private BoardSquare knight(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
+	private static BoardSquare knight(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		List<BoardPiece> legalKnights = new LinkedList<BoardPiece>();
 		BoardPiece knight;
 		int knightX;
@@ -110,7 +110,7 @@ public class ChessRules {
 
 		// Knight and all other pieces are tricker, because you have to exclude pieces from legalPieces which you can't move 
 		// because that would expose your king to check.
-		return this.executeCheck(board, legalKnights, toX, toY, capture);
+		return executeCheck(board, legalKnights, toX, toY, capture);
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class ChessRules {
 	 * @return The position of the piece on the board.
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
-	private BoardSquare bishop(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
+	private static BoardSquare bishop(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		List<BoardPiece> legalBishops = new LinkedList<BoardPiece>();
 		int bishopX;
 		int bishopY;
@@ -171,7 +171,7 @@ public class ChessRules {
 			}
 		}
 		
-		return this.executeCheck(board, legalBishops, toX, toY, capture);
+		return executeCheck(board, legalBishops, toX, toY, capture);
 	}
 
 	/**
@@ -186,7 +186,7 @@ public class ChessRules {
 	 * @return The position of the piece on the board.
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
-	private BoardSquare rook(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
+	private static BoardSquare rook(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		List<BoardPiece> legalRooks = new LinkedList<BoardPiece>();
 		int rookX;
 		int rookY;
@@ -231,7 +231,7 @@ public class ChessRules {
 			}
 		}
 		
-		return this.executeCheck(board, legalRooks, toX, toY, capture);
+		return executeCheck(board, legalRooks, toX, toY, capture);
 	}
 
 	/**
@@ -246,7 +246,7 @@ public class ChessRules {
 	 * @return The position of the piece on the board.
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
-	private BoardSquare queen(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
+	private static BoardSquare queen(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		List<BoardPiece> legalQueens = new LinkedList<BoardPiece>();
 		int queenX;
 		int queenY;
@@ -320,7 +320,7 @@ public class ChessRules {
 			}
 
 		}
-		return this.executeCheck(board, legalQueens, toX, toY, capture);
+		return executeCheck(board, legalQueens, toX, toY, capture);
 	}
 
 	/**
@@ -334,7 +334,7 @@ public class ChessRules {
 	 * @param capture True if there is a capture.
 	 * @return The position of the piece on the board.
 	 */
-	private BoardSquare king(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
+	private static BoardSquare king(ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) {
 		BoardPiece king;
 		BoardSquare result = null;
 		List<Integer> pieces = board.getPiece(PieceType.KING, board.currentMove, (char) 0, -1);
@@ -356,7 +356,7 @@ public class ChessRules {
 	 * @return The position of the piece on the board.
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
-	private BoardSquare executeCheck(ChessBoard board, List<BoardPiece> legalPieces, char toX, int toY, boolean capture) throws IncorrectFENException {
+	private static BoardSquare executeCheck(ChessBoard board, List<BoardPiece> legalPieces, char toX, int toY, boolean capture) throws IncorrectFENException {
 		BoardSquare result = null;
 		if(legalPieces.size() > 1) {
 			for(int i=0 ; i<legalPieces.size() ; i++) {
@@ -367,7 +367,7 @@ public class ChessRules {
 				// be under check if we do;
 				board.makeMove(pieceX, pieceY, toX, toY, capture);
 				board.switchMove();
-				if(!this.check(board,true)) {
+				if(!check(board,true)) {
 					result = new BoardSquare(pieceX, pieceY);
 					board.loadFEN(saveFEN);
 					break;
@@ -388,7 +388,7 @@ public class ChessRules {
 	 * @return True if the board is in check state.
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
-	public boolean check(ChessBoard board, boolean current) throws IncorrectFENException {
+	static boolean check(ChessBoard board, boolean current) throws IncorrectFENException {
 		BoardSquare attackArray;
 		PieceColor kingColor;
 		BoardPiece king;
@@ -424,7 +424,7 @@ public class ChessRules {
 					fromY = board.pieces.get(i).square.y;
 					// We simply check if any of the pieces can "capture" enemy
 					// king, if so, its check
-					attackArray = this.eval(board.pieces.get(i).type, board, fromX, fromY, kingX, kingY, true);
+					attackArray = eval(board.pieces.get(i).type, board, fromX, fromY, kingX, kingY, true);
 					if(attackArray != null) {
 						return true;
 					}
@@ -450,20 +450,20 @@ public class ChessRules {
 	 * @return The board square.
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
-	BoardSquare eval(PieceType piece, ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
+	static BoardSquare eval(PieceType piece, ChessBoard board, char fromX, int fromY, char toX, int toY, boolean capture) throws IncorrectFENException {
 		switch(piece) {
 			case PAWN:
-				return this.pawn(board, fromX, fromY, toX, toY, capture);
+				return pawn(board, fromX, fromY, toX, toY, capture);
 			case KNIGHT:
-				return this.knight(board, fromX, fromY, toX, toY, capture);
+				return knight(board, fromX, fromY, toX, toY, capture);
 			case BISHOP:
-				return this.bishop(board, fromX, fromY, toX, toY, capture);
+				return bishop(board, fromX, fromY, toX, toY, capture);
 			case ROOK:
-				return this.rook(board, fromX, fromY, toX, toY, capture);
+				return rook(board, fromX, fromY, toX, toY, capture);
 			case QUEEN:
-				return this.queen(board, fromX, fromY, toX, toY, capture);
+				return queen(board, fromX, fromY, toX, toY, capture);
 			case KING:
-				return this.king(board, fromX, fromY, toX, toY, capture);
+				return king(board, fromX, fromY, toX, toY, capture);
 		}
 		throw new IllegalArgumentException("Piece type not found: "+piece);
 	}

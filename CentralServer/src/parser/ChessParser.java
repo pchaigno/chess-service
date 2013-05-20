@@ -27,7 +27,6 @@ public class ChessParser {
 		this.put('g', 7);
 		this.put('h', 8);
 	}};
-	private ChessRules rules;
 	private ChessBoard board;
 	private String fen;
 
@@ -38,25 +37,9 @@ public class ChessParser {
 	 */
 	public ChessParser(String fen) throws IncorrectFENException {
 		this.fen = fen;
-	
-		this.rules = new ChessRules();
 		
 		this.board = new ChessBoard();
 		this.board.loadFEN(this.fen);
-	}
-	
-	/**
-	 * @return The rules.
-	 */
-	public ChessRules getRules() {
-		return rules;
-	}
-	
-	/**
-	 * @return The board.
-	 */
-	public ChessBoard getBoard() {
-		return board;
 	}
 
 	/**
@@ -119,16 +102,16 @@ public class ChessParser {
 		String pgnfromY = "";
 
 		// Determine if we need fromX/fromY coordinates in PGN move:
-		if(this.rules.eval(piece, board, (char)0, -1, toX, toY, capture).x!=0) {
+		if(ChessRules.eval(piece, board, (char)0, -1, toX, toY, capture).x!=0) {
 			pgnfromX = "";
 			pgnfromY = "";
-		} else if(this.rules.eval(piece, board, fromX, -1, toX, toY, capture).x!=0) {
+		} else if(ChessRules.eval(piece, board, fromX, -1, toX, toY, capture).x!=0) {
 			pgnfromX = String.valueOf(fromX);
 			pgnfromY = "";
-		} else if(this.rules.eval(piece, board, (char)0, fromY, toX, toY, capture).x!=0) {
+		} else if(ChessRules.eval(piece, board, (char)0, fromY, toX, toY, capture).x!=0) {
 			pgnfromX = "";
 			pgnfromY = String.valueOf(fromY);
-		} else if(this.rules.eval(piece, board, fromX, fromY, toX, toY, capture).x!=0) {
+		} else if(ChessRules.eval(piece, board, fromX, fromY, toX, toY, capture).x!=0) {
 			pgnfromX = String.valueOf(fromX);
 			pgnfromY = String.valueOf(fromY);
 		}
@@ -208,7 +191,7 @@ public class ChessParser {
 		}
 
 		// Determine the location of the piece to move using chess rules and incomplete information about it
-		BoardSquare pieceXY = this.rules.eval(piece, board, fromX, fromY, toX, toY, capture);
+		BoardSquare pieceXY = ChessRules.eval(piece, board, fromX, fromY, toX, toY, capture);
 		
 		// Return the Long Algebraic Notation.
 		return String.valueOf(pieceXY.x)+pieceXY.y+toX+toY;
@@ -322,9 +305,9 @@ public class ChessParser {
 		int nb = board.halfMoves;
 
 		if(nb<50) {
-			boolean echec = rules.check(board,false);
+			boolean echec = ChessRules.check(board,false);
 			
-			if(echec){
+			if(echec) {
 				PlayerColor color = null;
 				color = ChessParser.getColor(fen);
 				if(color==gameColor) {
@@ -334,7 +317,7 @@ public class ChessParser {
 					reward = EndingSuggestion.WIN_RESULT;
 					System.out.println("win");
 				}
-			}else{
+			} else {
 				reward = EndingSuggestion.DRAW_RESULT;
 				System.out.println("draw 1");
 			}
@@ -366,5 +349,15 @@ public class ChessParser {
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * Sees if board is in check state for the current player.
+	 * @param current True for the current color.
+	 * @return True if the board is in check state.
+	 * @throws IncorrectFENException If the FEN is incorrect.
+	 */
+	public boolean check(boolean current) throws IncorrectFENException {
+		return ChessRules.check(this.board, current);
 	}
 }
