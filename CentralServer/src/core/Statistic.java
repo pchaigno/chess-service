@@ -6,12 +6,31 @@ package core;
  * @author Clement Gautrais
  */
 public class Statistic {
-	
+	/**
+	 * Represents all the statistics accessible via StatsManager
+	 * @author clemgaut
+	 *
+	 */
 	enum Stat {
+		/**
+		 * The Weight (number of values).
+		 */
 		WEIGHT,
+		/**
+		 * The mean on values.
+		 */
 		MEAN,
+		/**
+		 * The variance on values.
+		 */
 		VARIANCE,
+		/**
+		 * The normalization mean (on score).
+		 */
 		NORMALIZATION_MEAN,
+		/**
+		 * The normalization variance (on score).
+		 */
 		NORMALIZATION_VARIANCE;
 	}
 	
