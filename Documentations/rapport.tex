@@ -62,6 +62,11 @@ Le résumé est limité à 10 lignes au maximum.
 \subsection{Interfaces intermédiaires pour les ressources distantes}
 Afin d'accéder à des ressources non accessibles en REST, nous avons dû mettre en place des interfaces intermédiaires en PHP. Ces interfaces ayant toutes des fonctions communes, nous avons choisi de créer un framework, en PHP également. Dans ce framework, nous communiquons avec les ressources au moyen d'appel cURL. Nous faisons donc des requêtes GET, éventuellement POST si requis, à chaque ressource. Le fait d'avoir centralisé le code nous permet également de structurer les appels pour respecter l'architecture REST. Toutefois les ressources n'utilisent pas toutes les mêmes conventions et les coups ne sont pas tous donnés sous la même forme. C'est pourquoi on trouve un ou plusieurs parser dans chaque interface intermédiaire. Ces parser permettent de formater les réponses des ressources. Comme nous avions besoin de transmettre peu d'informations, nous avons choisi de transmettre les réponses au format JSON, qui est peu verbeux. Ainsi, le serveur reçoit toutes les réponses dans un format unique.
 
+\subsection{Conversions entre les formats}
+Certaines ressources attendent des FEN sous une forme réduite, d'autres sous la forme normale; elles renvoient les suggestions de coups parfois au format SAN, parfois au format LAN. De plus les clients, pour leur interface graphique, ont parfois besoin du format LAN et parfois du format SAN. Nous avons donc dû implémenter les algorithmes, dans le serveur central, pour effectuer toutes les conversions nécessaires entre ses différents formats. Nous sommes partis pour cela d'algorithmes disponibles en JavaScript sur le site d'une de nos ressources. Nous avons donc dû les implémenter en Java, les améliorer et les corriger.
+
+Ce code source étant assez complexe nous avons choisis d'utiliser les techniques de développement pilotés par les tests. Nous avons donc commencé par écrire des tests unitaires de nos conversions. Après avoir écrit une première version fonctionnelle, nous nous sommes attachés à améliorer les algorithmes. Cette méthode nous a permis de repérer relativement rapidement les erreurs déjà présentes dans le code JavaScript.
+
 
 \section{Architecture du serveur central}
 
