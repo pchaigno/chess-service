@@ -107,9 +107,9 @@ Cette façon de faire permettra à la personne qui reprendra notre code de dévelop
 
 
 \section{Clients graphique}
+Afin de valoriser notre travail et de pouvoir tester de façon plus visuelle le système, nous avons interfacé deux clients graphiques avec notre serveur central. De part l'utilisation de l'architecture REST, notre système peut être interfacé avec n'importe quel client graphique. Nous avons juste dû, pour chaque client, écrire les fonctions pour effectuer les différentes requêtes HTTP vers l'interface RESTful du serveur central.
 
-[TODO: Parler du client 3D et du client AJAX]
-
+Le premier client avait été développé avec Unity 3D, nous avons donc dû écrire nos fonctions en C#. Le second client était en JavaScript (et fonctionne donc sur mobile) et nous avons donc utilisé l'architecture AJAX pour effectuer les requêtes vers le serveur central. L'architecture AJAX utilise quelques requêtes particulières, appelées preflight (\label{TODO: site externe}). Cela nous a contraint a adapter l'interface RESTful du serveur central.
 
 
 \section{Classement des suggestions de coups}
