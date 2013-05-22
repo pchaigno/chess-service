@@ -47,29 +47,38 @@ Le résumé est limité à 10 lignes au maximum.
 
 \section{Introduction}  
 
-\subsection{Attentes du client}
 [TODO: Attentes de Loic Helouet.]
-
-\subsection{Spécifications}
 [TODO: Spécifications en boîte noire.]
 
 
 \section{Architecture}
 
+\subsection{Présentation générale}
+[TODO: Présenter le fonctionnement général du système.]
+
 \subsection{Interfaces intermédiaires pour les ressources distantes}
 [TODO: PHP Wrappers : Appel cURL, parsing et structure.]
 
-\subsection{Utilisation des ressources côté serveur}
-[TODO: UML, query, version et parsing JSON.]
+\subsection{Réprésentation des ressources côté serveur}
+Nous avons rapidement déterminé trois types de ressources : les bases de données d'ouvertures, de fermeture et les moteurs d'échec.
+Ces trois types de ressources ne nous renvoient pas les mêmes informations. Par exemple, les bases de données d'ouvertures nous renvoient des probabilités de gagner et de perdre ainsi que le nombre de fois que le coup proposé a été joué. Les moteurs d'échec nous renvoient, eux, la profondeur de calcul dans leur arbre de décision ainsi que le score associés à chaque coups.
+Nous avons donc contruit nos classes Java sur ce modèle.
+[TODO: UML]
 
 \subsection{Base de données SQLite}
+Pour chaque ressource, seulement quelques informations doivent être enregistrées telles que l'URL, le nom ou la confiance dans la ressource (cf \label{TODO}). Toutes les ressources, quel que soit leur type, sont enregistrées dans la table Resources. Les utilisateurs du serveur central peuvent aussi créer des parties avec des informations associées concernant le format des réponses. Nous avons donc pour cela besoin d'une seconde table Games.
 [TODO: Schémas de conception, justification du choix de SQLite.]
 
-\subsection{Parallélisation des appels aux ressources}
-[TODO: Justification du choix des multithreads.]
+\subsection{Utilisation des ressources}
+Au démarrage, le serveur central commence par vérifier la disponibilité des ressources. Seulement les ressources qui répondent à cette première requête et qui possèdent une version compatible sont gardées pour la suite.
+A chaque appels du serveur central par le client, toutes les ressources sont interrogées pour obtenir une liste de suggestions de coups associés à la position de l'échiquier envoyée. Les ressources répondent ensuite avec un document JSON contenant tous les coups et leurs informations associées. Ce document est convertit en une liste d'objets Java MoveSuggestion (OpeningSuggestion pour les bases de données d'ouverture, etc.).
+Les requêtes vers chaque ressources ainsi que la conversion en objet Java sont effectués en parallèle avec l'utilisation de threads.
 
 \subsection{Interface RESTful du serveur central}
 [TODO: Interface Jersey : les requêtes HTTP requises.]
+
+\subsection{Listeners du serveur central}
+[TODO: Listeners]
 
 
 \section{Classement des suggestions de coups}
