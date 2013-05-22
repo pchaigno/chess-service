@@ -45,7 +45,7 @@ Le résumé est limité à 10 lignes au maximum.
 \end{abstract} 
 
 
-\section{Introduction}  
+\section{Contexte}  
 L'objectif de cette étude pratique était de oeuvre une chorégraphie de services web utilisant les réponses de services spécialisés pour proposer un coup sélectionné comme étant le meilleur dans une position donnée. De plus, Loïc Héloüet, à l'origine de ce sujet sera amené ensuite à reprendre notre système. Nous devions donc lui fournir des outils bien documentés et facilement réutilisables.
 
 L'un des souhaits de Loïc Héloüet était d'utiliser REST (REpresentational State Transfer \cite{rest-fielding}) comme style d'architecture. REST est un style d'architecture associant à une url un objet. De plus REST utilise un nombre réduit de méthode pour interagir avec ces objets. Les quatres actions de bases CRUD (Create, Read, Update et Delete) sont effectuées respectivement par des méthodes HTTP (POST, GET, PUT et DELETE).
@@ -61,7 +61,7 @@ Notre architecture s'articule autour de trois éléments principaux. Tout d'abord,
 Toutes ces différentes ressources sont utilisées par un serveur central. Ce serveur central envoie des requêtes afin de récupérer différentes informations communiquées par les ressources puis sélectionne le meilleur coup. Le développement de ce serveur central est le coeur de cette étude pratique.
 
 Une fois le meilleur coup déterminé par le serveur, celui-ci l'envoie aux clients (programmes d'échecs) ayant auparavant solicité le serveur afin d'avoir sa réponse sur le coup à jouer. Deux clients ont d'ailleurs été développés dans le cadre de cette étude pratique.
-\FigureEPS{h,t,b,p}{12cm}{./ArchitectureSimple.eps}
+\FigureEPS{h,t,b,p}{11cm}{./ArchitectureSimple.eps}
 {Schéma général du système}   
 {fig:schema-systeme}
 
@@ -77,15 +77,16 @@ Ce code source étant assez complexe nous avons choisis d'utiliser les techniques
 \section{Architecture du serveur central}
 
 \subsection{Réprésentation des ressources côté serveur}
+\label{types-ressources}
 Nous avons rapidement déterminé trois types de ressources : les bases de données d'ouvertures, de fermeture et les moteurs d'échec.
 Ces trois types de ressources ne nous renvoient pas les mêmes informations. Par exemple, les bases de données d'ouvertures nous renvoient des probabilités de gagner et de perdre ainsi que le nombre de fois que le coup proposé a été joué. Les moteurs d'échec nous renvoient, eux, la profondeur de calcul dans leur arbre de décision ainsi que le score associés à chaque coups.
 Nous avons donc contruit nos classes Java sur ce modèle.
-\FigureEPS{h,t,b,p}{15cm}{./resources-uml.eps}
+\FigureEPS{h,t,b,p}{16cm}{./resources-uml.eps}
 {Diagramme UML des ressources côté serveur}   
 {fig:diagramme-uml}
 
 \subsection{Base de données SQLite}
-Pour chaque ressource, seulement quelques informations doivent être enregistrées telles que l'URL, le nom ou la confiance dans la ressource (cf \label{TODO}). Toutes les ressources, quel que soit leur type, sont enregistrées dans la table Resources. Les utilisateurs du serveur central peuvent aussi créer des parties avec des informations associées concernant le format des réponses. Nous avons donc pour cela besoin d'une seconde table Games. Enfin, les coups proposés par les ressources et sélectionnés par le programme doivent aussi être stockés (cf \label{TODO}). Ces coups s'incrivent dans une partie et sont donc liés à la fois à Resources et à Games. Nous avons donc besoin d'une dernière table Moves.
+Pour chaque ressource, seulement quelques informations doivent être enregistrées telles que l'URL, le nom ou la confiance dans la ressource (cf \ref{confiance-ressources}). Toutes les ressources, quel que soit leur type, sont enregistrées dans la table Resources. Les utilisateurs du serveur central peuvent aussi créer des parties avec des informations associées concernant le format des réponses. Nous avons donc pour cela besoin d'une seconde table Games. Enfin, les coups proposés par les ressources et sélectionnés par le programme doivent aussi être stockés (cf \ref{confiance}). Ces coups s'incrivent dans une partie et sont donc liés à la fois à Resources et à Games. Nous avons donc besoin d'une dernière table Moves.
 
 \FigureEPS{h,t,b,p}{15cm}{./bdd-modele-conceptuel.eps}
 {Modèle entité-association de la base de données}   
@@ -93,7 +94,7 @@ Pour chaque ressource, seulement quelques informations doivent être enregistrées
 
 Pour réaliser cette base de données nous avons choisi d'utiliser le moteur de bases de données SQLite. En effet, ce dernier s'adapte particulièrement à de petites bases de données comme dans notre cas puisqu'il ne suit pas le schéma habituel serveur-client. Les informations sont stockées dans un seul fichier et les accès sont très rapides.
 
-Pour permettre à l'utilisateur de configurer simplement le système nous avons réalisé une interface graphique qui permet essentiellement d'ajouter, d'éditer ou de supprimer les ressources de la base de données. L'interface est réalisée avec la bibliothèque pour Java open-source et multiplateforme, SWT. Elle permet aussi de configurer le système, les pondérations (cf \label{TODO}) et de lancer le serveur central.
+Pour permettre à l'utilisateur de configurer simplement le système nous avons réalisé une interface graphique qui permet essentiellement d'ajouter, d'éditer ou de supprimer les ressources de la base de données. L'interface est réalisée avec la bibliothèque pour Java open-source et multiplateforme, SWT. Elle permet aussi de configurer le système, les pondérations (cf \ref{confiance-ressource}) et de lancer le serveur central.
 
 \subsection{Utilisation des ressources}
 Au démarrage, le serveur central commence par vérifier la disponibilité des ressources. Seulement les ressources qui répondent à cette première requête et qui possèdent une version compatible sont gardées pour la suite.
@@ -103,7 +104,7 @@ Les requêtes vers chaque ressources ainsi que la conversion en objets Java sont 
 \subsection{Interface RESTful du serveur central}
 Pour effectuer les appels vers les ressources et surtout pour créer l'interface RESTful de notre serveur central nous avons choisi d'utiliser Jersey. Ce framework implémente l'interface de programmation Java \textit{Java API for RESTful Web Services} (JAX-RS) qui permet de créer des services web avec une architecture REST.
 
-La première requête que doivent effectuer les clients qui souhaitent utiliser le serveur central est une requête HTTP POST pour créer la partie sur le serveur. Ils peuvent alors en profiter pour dire quel format de coups d'échec il souhaitent recevoir par la suite. Pour la suite de la partie, à chaque fois qu'un client veut l'avis du serveur central, il lui envoie l'état de l'échiquier sous forme de FEN avec une requête HTTP GET. A la fin de la partie, le client doit envoyer une requête HTTP DELETE avec le FEN final pour que le serveur central puisse mettre à jour la base de données et récompenser les ressources en fonction de l'issue de la partie (cf \label{TODO}).
+La première requête que doivent effectuer les clients qui souhaitent utiliser le serveur central est une requête HTTP POST pour créer la partie sur le serveur. Ils peuvent alors en profiter pour dire quel format de coups d'échec il souhaitent recevoir par la suite. Pour la suite de la partie, à chaque fois qu'un client veut l'avis du serveur central, il lui envoie l'état de l'échiquier sous forme de FEN avec une requête HTTP GET. A la fin de la partie, le client doit envoyer une requête HTTP DELETE avec le FEN final pour que le serveur central puisse mettre à jour la base de données et récompenser les ressources en fonction de l'issue de la partie (cf \ref{confiance}).
 
 Nous avons aussi ajouter la possibilité d'interroger le serveur central directement sans créer préalablement de partie, pour permettre aux utilisateurs de tester rapidement. Dans cette hypothèse, sans suivi de la partie, le système ne pourra pas évoluer de manière autonome. Enfin, nous avons mis à disposition une URL pour pouvoir analyser le fonctionnement interne. Lorsque cette dernière est utilisée pour récupérer l'avis du serveur central, les informations ayant servi aux calculs sont affichées.
 
@@ -115,7 +116,7 @@ Cette façon de faire permettra à la personne qui reprendra notre code de dévelop
 \section{Clients graphique}
 Afin de valoriser notre travail et de pouvoir tester de façon plus visuelle le système, nous avons interfacé deux clients graphiques avec notre serveur central. De part l'utilisation de l'architecture REST, notre système peut être interfacé avec n'importe quel client graphique. Nous avons juste dû, pour chaque client, écrire les fonctions pour effectuer les différentes requêtes HTTP vers l'interface RESTful du serveur central.
 
-Le premier client avait été développé avec Unity 3D, nous avons donc dû écrire nos fonctions en C\#. Le second client était en JavaScript (et fonctionne donc sur mobile) et nous avons donc utilisé l'architecture AJAX pour effectuer les requêtes vers le serveur central. L'architecture AJAX utilise quelques requêtes particulières, appelées preflight (\label{TODO: site externe}). Cela nous a contraint a adapter l'interface RESTful du serveur central.
+Le premier client avait été développé avec Unity 3D, nous avons donc dû écrire nos fonctions en C\#. Le second client était en JavaScript (et fonctionne donc sur mobile) et nous avons donc utilisé l'architecture AJAX pour effectuer les requêtes vers le serveur central. L'architecture AJAX utilise quelques requêtes particulières, appelées preflight (\cite{ajax-preflight}). Cela nous a contraint a adapter l'interface RESTful du serveur central.
 
 
 \section{Classement des suggestions de coups}
@@ -124,7 +125,7 @@ Le premier client avait été développé avec Unity 3D, nous avons donc dû écrire n
 De ce fait, nous avons donc créé un système permettant de renvoyer le meilleur coup (ou du moins considéré comme tel) au client, en tenant compte des informations renvoyées par les ressources et en intégrant les parties précédemment jouées.
 
 \subsection{Calcul d'un score}
-Comme nous l'avons vu au point (TODO), il existe différents types de ressources nous communiquant différant types d'informations.
+Comme nous l'avons vu en \ref{types-ressources}, il existe différents types de ressources nous communiquant différant types d'informations.
 Cependant, toutes les ressources nous renvoient au moins un coup ainsi que plusieurs informations sur ce coup (la probabilité de gagner et le nombre de fois que le coup a été joué pour les bases d'ouvertures et la profondeur de recherche ainsi que le score attribué au coup pour les bots).
 
 Partant du fait que nous avions pour chaque coups des informations justifiant son choix, nous avons donc décidé de calculer notre propre score associé à ce coup. Ainsi nous réutilisons les informations données par les ressources pour faire notre propre classement des meilleurs coups à jouer (le score renvoyé par les bots ne sera pas le score associé à ce coup, mais simplement une information).
