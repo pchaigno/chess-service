@@ -1,0 +1,56 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     STYLE POUR LES EXPOSÉS TECHNIQUES 
+%         3e année INSA de Rennes
+%
+%             NE PAS MODIFIER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[dvips]{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage[french]{babel} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Dimensions du document :
+
+\setlength{\voffset} {-0.54cm}
+\setlength{\hoffset} {-0,04cm}
+\setlength{\textwidth} {14cm}
+\setlength{\textheight} {24cm}
+\setlength{\oddsidemargin} {1cm}
+\setlength{\evensidemargin} {1cm}
+\setlength{\marginparsep} {0cm}
+\setlength{\marginparwidth} {0cm}
+\setlength{\topmargin} {0cm}
+\setlength{\headheight} {0,45cm}
+\setlength{\headsep} {0,57cm}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Commande simplifiant l'inclusion de figures :
+
+%------------------------------------------------------------------------------
+%       \FigureEPS{h,t,b,p}{largeur}{nom_fichier}{titre}{nom_symbolique} 
+%------------------------------------------------------------------------------
+
+\newcommand{\FigureEPS}[5] {
+  \begin{figure}[#1] 
+    $$ %pour centrer
+    \includegraphics[width=#2]{#3}
+    $$
+    \caption{#4}
+    \label{#5}   
+  \end{figure}
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Style du document :
+
+\pagestyle{myheadings}
+\bibliographystyle{plain-fr}
+
+\setcounter{tocdepth}{3}   % Niveau jusqu'où numéroter les titres (table des mat)
+\setcounter{secnumdepth}{3}% Niveau jusqu'où numéroter les titres (dans texte)
+
+\sloppy % Baisse le taux des césures
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
