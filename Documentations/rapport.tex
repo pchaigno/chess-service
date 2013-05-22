@@ -25,7 +25,7 @@
         Damien \textsc{Le Guen}, Clément \textsc{Gautrais}, \\
 				Benoit \textsc{Travers} \\
         \\
-        Encadreur : Yann \textsc{Ricquebourg}}
+        Encadrant : Yann \textsc{Ricquebourg}}
 
 \date{}                    % Ne pas modifier
  
@@ -46,10 +46,11 @@ Le résumé est limité à 10 lignes au maximum.
 
 
 \section{Introduction}  
+L'objectif de cette étude pratique était de oeuvre une chorégraphie de services web utilisant les réponses de services spécialisés pour proposer un coup sélectionné comme étant le meilleur dans une position donnée. De plus, Loïc Héloüet, à l'origine de ce sujet sera amené ensuite à reprendre notre système. Nous devions donc lui fournir des outils bien documentés et facilement réutilisables.
 
-[TODO: Attentes de Loic Helouet.]
-[TODO: Présenter REST]
-[TODO: Spécifications en boîte noire.]
+L'un des souhaits de Loïc Héloüet était d'utiliser REST (REpresentational State Transfer) comme style d'architecture. REST est un style d'architecture associant à une url un objet. De plus REST utilise un nombre réduit de méthode pour interagir avec ces objets. Les quatres actions de bases CRUD (Create, Read, Update et Delete) sont effectuées respectivement par des méthodes HTTP (POST, GET, PUT et DELETE).
+
+En plus d'avoir une architecture respectant le style REST, les données échangées étaient elles-mêmes bien spécifiques. En effet, les échecs utilisent des notations définies suivant des normes reconnues pour représenter un plateau de jeu et un coup joué. Ces normes sont d'ailleurs utilisées par tous les services spécialisés (appelés ressources par la suite). La notation la plus utilisé pour représenter un plateau de jeu est la FEN (Forsyth-Edwards Notation). Elle décrit le plateau ligne par ligne de façon compacte et elle contient d'autres informations (nombre de coups, couleur ayant joué), pour certaines spécifiques aux règles du jeu d'échecs (roque, en passant). Les coups sont eux représentés suivant une notation principale : la notation algébrique. Elle consiste généralement à donner la case de départ et la case d'arrivée (cette notation est appelée LAN (Long Algebraic Notation), mais dans certaines configuration de jeu, seule la case de départ (ainsi que le type de pièce dans certains cas) suffie. Cette notation abrégée est appelée SAN (Short Algebraic Notation).
 
 
 \section{Architecture}
