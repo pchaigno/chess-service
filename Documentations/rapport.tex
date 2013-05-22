@@ -39,14 +39,12 @@
 
 
 \begin{abstract}
-
-
-Le résumé est limité à 10 lignes au maximum.
+Ce rapport traite de la réalisation d'une architecture REST permettant d'utiliser différents services web afin de renvoyer le meilleur coup d'échec dans une situation donnée. Cette architecture s'articule autour des trois systèmes principaux :  des ressources, un serveur central et des clients. La communication en REST entre les ressources et le serveur central a été permise grâce à la mise en place d'interface entre ces deux entités. Une fois les ressources interrogées, le serveur central traite les informations fournies par les ressourcces afin de renvoyer le meilleur coup à jouer au client. Le traitement de ces données différentes a été possible grâce à l'utilisation de techniques d'acquisition de connaissances. La gestion de l'utilisation des ressources par le serveur centrale a été simplifié grâce au développement d'outils graphiques. Enfin, l'utilisation du serveur central a été mis en valeur par le réalisation de clients graphiques.
 \end{abstract} 
 
 
 \section{Introduction}  
-L'objectif de cette étude pratique était de oeuvre une chorégraphie de services web utilisant les réponses de services spécialisés pour proposer un coup sélectionné comme étant le meilleur dans une position donnée. De plus, Loïc Héloüet, à l'origine de ce sujet sera amené ensuite à reprendre notre système. Nous devions donc lui fournir des outils bien documentés et facilement réutilisables.
+L'objectif de cette étude pratique était de mettre oeuvre une chorégraphie de services web utilisant les réponses de services spécialisés pour proposer un coup sélectionné comme étant le meilleur dans une position donnée. De plus, Loïc Héloüet, à l'origine de ce sujet sera amené ensuite à reprendre notre système. Nous devions donc lui fournir des outils bien documentés et facilement réutilisables.
 
 L'un des souhaits de Loïc Héloüet était d'utiliser REST (REpresentational State Transfer \cite{rest-fielding}) comme style d'architecture. REST est un style d'architecture associant à une url un objet. De plus REST utilise un nombre réduit de méthode pour interagir avec ces objets. Les quatres actions de bases CRUD (Create, Read, Update et Delete) sont effectuées respectivement par des méthodes HTTP (POST, GET, PUT et DELETE).
 
