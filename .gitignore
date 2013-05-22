@@ -9,3 +9,4 @@ Documentations/*.bbl
 Documentations/*.blg
 Documentations/*.aux
 Documentations/*.pdf
+Documentations/*.dvi

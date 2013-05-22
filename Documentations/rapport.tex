@@ -63,12 +63,20 @@ Le résumé est limité à 10 lignes au maximum.
 Nous avons rapidement déterminé trois types de ressources : les bases de données d'ouvertures, de fermeture et les moteurs d'échec.
 Ces trois types de ressources ne nous renvoient pas les mêmes informations. Par exemple, les bases de données d'ouvertures nous renvoient des probabilités de gagner et de perdre ainsi que le nombre de fois que le coup proposé a été joué. Les moteurs d'échec nous renvoient, eux, la profondeur de calcul dans leur arbre de décision ainsi que le score associés à chaque coups.
 Nous avons donc contruit nos classes Java sur ce modèle.
-[TODO: UML]
+\FigureEPS{h,t,b,p}{15cm}{./resources-uml.eps}
+{Diagramme UML des ressources côté serveur}   
+{fig:diagramme-uml}
 
 \subsection{Base de données SQLite}
 Pour chaque ressource, seulement quelques informations doivent être enregistrées telles que l'URL, le nom ou la confiance dans la ressource (cf \label{TODO}). Toutes les ressources, quel que soit leur type, sont enregistrées dans la table Resources. Les utilisateurs du serveur central peuvent aussi créer des parties avec des informations associées concernant le format des réponses. Nous avons donc pour cela besoin d'une seconde table Games.
 
+\FigureEPS{h,t,b,p}{15cm}{./bdd-modele-conceptuel.eps}
+{Modèle entité-association de notre base de données}   
+{fig:modele-bdd}
+
 Pour réaliser cette base de données nous avons choisi d'utiliser le moteur de bases de données SQLite. En effet, ce dernier s'adapte particulièrement à de petites bases de données comme dans notre cas puisqu'il ne suit pas le schéma habituel serveur-client. Les informations sont stockées dans un seul fichier et les accès sont très rapides.
+
+
 
 \subsection{Utilisation des ressources}
 Au démarrage, le serveur central commence par vérifier la disponibilité des ressources. Seulement les ressources qui répondent à cette première requête et qui possèdent une version compatible sont gardées pour la suite.
