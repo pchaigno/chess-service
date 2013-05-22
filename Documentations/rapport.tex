@@ -17,8 +17,8 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{ \textbf{Rapport\\Distributed Chess Service} }
-\markright{Style pour l'exposé technique} 
+\title{ \textbf{Distributed Chess Service} }
+\markright{Distributed Chess Service} 
                            % Pour avoir le titre de l'expose sur chaque page
 
 \author{Paul \textsc{Chaignon}, Thomas \textsc{François}, \\
@@ -63,22 +63,33 @@ Afin d'accéder à des ressources non accessibles en REST, nous avons dû mettre en
 Nous avons rapidement déterminé trois types de ressources : les bases de données d'ouvertures, de fermeture et les moteurs d'échec.
 Ces trois types de ressources ne nous renvoient pas les mêmes informations. Par exemple, les bases de données d'ouvertures nous renvoient des probabilités de gagner et de perdre ainsi que le nombre de fois que le coup proposé a été joué. Les moteurs d'échec nous renvoient, eux, la profondeur de calcul dans leur arbre de décision ainsi que le score associés à chaque coups.
 Nous avons donc contruit nos classes Java sur ce modèle.
-[TODO: UML]
+\FigureEPS{h,t,b,p}{15cm}{./resources-uml.eps}
+{Diagramme UML des ressources côté serveur}   
+{fig:diagramme-uml}
 
 \subsection{Base de données SQLite}
 Pour chaque ressource, seulement quelques informations doivent être enregistrées telles que l'URL, le nom ou la confiance dans la ressource (cf \label{TODO}). Toutes les ressources, quel que soit leur type, sont enregistrées dans la table Resources. Les utilisateurs du serveur central peuvent aussi créer des parties avec des informations associées concernant le format des réponses. Nous avons donc pour cela besoin d'une seconde table Games.
-[TODO: Schémas de conception, justification du choix de SQLite.]
+
+\FigureEPS{h,t,b,p}{15cm}{./bdd-modele-conceptuel.eps}
+{Modèle entité-association de notre base de données}   
+{fig:modele-bdd}
+
+Pour réaliser cette base de données nous avons choisi d'utiliser le moteur de bases de données SQLite. En effet, ce dernier s'adapte particulièrement à de petites bases de données comme dans notre cas puisqu'il ne suit pas le schéma habituel serveur-client. Les informations sont stockées dans un seul fichier et les accès sont très rapides.
+
+
 
 \subsection{Utilisation des ressources}
 Au démarrage, le serveur central commence par vérifier la disponibilité des ressources. Seulement les ressources qui répondent à cette première requête et qui possèdent une version compatible sont gardées pour la suite.
-A chaque appels du serveur central par le client, toutes les ressources sont interrogées pour obtenir une liste de suggestions de coups associés à la position de l'échiquier envoyée. Les ressources répondent ensuite avec un document JSON contenant tous les coups et leurs informations associées. Ce document est convertit en une liste d'objets Java MoveSuggestion (OpeningSuggestion pour les bases de données d'ouverture, etc.).
-Les requêtes vers chaque ressources ainsi que la conversion en objet Java sont effectués en parallèle avec l'utilisation de threads.
+A chaque appel du serveur central par le client, toutes les ressources sont interrogées pour obtenir une liste de suggestions de coups associés à la position de l'échiquier envoyée. Les ressources répondent ensuite avec un document JSON contenant tous les coups et leurs informations associées. Ce document est convertit en une liste d'objets Java MoveSuggestion (OpeningSuggestion pour les bases de données d'ouverture, etc.).
+Les requêtes vers chaque ressources ainsi que la conversion en objets Java sont effectués en parallèle avec l'utilisation de threads.
 
 \subsection{Interface RESTful du serveur central}
+Pour effectuer les appels vers les ressources et surtout pour créer l'interface RESTful de notre serveur central nous avons choisi d'utiliser Jersey. Ce framework implémente l'interface de programmation Java \textit{Java API for RESTful Web Services} (JAX-RS) qui permet de créer des services web avec une architecture REST. 
 [TODO: Interface Jersey : les requêtes HTTP requises.]
 
 \subsection{Listeners du serveur central}
-[TODO: Listeners]
+Le serveur central notifie trois listeners que nous avons crée de tous les évènements qui ont lieu. Le premier listener est avertit de tous les accès qui sont fait au serveur depuis les clients. Le second est notifié lors des accès à la base de données ainsi que lors des exceptions levées. Le dernier listener est appelé pour tous les évènements liés aux ressources, à la fois lorsqu'on les interroge et lorsqu'elles nous répondent.
+Cette façon de faire permettra à la personne qui reprendra notre code de développer une interface graphique plus complète que celle que nous avons fait en respectant le patron Modèle-Vue-Contrôleur.
 
 
 \section{Classement des suggestions de coups}
@@ -89,16 +100,29 @@ De ce fait, nous avons donc créé un système permettant de renvoyer le meilleur c
 \subsection{Calcul d'un score}
 Comme nous l'avons vu au point (TODO), il existe différents types de ressources nous communiquant différant types d'informations.
 Cependant, toutes les ressources nous renvoient au moins un coup ainsi que plusieurs informations sur ce coup (la probabilité de gagner et le nombre de fois que le coup a été joué pour les bases d'ouvertures et la profondeur de recherche ainsi que le score attribué au coup pour les bots).
+
 Partant du fait que nous avions pour chaque coups des informations justifiant son choix, nous avons donc décidé de calculer notre propre score associé à ce coup. Ainsi nous réutilisons les informations données par les ressources pour faire notre propre classement des meilleurs coups à jouer (le score renvoyé par les bots ne sera pas le score associé à ce coup, mais simplement une information).
-Notre première idée a donc été de sommer les différentes informations afin d'obtenir le score associé :
-\[Score(coup1)=\sum_{k=1}^nx_{k}\] avec \[x_{k}\] la kième informations données par la ressource sur le coup1.
-[TODO: Formule générale avec somme pour différentes suggestions.]
+Notre première idée a donc été de sommer les différentes informations afin d'obtenir le score associé. Cependant, toutes les informations n'ont pas le même poids. En effet, par exemple, on peut penser que le score associé par un bot est plus ou moins important par rapport à la profondeur de recherche. Ces différentes pondérations (\(a_{k}\)) sont choisies par l'utilisateur via la GUI. Ainsi, c'est lui qui détermine quelle information privilégier.
+
+Nous avons donc \(Score(coup_{i})_{ressource_{j}}=\sum_{k=1}^na_{k}*f_{k}(x_{k})\) avec \(x_{k}\) la kième information donnée par la ressource sur le \(coup_{i}\) et \(f_{k}\) la fonction de traitement associée à l'information \(x_{k}\) (Voir section suivante pour la définition de \(f_{k}\) ).
+
+Le score calculé précédemment est valable pour un coup proposé par une ressource. Généralement, chaque coup est proposé par plusieurs ressources. Pour obtenir le score total d'un coup, nous avons simplement effectué une somme pondérée des scores (sur les ressources) associé à ce coup. Les pondérations sont liées au fait que l'on fait plus ou moins confiance à chaque ressource. Par exemple, une base de données d'ouverture contenant les parties des plus grands maîtres d'échecs sera plus digne de confiance qu'une base contenant des parties de tournois amateurs.
+
+Nous avons donc la formule suivante : \(Score(coup_{i})=\sum_{k=1}^mT_{k}*Score(coup_{i})_{ressource_{k}}\) avec \(T_{k}\) la confiance accordée à la ressource k.
+
+Ensuite, une fois ces scores calculés pour chaque coup, nous choisissons le coup ayant le score maximal. Ce coup est considéré comme étant le meilleur et est renvoyé au client.
 
 \subsection{Statistiques}
-[TODO: Amélioration de la formule avec variance et moyenne (centrée réduite).]
+Comme nous l'avons vu précédemment, les informations subissent des traitements (les fonctions \(f_{k}\)) avant d'être agrégées (via la somme). Ces traitements visent essentiellement à rendre comparable les différentes informations obtenues. En effet celles-ci se situent généralement dans des échelles différentes (une probabilité est entre 0 et 1 alors que le nombre de coup joué est potentiellement très élevé). Pour pouvoir mettre les informations à la même échelle nous centrons puis nous réduisons les variables \(x_{k}\) à l'aide des fonctions f associées.
 
-\subsection{Evolutuion des pondérations}
-[TODO: Evolution automatique des pondérations.]
+Nous avons donc \(f_{k}(x_{k})=\frac{x_{k}-\bar{x_{k}}}{\vee(x_{k})}\).
+
+Afin d'obtenir ces statistiques, nous avons donc créé une classe qui s'occupe de gérer et des recalculer après chaque coup les statistiques liées aux différentes informations.
+
+\subsection{Evolution des pondérations}
+Le système décrit précédemment permet de bien prendre en compte la diversité des informations traitées mais il ne permet pas encore de différencier une ressource par rapport à une autre.
+
+Pour cela, nous avons donc 
 
 
 \section{Conclusion} 
