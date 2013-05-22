@@ -48,6 +48,7 @@ Le résumé est limité à 10 lignes au maximum.
 \section{Introduction}  
 
 [TODO: Attentes de Loic Helouet.]
+[TODO: Présenter REST]
 [TODO: Spécifications en boîte noire.]
 
 
@@ -55,9 +56,12 @@ Le résumé est limité à 10 lignes au maximum.
 
 \subsection{Présentation générale}
 [TODO: Présenter le fonctionnement général du système.]
+\FigureEPS{h,t,b,p}{15cm}{./ArchitectureSimple.eps}
+{Schéma général du système}   
+{fig:schema-systeme}
 
 \subsection{Interfaces intermédiaires pour les ressources distantes}
-[TODO: PHP Wrappers : Appel cURL, parsing et structure.]
+Afin d'accéder à des ressources non accessibles en REST, nous avons dû mettre en place des interfaces intermédiaires en PHP. Ces interfaces ayant toutes des fonctions communes, nous avons choisi de créer un framework, en PHP également. Dans ce framework, nous communiquons avec les ressources au moyen d'appel cURL. Nous faisons donc des requêtes GET, éventuellement POST si requis, à chaque ressource. Le fait d'avoir centralisé le code nous permet également de structurer les appels pour respecter l'architecture REST. Toutefois les ressources n'utilisent pas toutes les mêmes conventions et les coups ne sont pas tous donnés sous la même forme. C'est pourquoi on trouve un ou plusieurs parser dans chaque interface intermédiaire. Ces parser permettent de formater les réponses des ressources. Comme nous avions besoin de transmettre peu d'informations, nous avons choisi de transmettre les réponses au format JSON, qui est peu verbeux. Ainsi, le serveur reçoit toutes les réponses dans un format unique.
 
 \subsection{Réprésentation des ressources côté serveur}
 Nous avons rapidement déterminé trois types de ressources : les bases de données d'ouvertures, de fermeture et les moteurs d'échec.
@@ -68,15 +72,15 @@ Nous avons donc contruit nos classes Java sur ce modèle.
 {fig:diagramme-uml}
 
 \subsection{Base de données SQLite}
-Pour chaque ressource, seulement quelques informations doivent être enregistrées telles que l'URL, le nom ou la confiance dans la ressource (cf \label{TODO}). Toutes les ressources, quel que soit leur type, sont enregistrées dans la table Resources. Les utilisateurs du serveur central peuvent aussi créer des parties avec des informations associées concernant le format des réponses. Nous avons donc pour cela besoin d'une seconde table Games.
+Pour chaque ressource, seulement quelques informations doivent être enregistrées telles que l'URL, le nom ou la confiance dans la ressource (cf \label{TODO}). Toutes les ressources, quel que soit leur type, sont enregistrées dans la table Resources. Les utilisateurs du serveur central peuvent aussi créer des parties avec des informations associées concernant le format des réponses. Nous avons donc pour cela besoin d'une seconde table Games. Enfin, les coups proposés par les ressources et sélectionnés par le programme doivent aussi être stockés (cf \label{TODO}). Ces coups s'incrivent dans une partie et sont donc liés à la fois à Resources et à Games. Nous avons donc besoin d'une dernière table Moves.
 
 \FigureEPS{h,t,b,p}{15cm}{./bdd-modele-conceptuel.eps}
-{Modèle entité-association de notre base de données}   
+{Modèle entité-association de la base de données}   
 {fig:modele-bdd}
 
 Pour réaliser cette base de données nous avons choisi d'utiliser le moteur de bases de données SQLite. En effet, ce dernier s'adapte particulièrement à de petites bases de données comme dans notre cas puisqu'il ne suit pas le schéma habituel serveur-client. Les informations sont stockées dans un seul fichier et les accès sont très rapides.
 
-
+Pour permettre à l'utilisateur de configurer simplement le système nous avons réalisé une interface graphique qui permet essentiellement d'ajouter, d'éditer ou de supprimer les ressources de la base de données. L'interface est réalisée avec la bibliothèque pour Java open-source et multiplateforme, SWT. Elle permet aussi de configurer le système, les pondérations (cf \label{TODO}) et de lancer le serveur central.
 
 \subsection{Utilisation des ressources}
 Au démarrage, le serveur central commence par vérifier la disponibilité des ressources. Seulement les ressources qui répondent à cette première requête et qui possèdent une version compatible sont gardées pour la suite.
@@ -88,13 +92,13 @@ Pour effectuer les appels vers les ressources et surtout pour créer l'interface 
 [TODO: Interface Jersey : les requêtes HTTP requises.]
 
 \subsection{Listeners du serveur central}
-Le serveur central notifie trois listeners que nous avons crée de tous les évènements qui ont lieu. Le premier listener est avertit de tous les accès qui sont fait au serveur depuis les clients. Le second est notifié lors des accès à la base de données ainsi que lors des exceptions levées. Le dernier listener est appelé pour tous les évènements liés aux ressources, à la fois lorsqu'on les interroge et lorsqu'elles nous répondent.
+Nous avons créé trois listeners pour que le serveur central puisse les notifier de tous les évènements qui ont lieu. Le premier listener est avertit de tous les accès qui sont fait au serveur depuis les clients. Le second est notifié lors des accès à la base de données ainsi que lors des exceptions levées. Le dernier listener est appelé pour tous les évènements liés aux ressources, à la fois lorsqu'on les interroge et lorsqu'elles nous répondent.
 Cette façon de faire permettra à la personne qui reprendra notre code de développer une interface graphique plus complète que celle que nous avons fait en respectant le patron Modèle-Vue-Contrôleur.
 
 
 \section{Classement des suggestions de coups}
 
-	Les ressources seules ne permmettent pas de choisir directement qeul coup renvoyer au client. En effet, nous devons renvoyer un unique coup (considéré comme étant le meilleur) au client, mais les ressources interrogées nous en conseillent généralement plusieurs.
+	Les ressources seules ne permettent pas de choisir directement qeul coup renvoyer au client. En effet, nous devons renvoyer un unique coup (considéré comme étant le meilleur) au client, mais les ressources interrogées nous en conseillent généralement plusieurs.
 De ce fait, nous avons donc créé un système permettant de renvoyer le meilleur coup (ou du moins considéré comme tel) au client, en tenant compte des informations renvoyées par les ressources, tout en tenant compte des parties précédemment jouées.
 
 \subsection{Calcul d'un score}
