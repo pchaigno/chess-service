@@ -112,21 +112,24 @@ Nous avons donc \(Score(coup_{i})_{ressource_{j}}=\sum_{k=1}^na_{k}*f_{k}(x_{k})
 
 Le score calculé précédemment est valable pour un coup proposé par une ressource. Généralement, chaque coup est proposé par plusieurs ressources. Pour obtenir le score total d'un coup, nous avons simplement effectué une somme pondérée des scores (sur les ressources) associé à ce coup. Les pondérations sont liées au fait que l'on fait plus ou moins confiance à chaque ressource. Par exemple, une base de données d'ouverture contenant les parties des plus grands maîtres d'échecs sera plus digne de confiance qu'une base contenant des parties de tournois amateurs.
 
-Nous avons donc la formule suivante : \(Score(coup_{i})=\sum_{k=1}^mT_{k}*Score(coup_{i})_{ressource_{k}}\) avec \(T_{k}\) la confiance accordée à la ressource k.
+Nous avons donc la formule suivante :\\ \(Score(coup_{i})=\sum_{k=1}^mT_{k}*Score(coup_{i})_{ressource_{k}}\) avec \(T_{k}\) la confiance accordée à la ressource k.
 
 Ensuite, une fois ces scores calculés pour chaque coup, nous choisissons le coup ayant le score maximal. Ce coup est considéré comme étant le meilleur et est renvoyé au client.
 
 \subsection{Statistiques}
 Comme nous l'avons vu précédemment, les informations subissent des traitements (les fonctions \(f_{k}\)) avant d'être agrégées (via la somme). Ces traitements visent essentiellement à rendre comparable les différentes informations obtenues. En effet celles-ci se situent généralement dans des échelles différentes (une probabilité est entre 0 et 1 alors que le nombre de coup joué est potentiellement très élevé). Pour pouvoir mettre les informations à la même échelle nous centrons puis nous réduisons les variables \(x_{k}\) à l'aide des fonctions f associées.
 
-Nous avons donc \(f_{k}(x_{k})=\frac{x_{k}-\bar{x_{k}}}{\vee(x_{k})}\).
+Nous avons donc :\\ \(f_{k}(x_{k})=\frac{x_{k}-\bar{x_{k}}}{\vee(x_{k})}\).
 
 Afin d'obtenir ces statistiques, nous avons donc créé une classe qui s'occupe de gérer et des recalculer après chaque coup les statistiques liées aux différentes informations.
 
 \subsection{Evolution des pondérations}
-Le système décrit précédemment permet de bien prendre en compte la diversité des informations traitées mais il ne permet pas encore de différencier une ressource par rapport à une autre.
+Le système décrit précédemment permet de bien prendre en compte la diversité des informations ainsi que l'hétérogénéité des ressources mais il reste encore figé. POur rendre dynamique notre système, nous avons donc fait un système permettant de recalculer à chaque fin de partie la confiance que nous avons dans chaque ressource.
 
-Pour cela, nous avons donc 
+Le principe de l'évolution de la confiance est basé sur un système de récompense. Si nous gagnons la partie, toutes les ressources nous ayant proposés au moins un coup joué lors de la partie seront récompensées positivement. Si nous perdons, elle le seront négativement et en cas de match nul, le système n'évolue pas. De plus, la récompense est proportionnelle à la confiance qu'avait la ressource dans le coup proposé. Plus elle est confiante, plus sa récompense augmente.
+
+Ainsi, nous avons donc un système qui permet d'utiliser les parties passées (via les statistiques et via la confiance dans les ressources) et les différentes informations communiquées par les ressources pour déterminer le meilleur coup à jouer.
+Ce système peut néanmoins être améliorer, notamment pour intégrer une notion de ressemblance entre les ressources. En effet, si deux ressources identiques ou se basant sur des données identiques sont appelées (notre système les considère comme différentes) il additionnera les scores associés aux coups proposés par ces ressources, sans s'apercevoir qu'elles sont en fait très proches. Le principe serait donc de calculer une "distance" entre les différentes ressources afin d'atténuer une ressource si une autre ressource "proche" a déjà été prise en compte.
 
 
 \section{Conclusion} 
