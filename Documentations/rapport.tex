@@ -56,7 +56,11 @@ En plus d'avoir une architecture respectant le style REST, les données échangées
 \section{Architecture générale}
 
 \subsection{Présentation générale}
-[TODO: Présenter le fonctionnement général du système.]
+Notre architecture s'articule autour de trois éléments principaux. Tout d'abord, nous utilisons différentes ressources afin d'obtenir des informations sur les coups à jouer. Ces ressources sont de trois types, chaque type étant associé à une phase du jeu. Les débuts de parties (les 5 à 10 premiers coups) sont répertoriés dans des bases de données appelées base de données d'ouverture (Openings Databases). Les informations accessibles via ce type de ressource sont essentiellement de natture statistiques, basées sur l'archivage de parties d'échecs. Ensuite, le milieu de partie est essentiellement dominé par des robots (appelés bots). Les informations communiquées par ces bots sont plutôt de nature calculatoire. Enfin, lorsqu'il ne reste plus que quelques pièces (5-6 généralement) sur l'échiquier, il existe des tables permettant de mener le joueur vers le meilleur résultat possible. Les ressources donnant accès à ces tables sont appelées Endings Databases. Ces tables sont de nature déterministe.
+
+Toutes ces différentes ressources sont utilisées par un serveur central. Ce serveur central envoie des requêtes afin de récupérer différentes informations communiquées par les ressources puis sélectionne le meilleur coup. Le développement de ce serveur central est le coeur de cette étude pratique.
+
+Une fois le meilleur coup déterminé par le serveur, celui-ci l'envoie aux clients (programmes d'échecs) ayant auparavant solicité le serveur afin d'avoir sa réponse sur le coup à jouer. Deux clients ont d'ailleurs été développés dans le cadre de cette étude pratique.
 \FigureEPS{h,t,b,p}{12cm}{./ArchitectureSimple.eps}
 {Schéma général du système}   
 {fig:schema-systeme}
