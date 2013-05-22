@@ -48,7 +48,7 @@ Le résumé est limité à 10 lignes au maximum.
 \section{Introduction}  
 L'objectif de cette étude pratique était de oeuvre une chorégraphie de services web utilisant les réponses de services spécialisés pour proposer un coup sélectionné comme étant le meilleur dans une position donnée. De plus, Loïc Héloüet, à l'origine de ce sujet sera amené ensuite à reprendre notre système. Nous devions donc lui fournir des outils bien documentés et facilement réutilisables.
 
-L'un des souhaits de Loïc Héloüet était d'utiliser REST (REpresentational State Transfer) comme style d'architecture. REST est un style d'architecture associant à une url un objet. De plus REST utilise un nombre réduit de méthode pour interagir avec ces objets. Les quatres actions de bases CRUD (Create, Read, Update et Delete) sont effectuées respectivement par des méthodes HTTP (POST, GET, PUT et DELETE).
+L'un des souhaits de Loïc Héloüet était d'utiliser REST (REpresentational State Transfer \cite{rest-fielding}) comme style d'architecture. REST est un style d'architecture associant à une url un objet. De plus REST utilise un nombre réduit de méthode pour interagir avec ces objets. Les quatres actions de bases CRUD (Create, Read, Update et Delete) sont effectuées respectivement par des méthodes HTTP (POST, GET, PUT et DELETE).
 
 En plus d'avoir une architecture respectant le style REST, les données échangées étaient elles-mêmes bien spécifiques. En effet, les échecs utilisent des notations définies suivant des normes reconnues pour représenter un plateau de jeu et un coup joué. Ces normes sont d'ailleurs utilisées par tous les services spécialisés (appelés ressources par la suite). La notation la plus utilisé pour représenter un plateau de jeu est la FEN (Forsyth-Edwards Notation). Elle décrit le plateau ligne par ligne de façon compacte et elle contient d'autres informations (nombre de coups, couleur ayant joué), pour certaines spécifiques aux règles du jeu d'échecs (roque, en passant). Les coups sont eux représentés suivant une notation principale : la notation algébrique. Elle consiste généralement à donner la case de départ et la case d'arrivée (cette notation est appelée LAN (Long Algebraic Notation), mais dans certaines configuration de jeu, seule la case de départ (ainsi que le type de pièce dans certains cas) suffie. Cette notation abrégée est appelée SAN (Short Algebraic Notation).
 
@@ -111,7 +111,7 @@ Cette façon de faire permettra à la personne qui reprendra notre code de dévelop
 \section{Clients graphique}
 Afin de valoriser notre travail et de pouvoir tester de façon plus visuelle le système, nous avons interfacé deux clients graphiques avec notre serveur central. De part l'utilisation de l'architecture REST, notre système peut être interfacé avec n'importe quel client graphique. Nous avons juste dû, pour chaque client, écrire les fonctions pour effectuer les différentes requêtes HTTP vers l'interface RESTful du serveur central.
 
-Le premier client avait été développé avec Unity 3D, nous avons donc dû écrire nos fonctions en C#. Le second client était en JavaScript (et fonctionne donc sur mobile) et nous avons donc utilisé l'architecture AJAX pour effectuer les requêtes vers le serveur central. L'architecture AJAX utilise quelques requêtes particulières, appelées preflight (\label{TODO: site externe}). Cela nous a contraint a adapter l'interface RESTful du serveur central.
+Le premier client avait été développé avec Unity 3D, nous avons donc dû écrire nos fonctions en C\#. Le second client était en JavaScript (et fonctionne donc sur mobile) et nous avons donc utilisé l'architecture AJAX pour effectuer les requêtes vers le serveur central. L'architecture AJAX utilise quelques requêtes particulières, appelées preflight (\label{TODO: site externe}). Cela nous a contraint a adapter l'interface RESTful du serveur central.
 
 
 \section{Classement des suggestions de coups}
@@ -154,6 +154,7 @@ Ce système peut néanmoins être améliorer, notamment pour intégrer une notion de 
  
 
 
+\bibliography{biblio-rapport}
 
 \end{document}
 
