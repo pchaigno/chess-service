@@ -56,6 +56,9 @@ Le résumé est limité à 10 lignes au maximum.
 
 \subsection{Présentation générale}
 [TODO: Présenter le fonctionnement général du système.]
+\FigureEPS{h,t,b,p}{15cm}{./ArchitectureSimple.eps}
+{Schéma général du système}   
+{fig:schema-systeme}
 
 \subsection{Interfaces intermédiaires pour les ressources distantes}
 Afin d'accéder à des ressources non accessibles en REST, nous avons dû mettre en place des interfaces intermédiaires en PHP. Ces interfaces ayant toutes des fonctions communes, nous avons choisi de créer un framework, en PHP également. Dans ce framework, nous communiquons avec les ressources au moyen d'appel cURL. Nous faisons donc des requêtes GET, éventuellement POST si requis, à chaque ressource. Le fait d'avoir centralisé le code nous permet également de structurer les appels pour respecter l'architecture REST. Toutefois les ressources n'utilisent pas toutes les mêmes conventions et les coups ne sont pas tous donnés sous la même forme. C'est pourquoi on trouve un ou plusieurs parser dans chaque interface intermédiaire. Ces parser permettent de formater les réponses des ressources. Comme nous avions besoin de transmettre peu d'informations, nous avons choisi de transmettre les réponses au format JSON, qui est peu verbeux. Ainsi, le serveur reçoit toutes les réponses dans un format unique.
@@ -72,7 +75,7 @@ Nous avons donc contruit nos classes Java sur ce modèle.
 Pour chaque ressource, seulement quelques informations doivent être enregistrées telles que l'URL, le nom ou la confiance dans la ressource (cf \label{TODO}). Toutes les ressources, quel que soit leur type, sont enregistrées dans la table Resources. Les utilisateurs du serveur central peuvent aussi créer des parties avec des informations associées concernant le format des réponses. Nous avons donc pour cela besoin d'une seconde table Games. Enfin, les coups proposés par les ressources et sélectionnés par le programme doivent aussi être stockés (cf \label{TODO}). Ces coups s'incrivent dans une partie et sont donc liés à la fois à Resources et à Games. Nous avons donc besoin d'une dernière table Moves.
 
 \FigureEPS{h,t,b,p}{15cm}{./bdd-modele-conceptuel.eps}
-{Modèle entité-association de notre base de données}   
+{Modèle entité-association de la base de données}   
 {fig:modele-bdd}
 
 Pour réaliser cette base de données nous avons choisi d'utiliser le moteur de bases de données SQLite. En effet, ce dernier s'adapte particulièrement à de petites bases de données comme dans notre cas puisqu'il ne suit pas le schéma habituel serveur-client. Les informations sont stockées dans un seul fichier et les accès sont très rapides.
