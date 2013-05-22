@@ -57,7 +57,7 @@ Le résumé est limité à 10 lignes au maximum.
 [TODO: Présenter le fonctionnement général du système.]
 
 \subsection{Interfaces intermédiaires pour les ressources distantes}
-[TODO: PHP Wrappers : Appel cURL, parsing et structure.]
+Afin d'accéder à des ressources non accessibles en REST, nous avons dû mettre en place des interfaces intermédiaires en PHP. Ces interfaces ayant toutes des fonctions communes, nous avons choisi de créer un framework, en PHP également. Dans ce framework, nous communiquons avec les ressources au moyen d'appel cURL. Nous faisons donc des requêtes GET, éventuellement POST si requis, à chaque ressource. Le fait d'avoir centralisé le code nous permet également de structurer les appels pour respecter l'architecture REST. Toutefois les ressources n'utilisent pas toutes les mêmes conventions et les coups ne sont pas tous donnés sous la même forme. C'est pourquoi on trouve un ou plusieurs parser dans chaque interface intermédiaire. Ces parser permettent de formater les réponses des ressources. Comme nous avions besoin de transmettre peu d'informations, nous avons choisi de transmettre les réponses au format JSON, qui est peu verbeux. Ainsi, le serveur reçoit toutes les réponses dans un format unique.
 
 \subsection{Réprésentation des ressources côté serveur}
 Nous avons rapidement déterminé trois types de ressources : les bases de données d'ouvertures, de fermeture et les moteurs d'échec.
