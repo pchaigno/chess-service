@@ -17,8 +17,8 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{ \textbf{Rapport\\Distributed Chess Service} }
-\markright{Style pour l'exposé technique} 
+\title{ \textbf{Distributed Chess Service} }
+\markright{Distributed Chess Service} 
                            % Pour avoir le titre de l'expose sur chaque page
 
 \author{Paul \textsc{Chaignon}, Thomas \textsc{François}, \\
@@ -67,18 +67,21 @@ Nous avons donc contruit nos classes Java sur ce modèle.
 
 \subsection{Base de données SQLite}
 Pour chaque ressource, seulement quelques informations doivent être enregistrées telles que l'URL, le nom ou la confiance dans la ressource (cf \label{TODO}). Toutes les ressources, quel que soit leur type, sont enregistrées dans la table Resources. Les utilisateurs du serveur central peuvent aussi créer des parties avec des informations associées concernant le format des réponses. Nous avons donc pour cela besoin d'une seconde table Games.
-[TODO: Schémas de conception, justification du choix de SQLite.]
+
+Pour réaliser cette base de données nous avons choisi d'utiliser le moteur de bases de données SQLite. En effet, ce dernier s'adapte particulièrement à de petites bases de données comme dans notre cas puisqu'il ne suit pas le schéma habituel serveur-client. Les informations sont stockées dans un seul fichier et les accès sont très rapides.
 
 \subsection{Utilisation des ressources}
 Au démarrage, le serveur central commence par vérifier la disponibilité des ressources. Seulement les ressources qui répondent à cette première requête et qui possèdent une version compatible sont gardées pour la suite.
-A chaque appels du serveur central par le client, toutes les ressources sont interrogées pour obtenir une liste de suggestions de coups associés à la position de l'échiquier envoyée. Les ressources répondent ensuite avec un document JSON contenant tous les coups et leurs informations associées. Ce document est convertit en une liste d'objets Java MoveSuggestion (OpeningSuggestion pour les bases de données d'ouverture, etc.).
-Les requêtes vers chaque ressources ainsi que la conversion en objet Java sont effectués en parallèle avec l'utilisation de threads.
+A chaque appel du serveur central par le client, toutes les ressources sont interrogées pour obtenir une liste de suggestions de coups associés à la position de l'échiquier envoyée. Les ressources répondent ensuite avec un document JSON contenant tous les coups et leurs informations associées. Ce document est convertit en une liste d'objets Java MoveSuggestion (OpeningSuggestion pour les bases de données d'ouverture, etc.).
+Les requêtes vers chaque ressources ainsi que la conversion en objets Java sont effectués en parallèle avec l'utilisation de threads.
 
 \subsection{Interface RESTful du serveur central}
+Pour effectuer les appels vers les ressources et surtout pour créer l'interface RESTful de notre serveur central nous avons choisi d'utiliser Jersey. Ce framework implémente l'interface de programmation Java \textit{Java API for RESTful Web Services} (JAX-RS) qui permet de créer des services web avec une architecture REST. 
 [TODO: Interface Jersey : les requêtes HTTP requises.]
 
 \subsection{Listeners du serveur central}
-[TODO: Listeners]
+Le serveur central notifie trois listeners que nous avons crée de tous les évènements qui ont lieu. Le premier listener est avertit de tous les accès qui sont fait au serveur depuis les clients. Le second est notifié lors des accès à la base de données ainsi que lors des exceptions levées. Le dernier listener est appelé pour tous les évènements liés aux ressources, à la fois lorsqu'on les interroge et lorsqu'elles nous répondent.
+Cette façon de faire permettra à la personne qui reprendra notre code de développer une interface graphique plus complète que celle que nous avons fait en respectant le patron Modèle-Vue-Contrôleur.
 
 
 \section{Classement des suggestions de coups}
@@ -97,7 +100,7 @@ Notre première idée a donc été de sommer les différentes informations afin d'obt
 \subsection{Statistiques}
 [TODO: Amélioration de la formule avec variance et moyenne (centrée réduite).]
 
-\subsection{Evolutuion des pondérations}
+\subsection{Evolution des pondérations}
 [TODO: Evolution automatique des pondérations.]
 
 
