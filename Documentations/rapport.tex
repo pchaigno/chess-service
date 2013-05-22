@@ -74,11 +74,19 @@ Le résumé est limité à 10 lignes au maximum.
 
 \section{Classement des suggestions de coups}
 
+	Les ressources seules ne permmettent pas de choisir directement qeul coup renvoyer au client. En effet, nous devons renvoyer un unique coup (considéré comme étant le meilleur) au client, mais les ressources interrogées nous en conseillent généralement plusieurs.
+De ce fait, nous avons donc créé un système permettant de renvoyer le meilleur coup (ou du moins considéré comme tel) au client, en tenant compte des informations renvoyées par les ressources, tout en tenant compte des parties précédemment jouées.
+
 \subsection{Calcul d'un score}
+Comme nous l'avons vu au point (TODO), il existe différents types de ressources nous communiquant différant types d'informations.
+Cependant, toutes les ressources nous renvoient au moins un coup ainsi que plusieurs informations sur ce coup (la probabilité de gagner et le nombre de fois que le coup a été joué pour les bases d'ouvertures et la profondeur de recherche ainsi que le score attribué au coup pour les bots).
+Partant du fait que nous avions pour chaque coups des informations justifiant son choix, nous avons donc décidé de calculer notre propre score associé à ce coup. Ainsi nous réutilisons les informations données par les ressources pour faire notre propre classement des meilleurs coups à jouer (le score renvoyé par les bots ne sera pas le score associé à ce coup, mais simplement une information).
+Notre première idée a donc été de sommer les différentes informations afin d'obtenir le score associé :
+\[Score(coup1)=\sum_{k=1}^nx_{k}\] avec \[x_{k}\] la kième informations données par la ressource sur le coup1.
 [TODO: Formule générale avec somme pour différentes suggestions.]
 
 \subsection{Statistiques}
-[TODO: Amélioration de la formule avec variance et moeynne (centrée réduite).]
+[TODO: Amélioration de la formule avec variance et moyenne (centrée réduite).]
 
 \subsection{Evolutuion des pondérations}
 [TODO: Evolution automatique des pondérations.]
