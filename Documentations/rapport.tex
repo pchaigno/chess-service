@@ -58,7 +58,7 @@ Le résumé est limité à 10 lignes au maximum.
 [TODO: Présenter le fonctionnement général du système.]
 
 \subsection{Interfaces intermédiaires pour les ressources distantes}
-[TODO: PHP Wrappers : Appel cURL, parsing et structure.]
+Afin d'accéder à des ressources non accessibles en REST, nous avons dû mettre en place des interfaces intermédiaires en PHP. Ces interfaces ayant toutes des fonctions communes, nous avons choisi de créer un framework, en PHP également. Dans ce framework, nous communiquons avec les ressources au moyen d'appel cURL. Nous faisons donc des requêtes GET, éventuellement POST si requis, à chaque ressource. Le fait d'avoir centralisé le code nous permet également de structurer les appels pour respecter l'architecture REST. Toutefois les ressources n'utilisent pas toutes les mêmes conventions et les coups ne sont pas tous donnés sous la même forme. C'est pourquoi on trouve un ou plusieurs parser dans chaque interface intermédiaire. Ces parser permettent de formater les réponses des ressources. Comme nous avions besoin de transmettre peu d'informations, nous avons choisi de transmettre les réponses au format JSON, qui est peu verbeux. Ainsi, le serveur reçoit toutes les réponses dans un format unique.
 
 \subsection{Réprésentation des ressources côté serveur}
 Nous avons rapidement déterminé trois types de ressources : les bases de données d'ouvertures, de fermeture et les moteurs d'échec.
@@ -100,22 +100,30 @@ De ce fait, nous avons donc créé un système permettant de renvoyer le meilleur c
 
 \subsection{Calcul d'un score}
 Comme nous l'avons vu au point (TODO), il existe différents types de ressources nous communiquant différant types d'informations.
-Cependant, toutes les ressources nous renvoient au moins un coup ainsi que plusieurs informations sur ce coup (la probabilité de gagner et le nombre de fois que le coup a été joué pour les bases d'ouvertures et la profondeur de recherche ainsi que le score attribué au coup pour les bots).\\
+Cependant, toutes les ressources nous renvoient au moins un coup ainsi que plusieurs informations sur ce coup (la probabilité de gagner et le nombre de fois que le coup a été joué pour les bases d'ouvertures et la profondeur de recherche ainsi que le score attribué au coup pour les bots).
+
 Partant du fait que nous avions pour chaque coups des informations justifiant son choix, nous avons donc décidé de calculer notre propre score associé à ce coup. Ainsi nous réutilisons les informations données par les ressources pour faire notre propre classement des meilleurs coups à jouer (le score renvoyé par les bots ne sera pas le score associé à ce coup, mais simplement une information).
-Notre première idée a donc été de sommer les différentes informations afin d'obtenir le score associé. Cependant, toutes les informations n'ont pas le même poids. En effet, par exemple, on peut penser que le score associé par un bot est plus ou moins important par rapport à la profondeur de recherche. Ces différentes pondérations (\(a_{k}\)) sont choisies par l'utilisateur via la GUI. Ainsi, c'est lui qui détermine quelle information privilégier.\\
-\(Score(coup_{i})_{ressource_{j}}=\sum_{k=1}^na_{k}*f_{k}(x_{k})\) avec \(x_{k}\) la kième information donnée par la ressource sur le \(coup_{i}\) et \(f_{k}\) la fonction de traitement associée à l'information \(x_{k}\) (Voir section suivante pour la définition de \(f_{k}\) ).\\
-Le score calculé précédemment est valable pour un coup proposé par une ressource. Généralement, chaque coup est proposé par plusieurs ressources. Pour obtenir le score total d'un coup, nous avons simplement effectué la somme des scores (sur les ressources) associé à ce coup.\\
-\(Score(coup_{i})=\sum_{k=1}^mScore(coup_{i})_{ressource_{k}}\)\\
+Notre première idée a donc été de sommer les différentes informations afin d'obtenir le score associé. Cependant, toutes les informations n'ont pas le même poids. En effet, par exemple, on peut penser que le score associé par un bot est plus ou moins important par rapport à la profondeur de recherche. Ces différentes pondérations (\(a_{k}\)) sont choisies par l'utilisateur via la GUI. Ainsi, c'est lui qui détermine quelle information privilégier.
+
+Nous avons donc \(Score(coup_{i})_{ressource_{j}}=\sum_{k=1}^na_{k}*f_{k}(x_{k})\) avec \(x_{k}\) la kième information donnée par la ressource sur le \(coup_{i}\) et \(f_{k}\) la fonction de traitement associée à l'information \(x_{k}\) (Voir section suivante pour la définition de \(f_{k}\) ).
+
+Le score calculé précédemment est valable pour un coup proposé par une ressource. Généralement, chaque coup est proposé par plusieurs ressources. Pour obtenir le score total d'un coup, nous avons simplement effectué une somme pondérée des scores (sur les ressources) associé à ce coup. Les pondérations sont liées au fait que l'on fait plus ou moins confiance à chaque ressource. Par exemple, une base de données d'ouverture contenant les parties des plus grands maîtres d'échecs sera plus digne de confiance qu'une base contenant des parties de tournois amateurs.
+
+Nous avons donc la formule suivante : \(Score(coup_{i})=\sum_{k=1}^mT_{k}*Score(coup_{i})_{ressource_{k}}\) avec \(T_{k}\) la confiance accordée à la ressource k.
+
 Ensuite, une fois ces scores calculés pour chaque coup, nous choisissons le coup ayant le score maximal. Ce coup est considéré comme étant le meilleur et est renvoyé au client.
 
 \subsection{Statistiques}
-Comme nous l'avons vu précédemment, les informations subissent des traitements (les fonctions \(f_{k}\)) avant d'être agrégées (via la somme). Ces traitements visent essentiellement à rendre comparable les différentes informations obtenues. En effet celles-ci se situent généralement dans des échelles différentes (une probabilité est entre 0 et 1 alors que le nombre de coup joué est potentiellement très élevé). Pour pouvoir mettre les informations à la même échelle nous centrons puis nous réduisons les variables \(x_{k}\) à l'aide des fonctions f associées.\\
-Nous avons donc \(f_{k}(x_{k})=\frac{x_{k}-\bar{x_{k}}}{\vee(x_{k})}\).\\
+Comme nous l'avons vu précédemment, les informations subissent des traitements (les fonctions \(f_{k}\)) avant d'être agrégées (via la somme). Ces traitements visent essentiellement à rendre comparable les différentes informations obtenues. En effet celles-ci se situent généralement dans des échelles différentes (une probabilité est entre 0 et 1 alors que le nombre de coup joué est potentiellement très élevé). Pour pouvoir mettre les informations à la même échelle nous centrons puis nous réduisons les variables \(x_{k}\) à l'aide des fonctions f associées.
+
+Nous avons donc \(f_{k}(x_{k})=\frac{x_{k}-\bar{x_{k}}}{\vee(x_{k})}\).
+
 Afin d'obtenir ces statistiques, nous avons donc créé une classe qui s'occupe de gérer et des recalculer après chaque coup les statistiques liées aux différentes informations.
 
 \subsection{Evolution des pondérations}
-Le système décrit précédemment permet de bien prendre en compte la diversité des informations traitées mais il ne permet pas de différencier une ressource par rapport à une autre.
-[TODO: Evolution automatique des pondérations.]
+Le système décrit précédemment permet de bien prendre en compte la diversité des informations traitées mais il ne permet pas encore de différencier une ressource par rapport à une autre.
+
+Pour cela, nous avons donc 
 
 
 \section{Conclusion} 
