@@ -1,53 +1,94 @@
-\documentclass[a4paper,11pt]{report}
-\usepackage[utf8]{inputenc}
-\usepackage[french]{babel}
-\usepackage{listings}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     STYLE POUR LES EXPOSES TECHNIQUES 
+%         3e année INSA de Rennes
+%
+%             NE PAS MODIFIER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{Distributed Chess Services - Rapport}
-\author{P. Chaignon, T. FranÃ§ois, C. Gautrais, D. Le Guen, B. Travers}
-\date{INSA Rennes - 2012-2013} 
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{exptech}       % Fichier (./exptech.sty) contenant les styles pour 
+                           % l'expose technique (ne pas le modifier)
+
+%\linespread{1,6}          % Pour une version destinée à un relecteur,
+                           % décommenter cette commande (double interligne) 
+                           
+% UTILISEZ SPELL (correcteur orthographique) à accès simplifié depuis XEmacs
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{ \textbf{Rapport\\Distributed Chess Service} }
+\markright{Style pour l'exposé technique} 
+                           % Pour avoir le titre de l'expose sur chaque page
+
+\author{Paul \textsc{Chaignon}, Thomas \textsc{François}, \\
+        Damien \textsc{Le Guen}, Clément \textsc{Gautrais}, \\
+				Benoit \textsc{Travers} \\
+        \\
+        Encadreur : Yann \textsc{Ricquebourg}}
+
+\date{}                    % Ne pas modifier
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}          
+
+\maketitle                 % Génère le titre
+\thispagestyle{empty}      % Supprime le numéro de page sur la 1re page
 
 
-\begin{document}
-\maketitle{}
 
-\chapter{Cahier des charges}
+\begin{abstract}
 
-\section{Attentes du client}
+
+Le résumé est limité à 10 lignes au maximum.
+\end{abstract} 
+
+
+\section{Introduction}  
+
+\subsection{Attentes du client}
 [TODO: Attentes de Loic Helouet.]
 
-\section{SpÃ©cifications}
-[TODO: SpÃ©cifications en boÃ®te noire.]
+\subsection{Spécifications}
+[TODO: Spécifications en boîte noire.]
 
 
-\chapter{Architecture}
+\section{Architecture}
 
-\section{Interfaces intermÃ©diaires pour les ressources distantes}
+\subsection{Interfaces intermédiaires pour les ressources distantes}
 [TODO: PHP Wrappers : Appel cURL, parsing et structure.]
 
-\section{Utilisation des ressources cÃ´tÃ© serveur}
+\subsection{Utilisation des ressources côté serveur}
 [TODO: UML, query, version et parsing JSON.]
 
-\section{Base de donnÃ©es SQLite}
-[TODO: SchÃ©mas de conception, justification du choix de SQLite.]
+\subsection{Base de données SQLite}
+[TODO: Schémas de conception, justification du choix de SQLite.]
 
-\section{ParallÃ©lisation des appels aux ressources}
+\subsection{Parallélisation des appels aux ressources}
 [TODO: Justification du choix des multithreads.]
 
-\section{Interface RESTful du serveur central}
-[TODO: Interface Jersey : les requÃªtes HTTP requises.]
+\subsection{Interface RESTful du serveur central}
+[TODO: Interface Jersey : les requêtes HTTP requises.]
 
 
-\chapter{Classement des suggestions de coups}
+\section{Classement des suggestions de coups}
 
-\section{Calcul d'un score}
-[TODO: Formule gÃ©nÃ©rale avec somme pour diffÃ©rentes suggestions.]
+\subsection{Calcul d'un score}
+[TODO: Formule générale avec somme pour différentes suggestions.]
 
-\section{Statistiques}
-[TODO: AmÃ©lioration de la formule avec variance et moeynne (centrÃ©e rÃ©duite).]
+\subsection{Statistiques}
+[TODO: Amélioration de la formule avec variance et moeynne (centrée réduite).]
 
-\section{Evolutuion des pondÃ©rations}
-[TODO: Evolution automatique des pondÃ©rations.]
+\subsection{Evolutuion des pondérations}
+[TODO: Evolution automatique des pondérations.]
+
+
+\section{Conclusion} 
+ 
+
 
 
 \end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
