@@ -93,16 +93,21 @@ De ce fait, nous avons donc créé un système permettant de renvoyer le meilleur c
 
 \subsection{Calcul d'un score}
 Comme nous l'avons vu au point (TODO), il existe différents types de ressources nous communiquant différant types d'informations.
-Cependant, toutes les ressources nous renvoient au moins un coup ainsi que plusieurs informations sur ce coup (la probabilité de gagner et le nombre de fois que le coup a été joué pour les bases d'ouvertures et la profondeur de recherche ainsi que le score attribué au coup pour les bots).
+Cependant, toutes les ressources nous renvoient au moins un coup ainsi que plusieurs informations sur ce coup (la probabilité de gagner et le nombre de fois que le coup a été joué pour les bases d'ouvertures et la profondeur de recherche ainsi que le score attribué au coup pour les bots).\\
 Partant du fait que nous avions pour chaque coups des informations justifiant son choix, nous avons donc décidé de calculer notre propre score associé à ce coup. Ainsi nous réutilisons les informations données par les ressources pour faire notre propre classement des meilleurs coups à jouer (le score renvoyé par les bots ne sera pas le score associé à ce coup, mais simplement une information).
-Notre première idée a donc été de sommer les différentes informations afin d'obtenir le score associé :
-\[Score(coup1)=\sum_{k=1}^nx_{k}\] avec \[x_{k}\] la kième informations données par la ressource sur le coup1.
-[TODO: Formule générale avec somme pour différentes suggestions.]
+Notre première idée a donc été de sommer les différentes informations afin d'obtenir le score associé. Cependant, toutes les informations n'ont pas le même poids. En effet, par exemple, on peut penser que le score associé par un bot est plus ou moins important par rapport à la profondeur de recherche. Ces différentes pondérations (\(a_{k}\)) sont choisies par l'utilisateur via la GUI. Ainsi, c'est lui qui détermine quelle information privilégier.\\
+\(Score(coup_{i})_{ressource_{j}}=\sum_{k=1}^na_{k}*f_{k}(x_{k})\) avec \(x_{k}\) la kième information donnée par la ressource sur le \(coup_{i}\) et \(f_{k}\) la fonction de traitement associée à l'information \(x_{k}\) (Voir section suivante pour la définition de \(f_{k}\) ).\\
+Le score calculé précédemment est valable pour un coup proposé par une ressource. Généralement, chaque coup est proposé par plusieurs ressources. Pour obtenir le score total d'un coup, nous avons simplement effectué la somme des scores (sur les ressources) associé à ce coup.\\
+\(Score(coup_{i})=\sum_{k=1}^mScore(coup_{i})_{ressource_{k}}\)\\
+Ensuite, une fois ces scores calculés pour chaque coup, nous choisissons le coup ayant le score maximal. Ce coup est considéré comme étant le meilleur et est renvoyé au client.
 
 \subsection{Statistiques}
-[TODO: Amélioration de la formule avec variance et moyenne (centrée réduite).]
+Comme nous l'avons vu précédemment, les informations subissent des traitements (les fonctions \(f_{k}\)) avant d'être agrégées (via la somme). Ces traitements visent essentiellement à rendre comparable les différentes informations obtenues. En effet celles-ci se situent généralement dans des échelles différentes (une probabilité est entre 0 et 1 alors que le nombre de coup joué est potentiellement très élevé). Pour pouvoir mettre les informations à la même échelle nous centrons puis nous réduisons les variables \(x_{k}\) à l'aide des fonctions f associées.\\
+Nous avons donc \(f_{k}(x_{k})=\frac{x_{k}-\bar{x_{k}}}{\vee(x_{k})}\).\\
+Afin d'obtenir ces statistiques, nous avons donc créé une classe qui s'occupe de gérer et des recalculer après chaque coup les statistiques liées aux différentes informations.
 
 \subsection{Evolution des pondérations}
+Le système décrit précédemment permet de bien prendre en compte la diversité des informations traitées mais il ne permet pas de différencier une ressource par rapport à une autre.
 [TODO: Evolution automatique des pondérations.]
 
 
