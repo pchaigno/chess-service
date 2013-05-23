@@ -125,11 +125,11 @@ De ce fait, nous avons donc créé un système permettant de renvoyer le meilleur c
 
 \subsection{Calcul d'un score}
 \label{confiance-ressources}
-Comme nous l'avons vu en \ref{types-ressources}, il existe différents types de ressources nous communiquant différant types d'informations.
+Comme nous l'avons vu en \ref{types-ressources}, il existe différents types de ressources nous communiquant différents types d'informations.
 Cependant, toutes les ressources nous renvoient au moins un coup ainsi que plusieurs informations sur ce coup (la probabilité de gagner et le nombre de fois que le coup a été joué pour les bases d'ouvertures et la profondeur de recherche ainsi que le score attribué au coup pour les bots).
 
-Partant du fait que nous avions pour chaque coups des informations justifiant son choix, nous avons donc décidé de calculer notre propre score associé à ce coup. Ainsi nous réutilisons les informations données par les ressources pour faire notre propre classement des meilleurs coups à jouer (le score renvoyé par les bots ne sera pas le score associé à ce coup, mais simplement une information).
-Notre première idée a donc été de sommer les différentes informations afin d'obtenir le score associé. Cependant, toutes les informations n'ont pas le même poids. En effet, par exemple, on peut penser que le score associé par un bot est plus ou moins important par rapport à la profondeur de recherche. Ces différentes pondérations (\(a_{k}\)) sont choisies par l'utilisateur via la GUI. Ainsi, c'est lui qui détermine quelle information privilégier. 
+Partant du fait que nous avions pour chaque coup des informations justifiant son choix, nous avons décidé de calculer notre propre score associé à ce coup. Ainsi nous réutilisons les informations données par les ressources pour faire notre propre classement des meilleurs coups à jouer (le score renvoyé par les bots ne sera pas le score associé à ce coup, mais simplement une information).
+Notre première idée a donc été de sommer les différentes informations afin d'obtenir le score associé. Cependant, toutes les informations n'ont pas le même poids. On peut par exemple penser que le score associé par un bot est plus ou moins important par rapport à la profondeur de recherche. Ces différentes pondérations (\(a_{k}\)) sont choisies par l'utilisateur via la GUI. Ainsi, c'est lui qui détermine quelle information privilégier. 
 
 Nous avons donc \(Score(coup_{i})_{ressource_{j}}=\sum_{k=1}^na_{k}*f_{k}(x_{k})\) avec \(x_{k}\) la kième information donnée par la ressource sur le \(coup_{i}\) et \(f_{k}\) la fonction de traitement associée à l'information \(x_{k}\) (Voir section suivante pour la définition de \(f_{k}\)).
 
