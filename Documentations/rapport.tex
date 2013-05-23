@@ -9,6 +9,7 @@
 
 \usepackage{exptech}       % Fichier (./exptech.sty) contenant les styles pour 
                            % l'expose technique (ne pas le modifier)
+\usepackage{url}
 
 %\linespread{1,6}          % Pour une version destinée à un relecteur,
                            % décommenter cette commande (double interligne) 
@@ -48,7 +49,7 @@ L'objectif de cette étude pratique était de mettre en oeuvre une chorégraphie de
 
 L'un des souhaits de Loïc Hélouët était d'utiliser REST (REpresentational State Transfer \cite{rest-fielding}) comme style d'architecture. REST est un style d'architecture pemettant d'associer à une URL un objet. De plus REST utilise un nombre réduit de méthodes pour interagir avec ces objets. Les quatres actions de bases CRUD (Create, Read, Update et Delete) sont effectuées respectivement par des méthodes HTTP (POST, GET, PUT et DELETE).
 
-En plus d'avoir une architecture respectant le style REST, les données échangées étaient elles-mêmes bien spécifiques. En effet, les échecs utilisent des notations normalisées pour représenter un plateau de jeu et un coup joué. Ces normes sont d'ailleurs utilisées par tous les services spécialisés (appelés ressources par la suite). La notation la plus utilisée pour représenter un plateau de jeu est la FEN (Forsyth-Edwards Notation). Elle décrit le plateau ligne par ligne de façon compacte et contient d'autres informations telles que le nombre de coups joués, la prochaine couleur à effectuer un déplacement, ainsi que certaines règles spécifiques au jeu d'échecs (telle que le roque ou le coup en passant). Les coups sont eux représentés suivant une notation particulière : la notation algébrique. Celle-ci existe sous deux formes : la première, appelée LAN (Long Algebraic Notation), donne la case de départ et la case d'arrivée, par exemple : e4e6 ou b1c3. Une deuxième notation abrégée existe et ne donne que la case de départ ainsi que le type de pièce (si la pièce n'est pas un pion), elle est nommée SAN (Short Algebraic Notation), les exemples précédents sont alors notés : e6 et Nc3.
+En plus d'avoir une architecture respectant le style REST, les données échangées étaient elles-mêmes bien spécifiques. En effet, les échecs utilisent des notations normalisées pour représenter un plateau de jeu et un coup joué. Ces normes sont d'ailleurs utilisées par tous les services spécialisés (appelés ressources par la suite). La notation la plus utilisée pour représenter un plateau de jeu est la FEN (Forsyth-Edwards Notation \cite{fen}). Elle décrit le plateau ligne par ligne de façon compacte et contient d'autres informations telles que le nombre de coups joués, la prochaine couleur à effectuer un déplacement, ainsi que certaines règles spécifiques au jeu d'échecs (telle que le roque ou le coup en passant). Les coups sont eux représentés suivant une notation particulière : la notation algébrique. Celle-ci existe sous deux formes : la première, appelée LAN (Long Algebraic Notation), donne la case de départ et la case d'arrivée, par exemple : e4e6 ou b1c3. Une deuxième notation abrégée existe et ne donne que la case de départ ainsi que le type de pièce (si la pièce n'est pas un pion), elle est nommée SAN (Short Algebraic Notation), les exemples précédents sont alors notés : e6 et Nc3.
 
 
 \section{Architecture générale}
@@ -58,7 +59,7 @@ Notre architecture s'articule autour de trois éléments principaux. Tout d'abord,
 
 Toutes ces différentes ressources sont utilisées par un serveur central. Ce serveur central envoie des requêtes afin de récupérer différentes informations communiquées par les ressources puis sélectionne le meilleur coup. Le développement de ce serveur central est le c{\oe}ur de cette étude pratique (cf. figure \ref{fig:schema-systeme}).
 
-Une fois le meilleur coup déterminé par le serveur, celui-ci l'envoie aux clients (programmes d'échecs) ayant sollicité le serveur afin d'avoir sa réponse sur le coup à jouer. Deux clients ont d'ailleurs été développés dans le cadre de cette étude pratique : un premier à l'aide d'Unity3D en C# et un second en JavaScript.
+Une fois le meilleur coup déterminé par le serveur, celui-ci l'envoie aux clients (programmes d'échecs) ayant sollicité le serveur afin d'avoir sa réponse sur le coup à jouer. Deux clients ont d'ailleurs été développés dans le cadre de cette étude pratique : un premier à l'aide d'Unity 3D en C\# et un second en JavaScript.
 \FigureEPS{h,t,b,p}{11cm}{./ArchitectureSimple.eps}
 {Schéma général du système}   
 {fig:schema-systeme}
