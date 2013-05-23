@@ -103,7 +103,7 @@ Les requêtes vers chaque ressource ainsi que la conversion en objets Java sont e
 \subsection{Interface RESTful du serveur central}
 Pour effectuer les appels vers les ressources et surtout pour créer l'interface RESTful de notre serveur central nous avons choisi d'utiliser Jersey. Ce framework implémente l'interface de programmation Java \textit{Java API for RESTful Web Services} (JAX-RS) qui permet de créer des services web avec une architecture REST.
 
-La première requête que doivent effectuer les clients qui souhaitent utiliser le serveur central est une requête HTTP POST pour créer la partie sur le serveur. Ils peuvent alors en profiter pour dire quel format de coups d'échec il souhaitent recevoir par la suite. Pour la suite de la partie, à chaque fois qu'un client veut l'avis du serveur central, il lui envoie l'état de l'échiquier sous forme de FEN avec une requête HTTP GET. A la fin de la partie, le client doit envoyer une requête HTTP DELETE avec le FEN final pour que le serveur central puisse mettre à jour la base de données et récompenser les ressources en fonction de l'issue de la partie (cf. \ref{confiance}).
+La première requête que doivent effectuer les clients qui souhaitent utiliser le serveur central est une requête HTTP POST pour créer la partie sur le serveur. Ils peuvent alors en profiter pour dire quel format de coups d'échecs ils souhaitent recevoir par la suite. Pour la suite de la partie, à chaque fois qu'un client veut l'avis du serveur central, il lui envoie l'état de l'échiquier sous forme de FEN avec une requête HTTP GET. A la fin de la partie, le client doit envoyer une requête HTTP DELETE avec le FEN final pour que le serveur central puisse mettre à jour la base de données et récompenser les ressources en fonction de l'issue de la partie (cf. \ref{confiance}).
 
 Nous avons aussi ajouter la possibilité d'interroger le serveur central directement sans créer préalablement de partie, pour permettre aux utilisateurs de tester rapidement. Dans cette hypothèse, sans suivi de la partie, le système ne pourra pas évoluer de manière autonome. Enfin, nous avons mis à disposition une URL pour pouvoir analyser le fonctionnement interne. Lorsque cette dernière est utilisée pour récupérer l'avis du serveur central, les informations ayant servi aux calculs sont affichées.
 
@@ -113,14 +113,14 @@ Cette façon de faire permettra à la personne qui reprendra notre code de dévelop
 
 
 \section{Clients graphique}
-Afin de valoriser notre travail et de pouvoir tester de façon plus visuelle le système, nous avons interfacé deux clients graphiques avec notre serveur central. De part l'utilisation de l'architecture REST, notre système peut être interfacé avec n'importe quel client graphique. Nous avons juste dû, pour chaque client, écrire les fonctions pour effectuer les différentes requêtes HTTP vers l'interface RESTful du serveur central.
+Afin de valoriser notre travail et de pouvoir tester de façon plus visuel le système, nous avons interfacé deux clients graphiques avec notre serveur central. De part l'utilisation de l'architecture REST, notre système peut être interfacé avec n'importe quel client graphique. Nous avons juste dû, pour chaque client, écrire les fonctions pour effectuer les différentes requêtes HTTP vers l'interface RESTful du serveur central.
 
 Le premier client avait été développé avec Unity 3D, nous avons donc dû écrire nos fonctions en C\#. Le second client était en JavaScript (et fonctionne donc sur mobile) et nous avons donc utilisé l'architecture AJAX pour effectuer les requêtes vers le serveur central. L'architecture AJAX utilise quelques requêtes particulières, appelées preflight \cite{ajax-preflight}. Cela nous a contraint a adapter l'interface RESTful du serveur central.
 
 
 \section{Classement des suggestions de coups}
 
-	Les ressources seules ne permettent pas de choisir directement qeul coup renvoyer au client. En effet, nous devons renvoyer un unique coup (considéré comme étant le meilleur) au client, mais les ressources interrogées nous en conseillent généralement plusieurs.
+	Les ressources seules ne permettent pas de choisir directement quel coup renvoyer au client. En effet, nous devons renvoyer un unique coup (considéré comme étant le meilleur) au client, mais les ressources interrogées nous en conseillent généralement plusieurs.
 De ce fait, nous avons donc créé un système permettant de renvoyer le meilleur coup (ou du moins considéré comme tel) au client, en tenant compte des informations renvoyées par les ressources et en intégrant les parties précédemment jouées.
 
 \subsection{Calcul d'un score}
@@ -140,11 +140,11 @@ Nous avons donc la formule suivante :\\ \(Score(coup_{i})=\sum_{k=1}^mT_{k}*Scor
 Ensuite, une fois ces scores calculés pour chaque coup, nous choisissons le coup ayant le score maximal. Ce coup est considéré comme étant le meilleur et est renvoyé au client.
 
 \subsection{Statistiques}
-Comme nous l'avons vu précédemment, les informations subissent des traitements (les fonctions \(f_{k}\)) avant d'être agrégées (via la somme). Ces traitements visent essentiellement à rendre comparable les différentes informations obtenues. En effet celles-ci se situent généralement dans des échelles différentes (une probabilité est entre 0 et 1 alors que le nombre de coup joué est potentiellement très élevé). Pour pouvoir mettre les informations à la même échelle nous centrons puis nous réduisons les variables \(x_{k}\) à l'aide des fonctions f associées.
+Comme nous l'avons vu précédemment, les informations subissent des traitements (les fonctions \(f_{k}\)) avant d'être agrégées (via la somme). Ces traitements visent essentiellement à rendre comparable les différentes informations obtenues. En effet celles-ci se situent généralement dans des échelles différentes (une probabilité est entre 0 et 1 alors que le nombre de coup joué est potentiellement très élevé). Pour pouvoir mettre les informations à la même échelle, nous centrons puis nous réduisons les variables \(x_{k}\) à l'aide des fonctions f associées.
 
 Nous avons donc :\\ \(f_{k}(x_{k})=\frac{x_{k}-\bar{x_{k}}}{\vee(x_{k})}\).
 
-Afin d'obtenir ces statistiques, nous avons donc créé une classe qui s'occupe de gérer et de recalculer après chaque coup les statistiques liées aux différentes informations.
+Afin d'obtenir ces statistiques, nous avons créé une classe qui s'occupe de gérer et de recalculer après chaque coup les statistiques liées aux différentes informations.
 
 \subsection{Evolution des pondérations}
 \label{confiance}
