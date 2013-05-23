@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     STYLE POUR LES EXPOSES TECHNIQUES 
-%         3e année INSA de Rennes
+%         3e annÃ©e INSA de Rennes
 %
 %             NE PAS MODIFIER
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -10,10 +10,10 @@
 \usepackage{exptech}       % Fichier (./exptech.sty) contenant les styles pour 
                            % l'expose technique (ne pas le modifier)
 
-%\linespread{1,6}          % Pour une version destinée à un relecteur,
-                           % décommenter cette commande (double interligne) 
+%\linespread{1,6}          % Pour une version destinÃ©e Ã  un relecteur,
+                           % dÃ©commenter cette commande (double interligne) 
                            
-% UTILISEZ SPELL (correcteur orthographique) à accès simplifié depuis XEmacs
+% UTILISEZ SPELL (correcteur orthographique) Ã  accÃ¨s simplifiÃ© depuis XEmacs
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -21,11 +21,11 @@
 \markright{Distributed Chess Service} 
                            % Pour avoir le titre de l'expose sur chaque page
 
-\author{Paul \textsc{Chaignon}, Thomas \textsc{François}, \\
-        Damien \textsc{Le Guen}, Clément \textsc{Gautrais}, \\
+\author{Paul \textsc{Chaignon}, Thomas \textsc{FranÃ§ois}, \\
+        Damien \textsc{Le Guen}, ClÃ©ment \textsc{Gautrais}, \\
 				Benoit \textsc{Travers} \\
         \\
-        Encadrant : Yann \textsc{Ricquebourg}}
+        Encadrants : LoÃ¯c \textsc{HÃ©louÃ«t}, Yann \textsc{Ricquebourg}}
 
 \date{}                    % Ne pas modifier
  
@@ -33,131 +33,131 @@
 
 \begin{document}          
 
-\maketitle                 % Génère le titre
-\thispagestyle{empty}      % Supprime le numéro de page sur la 1re page
+\maketitle                 % GÃ©nÃ¨re le titre
+\thispagestyle{empty}      % Supprime le numÃ©ro de page sur la 1re page
 
 
 
 \begin{abstract}
-Ce rapport traite de la réalisation d'une architecture REST permettant d'utiliser différents services web afin de renvoyer le meilleur coup d'échecs dans une situation donnée. Cette architecture s'articule autour de trois systèmes principaux : des ressources distantes, un serveur central et des clients. La communication en REST entre les ressources et le serveur central a été permise grâce à la mise en place d'interface entre ces deux entités. Une fois les ressources interrogées, celles-ci fournissent des informations qui sont alors traitées par le serveur central afin de renvoyer le meilleur coup à jouer au client. Le traitement de ces différentes données a été possible grâce à l'utilisation de techniques d'acquisition de connaissances. Enfin, l'utilisation du serveur central a été mis en valeur par le réalisation de clients graphiques.
+Ce rapport traite de la rÃ©alisation d'une architecture REST permettant d'utiliser diffÃ©rents services web afin de renvoyer le meilleur coup d'Ã©checs dans une situation donnÃ©e. Cette architecture s'articule autour de trois systÃ¨mes principaux : des ressources distantes, un serveur central et des clients. La communication en REST entre les ressources et le serveur central a Ã©tÃ© permise grÃ¢ce Ã  la mise en place d'interface entre ces deux entitÃ©s. Une fois les ressources interrogÃ©es, celles-ci fournissent des informations qui sont alors traitÃ©es par le serveur central afin de renvoyer le meilleur coup Ã  jouer au client. Le traitement de ces diffÃ©rentes donnÃ©es a Ã©tÃ© possible grÃ¢ce Ã  l'utilisation de techniques d'acquisition de connaissances. Enfin, l'utilisation du serveur central a Ã©tÃ© mis en valeur par le rÃ©alisation de clients graphiques.
 \end{abstract} 
 
 
 \section{Contexte}  
-L'objectif de cette étude pratique était de mettre en oeuvre une chorégraphie de services web utilisant les réponses de services spécialisés pour proposer un coup sélectionné comme étant le meilleur dans une position donnée. De plus, Loïc Héloüet, à l'origine de ce sujet, sera amené ensuite à reprendre notre système. Nous devions donc lui fournir des outils bien documentés et facilement réutilisables.
+L'objectif de cette Ã©tude pratique Ã©tait de mettre en oeuvre une chorÃ©graphie de services web utilisant les rÃ©ponses de services spÃ©cialisÃ©s pour proposer un coup sÃ©lectionnÃ© comme Ã©tant le meilleur dans une position donnÃ©e. De plus, LoÃ¯c HÃ©louÃ«t, Ã  l'origine de ce sujet, sera amenÃ© ensuite Ã  reprendre notre systÃ¨me. Nous devions donc lui fournir des outils bien documentÃ©s et facilement rÃ©utilisables.
 
-L'un des souhaits de Loïc Héloüet était d'utiliser REST (REpresentational State Transfer \cite{rest-fielding}) comme style d'architecture. REST est un style d'architecture pemettant d'associer à une URL un objet. De plus REST utilise un nombre réduit de méthodes pour interagir avec ces objets. Les quatres actions de bases CRUD (Create, Read, Update et Delete) sont effectuées respectivement par des méthodes HTTP (POST, GET, PUT et DELETE).
+L'un des souhaits de LoÃ¯c HÃ©louÃ«t Ã©tait d'utiliser REST (REpresentational State Transfer \cite{rest-fielding}) comme style d'architecture. REST est un style d'architecture pemettant d'associer Ã  une URL un objet. De plus REST utilise un nombre rÃ©duit de mÃ©thodes pour interagir avec ces objets. Les quatres actions de bases CRUD (Create, Read, Update et Delete) sont effectuÃ©es respectivement par des mÃ©thodes HTTP (POST, GET, PUT et DELETE).
 
-En plus d'avoir une architecture respectant le style REST, les données échangées étaient elles-mêmes bien spécifiques. En effet, les échecs utilisent des notations normées pour représenter un plateau de jeu et un coup joué. Ces normes sont d'ailleurs utilisées par tous les services spécialisés (appelés ressources par la suite). La notation la plus utilisée pour représenter un plateau de jeu est la FEN (Forsyth-Edwards Notation). Elle décrit le plateau ligne par ligne de façon compacte et contient d'autres informations telles que le nombre de coups joués, la prochaine couleur à effectuer un déplacement, ainsi que certaines règles spécifiques au jeu d'échecs (telle que le roque ou le coup en passant). Les coups sont eux représentés suivant une notation particulière : la notation algébrique. Celle-ci existe sous deux formes : la première, appelée LAN (Long Algebraic Notation), donne la case de départ et la case d'arrivée, par exemple : e4e6 ou b1c3. Une deuxième notation abrégée existe et ne donne que la case de départ ainsi que le type de pièce (si la pièce n'est pas un pion), elle est nommée SAN (Short Algebraic Notation), les exemples précédents sont alors notés : e6 et Nc3.
+En plus d'avoir une architecture respectant le style REST, les donnÃ©es Ã©changÃ©es Ã©taient elles-mÃªmes bien spÃ©cifiques. En effet, les Ã©checs utilisent des notations normalisÃ©es pour reprÃ©senter un plateau de jeu et un coup jouÃ©. Ces normes sont d'ailleurs utilisÃ©es par tous les services spÃ©cialisÃ©s (appelÃ©s ressources par la suite). La notation la plus utilisÃ©e pour reprÃ©senter un plateau de jeu est la FEN (Forsyth-Edwards Notation). Elle dÃ©crit le plateau ligne par ligne de faÃ§on compacte et contient d'autres informations telles que le nombre de coups jouÃ©s, la prochaine couleur Ã  effectuer un dÃ©placement, ainsi que certaines rÃ¨gles spÃ©cifiques au jeu d'Ã©checs (telle que le roque ou le coup en passant). Les coups sont eux reprÃ©sentÃ©s suivant une notation particuliÃ¨re : la notation algÃ©brique. Celle-ci existe sous deux formes : la premiÃ¨re, appelÃ©e LAN (Long Algebraic Notation), donne la case de dÃ©part et la case d'arrivÃ©e, par exemple : e4e6 ou b1c3. Une deuxiÃ¨me notation abrÃ©gÃ©e existe et ne donne que la case de dÃ©part ainsi que le type de piÃ¨ce (si la piÃ¨ce n'est pas un pion), elle est nommÃ©e SAN (Short Algebraic Notation), les exemples prÃ©cÃ©dents sont alors notÃ©s : e6 et Nc3.
 
 
-\section{Architecture générale}
+\section{Architecture gÃ©nÃ©rale}
 
-\subsection{Présentation générale}
-Notre architecture s'articule autour de trois éléments principaux. Tout d'abord, nous utilisons différentes ressources afin d'obtenir des informations sur les coups à jouer. Ces ressources sont de trois types, chaque type étant associé à une phase du jeu. Les débuts de parties (les 5 à 10 premiers coups) sont répertoriés dans des bases de données appelées base de données d'ouverture (Openings Databases). Les informations accessibles via ce type de ressource sont essentiellement de nature statistiques, basées sur l'archivage de parties d'échecs. Ensuite, le milieu de partie est essentiellement dominé par des robots (appelés bots). Les informations communiquées par ces bots sont plutôt de nature calculatoire. Enfin, lorsqu'il ne reste plus que quelques pièces (5-6 généralement) sur l'échiquier, il existe des tables permettant de mener le joueur vers le meilleur résultat possible. Les ressources donnant accès à ces tables sont appelées Endings Databases et sont de nature déterministe.
+\subsection{PrÃ©sentation gÃ©nÃ©rale}
+Notre architecture s'articule autour de trois Ã©lÃ©ments principaux. Tout d'abord, nous utilisons diffÃ©rentes ressources afin d'obtenir des informations sur les coups Ã  jouer. Ces ressources sont de trois types, chaque type Ã©tant associÃ© Ã  une phase du jeu. Les dÃ©buts de parties (les 5 Ã  10 premiers coups) sont rÃ©pertoriÃ©s dans des bases de donnÃ©es appelÃ©es base de donnÃ©es d'ouverture ({\it Openings Databases}). Les informations accessibles via ce type de ressource sont essentiellement de nature statistiques, basÃ©es sur l'archivage de parties d'Ã©checs. Ensuite, le milieu de partie est essentiellement dominÃ© par des robots (appelÃ©s {\it bots}). Les informations communiquÃ©es par ces bots sont plutÃ´t de nature calculatoire. Enfin, lorsqu'il ne reste plus que quelques piÃ¨ces (5 Ã  6 gÃ©nÃ©ralement) sur l'Ã©chiquier, il existe des tables permettant de mener le joueur vers le meilleur rÃ©sultat possible. Les ressources donnant accÃ¨s Ã  ces tables de fermeture sont appelÃ©es {\it Endings Databases} et sont de nature dÃ©terministe.
 
-Toutes ces différentes ressources sont utilisées par un serveur central. Ce serveur central envoie des requêtes afin de récupérer différentes informations communiquées par les ressources puis sélectionne le meilleur coup. Le développement de ce serveur central est le coeur de cette étude pratique (cf. figure \ref{fig:schema-systeme}).
+Toutes ces diffÃ©rentes ressources sont utilisÃ©es par un serveur central. Ce serveur central envoie des requÃªtes afin de rÃ©cupÃ©rer diffÃ©rentes informations communiquÃ©es par les ressources puis sÃ©lectionne le meilleur coup. Le dÃ©veloppement de ce serveur central est le c{\oe}ur de cette Ã©tude pratique (cf. figure \ref{fig:schema-systeme}).
 
-Une fois le meilleur coup déterminé par le serveur, celui-ci l'envoie aux clients (programmes d'échecs) ayant sollicité le serveur afin d'avoir sa réponse sur le coup à jouer. Deux clients ont d'ailleurs été développés dans le cadre de cette étude pratique.
+Une fois le meilleur coup dÃ©terminÃ© par le serveur, celui-ci l'envoie aux clients (programmes d'Ã©checs) ayant sollicitÃ© le serveur afin d'avoir sa rÃ©ponse sur le coup Ã  jouer. Deux clients ont d'ailleurs Ã©tÃ© dÃ©veloppÃ©s dans le cadre de cette Ã©tude pratique : un premier Ã  l'aide d'Unity3D en C# et un second en JavaScript.
 \FigureEPS{h,t,b,p}{11cm}{./ArchitectureSimple.eps}
-{Schéma général du système}   
+{SchÃ©ma gÃ©nÃ©ral du systÃ¨me}   
 {fig:schema-systeme}
 
-\subsection{Interfaces intermédiaires pour les ressources distantes}
-Afin d'accéder à des ressources non accessibles en REST, nous avons dû mettre en place des interfaces intermédiaires en PHP. Ces interfaces ayant toutes des fonctions communes, nous avons choisi de créer un framework, en PHP également. Dans ce framework, nous communiquons avec les ressources au moyen d'appel cURL. Nous faisons donc des requêtes GET, éventuellement POST si requis, à chaque ressource. Le fait d'avoir centralisé le code nous permet également de structurer les appels pour respecter l'architecture REST. Toutefois les ressources n'utilisent pas toutes les mêmes conventions et les coups ne sont pas tous donnés sous la même forme. C'est pourquoi on trouve un ou plusieurs parseurs dans chaque interface intermédiaire. Ces parseurs permettent de formater les réponses des ressources. Comme nous avions besoin de transmettre peu d'informations, nous avons choisi de transmettre les réponses au format JSON, qui est peu verbeux contrairement au format XML. Ainsi, le serveur reçoit toutes les réponses dans un format unique.
+\subsection{Interfaces intermÃ©diaires pour les ressources distantes}
+Afin d'accÃ©der Ã  des ressources non accessibles en REST, nous avons dÃ» mettre en place des interfaces intermÃ©diaires en PHP. Ces interfaces ayant toutes des fonctions communes, nous avons choisi de crÃ©er un framework, en PHP Ã©galement. Dans ce {\it framework}, nous communiquons avec les ressources au moyen d'appel cURL. Nous faisons donc des requÃªtes GET, Ã©ventuellement POST si requis, Ã  chaque ressource. Le fait d'avoir centralisÃ© le code nous permet Ã©galement de structurer les appels pour respecter l'architecture REST. Toutefois les ressources n'utilisent pas toutes les mÃªmes conventions et les coups ne sont pas tous donnÃ©s sous la mÃªme forme. C'est pourquoi on trouve un ou plusieurs analyseurs syntaxiques dans chaque interface intermÃ©diaire. Ces parseurs permettent de formater les rÃ©ponses des ressources. Comme nous avions besoin de transmettre peu d'informations, nous avons choisi de transmettre les rÃ©ponses au format JSON, qui est peu verbeux contrairement au format XML. Ainsi, le serveur reÃ§oit toutes les rÃ©ponses dans un format unique.
 
 \subsection{Conversions entre les formats}
-Certaines ressources attendent des FEN sous une forme réduite, d'autres sous la forme normale; elles renvoient les suggestions de coups parfois au format SAN, parfois au format LAN. De plus, les clients ont parfois besoin pour leur interface graphique du format LAN et parfois du format SAN. Nous avons donc dû implémenter des algorithmes, dans le serveur central, pour effectuer toutes les conversions nécessaires entre ces différents formats. Nous sommes partis pour cela d'algorithmes disponibles en JavaScript sur le site d'une de nos ressources. Nous avons donc dû les implémenter en Java, les améliorer et les corriger.
+Certaines ressources attendent des FEN sous une forme rÃ©duite, d'autres sous la forme normale; elles renvoient les suggestions de coups parfois au format SAN, parfois au format LAN. De plus, les clients ont parfois besoin pour leur interface graphique du format LAN et parfois du format SAN. Nous avons donc dÃ» implÃ©menter des algorithmes, dans le serveur central, pour effectuer toutes les conversions nÃ©cessaires entre ces diffÃ©rents formats. Nous sommes partis pour cela d'algorithmes disponibles en JavaScript sur le site d'une de nos ressources. Nous avons donc dÃ» les implÃ©menter en Java, les amÃ©liorer et les corriger.
 
-Ce code source étant assez complexe nous avons choisi d'utiliser les techniques de développement pilotés par les tests. Nous avons donc commencé par écrire des tests unitaires de nos conversions. Après avoir écrit une première version fonctionnelle, nous nous sommes attachés à améliorer les algorithmes. Cette méthode nous a permis de repérer relativement rapidement les erreurs déjà présentes dans le code JavaScript.
+Ce code source Ã©tant assez complexe nous avons choisi d'utiliser les techniques de dÃ©veloppement pilotÃ©s par les tests. Nous avons donc commencÃ© par Ã©crire des tests unitaires de nos conversions. AprÃ¨s avoir Ã©crit une premiÃ¨re version fonctionnelle, nous nous sommes attachÃ©s Ã  amÃ©liorer les algorithmes. Cette mÃ©thode nous a permis de repÃ©rer relativement rapidement les erreurs dÃ©jÃ  prÃ©sentes dans le code JavaScript.
 
 
 \section{Architecture du serveur central}
 
-\subsection{Représentation des ressources côté serveur}
+\subsection{ReprÃ©sentation des ressources cÃ´tÃ© serveur}
 \label{types-ressources}
-Nous avons rapidement déterminé trois types de ressources : les bases de données d'ouvertures, de fermeture et les moteurs d'échecs.
-Ces trois types de ressources ne nous renvoient pas les mêmes informations. Par exemple, les bases de données d'ouvertures nous renvoient des probabilités de gagner et de perdre ainsi que le nombre de fois que le coup proposé a été joué. Les moteurs d'échecs nous renvoient, eux, la profondeur de calcul dans leur arbre de décision ainsi que le score associés à chaque coup.
-Nous avons donc contruit nos classes Java sur ce modèle (cf. figure \ref{fig:diagramme-uml}).
+Nous avons rapidement dÃ©terminÃ© trois types de ressources : les bases de donnÃ©es d'ouvertures, de fermeture et les moteurs d'Ã©checs.
+Ces trois types de ressources ne nous renvoient pas les mÃªmes informations. Par exemple, les bases de donnÃ©es d'ouvertures nous renvoient des probabilitÃ©s de gagner et de perdre ainsi que le nombre de fois que le coup proposÃ© a Ã©tÃ© jouÃ©. Les moteurs d'Ã©checs nous renvoient, eux, la profondeur de calcul dans leur arbre de dÃ©cision ainsi que le score associÃ©s Ã  chaque coup.
+Nous avons donc contruit nos classes Java sur ce modÃ¨le (cf. figure \ref{fig:diagramme-uml}).
 
 \FigureEPS{h,t,b,p}{16cm}{./resources-uml.eps}
-{Diagramme UML des ressources côté serveur}   
+{Diagramme UML des ressources cÃ´tÃ© serveur}   
 {fig:diagramme-uml}
 
-\subsection{Base de données SQLite}
-Pour chaque ressource, seulement quelques informations doivent être enregistrées, telles que l'URL, le nom ou la confiance dans la ressource (cf. \ref{confiance-ressources}). Toutes les ressources, quel que soit leur type, sont enregistrées dans la table Resources. Les utilisateurs du serveur central peuvent aussi créer des parties avec des informations associées concernant le format des réponses. Nous avons donc pour cela besoin d'une seconde table Games. Enfin, les coups proposés par les ressources et sélectionnés par le programme doivent aussi être stockés (cf. \ref{confiance}). Ces coups s'incrivent dans une partie et sont donc liés à la fois à Resources et à Games. Nous avons donc besoin d'une dernière table Moves. La figure \ref{fig:modele-bdd} présente le modèle entité-association de la base de données.
+\subsection{Base de donnÃ©es SQLite}
+Pour chaque ressource, seulement quelques informations doivent Ãªtre enregistrÃ©es, telles que l'URL, le nom ou la confiance dans la ressource (cf. \ref{confiance-ressources}). Toutes les ressources, quel que soit leur type, sont enregistrÃ©es dans la table Resources. Les utilisateurs du serveur central peuvent aussi crÃ©er des parties avec des informations associÃ©es concernant le format des rÃ©ponses. Nous avons donc pour cela besoin d'une seconde table Games. Enfin, les coups proposÃ©s par les ressources et sÃ©lectionnÃ©s par le programme doivent aussi Ãªtre stockÃ©s (cf. \ref{confiance}). Ces coups s'incrivent dans une partie et sont donc liÃ©s Ã  la fois Ã  Resources et Ã  Games. Nous avons donc besoin d'une derniÃ¨re table Moves. La figure \ref{fig:modele-bdd} prÃ©sente le modÃ¨le entitÃ©-association de la base de donnÃ©es.
 
 \FigureEPS{h,t,b,p}{15cm}{./bdd-modele-conceptuel.eps}
-{Modèle entité-association de la base de données}   
+{ModÃ¨le entitÃ©-association de la base de donnÃ©es}   
 {fig:modele-bdd}
 
-Pour réaliser cette base de données nous avons choisi d'utiliser le moteur de bases de données SQLite. En effet, ce dernier s'adapte particulièrement à de petites bases de données comme dans notre cas puisqu'il ne suit pas le schéma habituel serveur-client. Les informations sont stockées dans un seul fichier et les accès sont très rapides.
+Pour rÃ©aliser cette base de donnÃ©es nous avons choisi d'utiliser le moteur de bases de donnÃ©es SQLite. En effet, ce dernier s'adapte particuliÃ¨rement Ã  de petites bases de donnÃ©es comme dans notre cas puisqu'il ne suit pas le schÃ©ma habituel serveur-client. Les informations sont stockÃ©es dans un seul fichier et les accÃ¨s sont trÃ¨s rapides.
 
-Pour permettre à l'utilisateur de configurer simplement le système nous avons réalisé une interface graphique qui permet essentiellement d'ajouter, d'éditer ou de supprimer les ressources de la base de données. L'interface est réalisée avec la bibliothèque pour Java open-source et multiplateforme, SWT. Elle permet aussi de configurer le système, les pondérations (cf. \ref{confiance-ressources}) et de lancer le serveur central.
+Pour permettre Ã  l'utilisateur de configurer simplement le systÃ¨me nous avons rÃ©alisÃ© une interface graphique qui permet essentiellement d'ajouter, d'Ã©diter ou de supprimer les ressources de la base de donnÃ©es. L'interface est rÃ©alisÃ©e avec la bibliothÃ¨que pour Java open-source et multiplateforme, SWT. Elle permet aussi de configurer le systÃ¨me, les pondÃ©rations (cf. \ref{confiance-ressources}) et de lancer le serveur central.
 
 \subsection{Utilisation des ressources}
-Au démarrage, le serveur central commence par vérifier la disponibilité des ressources. Seules les ressources qui répondent à cette première requête et qui possèdent une version compatible sont gardées pour déterminer le meilleur coup.
-A chaque appel du serveur central par le client, toutes les ressources compatibles sont interrogées pour obtenir une liste de suggestions de coups associés à la position de l'échiquier envoyée. Les ressources répondent ensuite avec un document JSON contenant tous les coups et leurs informations associées. Ce document est convertit en une liste d'objets Java MoveSuggestion (OpeningSuggestion pour les bases de données d'ouverture, etc.).
-Les requêtes vers chaque ressource ainsi que la conversion en objets Java sont effectués en parallèle avec l'utilisation de threads.
+Au dÃ©marrage, le serveur central commence par vÃ©rifier la disponibilitÃ© des ressources. Seules les ressources qui rÃ©pondent Ã  cette premiÃ¨re requÃªte et qui possÃ¨dent une version compatible sont gardÃ©es pour dÃ©terminer le meilleur coup.
+Ã€ chaque appel du serveur central par le client, toutes les ressources compatibles sont interrogÃ©es pour obtenir une liste de suggestions de coups associÃ©s Ã  la position de l'Ã©chiquier envoyÃ©e. Les ressources rÃ©pondent ensuite avec un document JSON contenant tous les coups et leurs informations associÃ©es. Ce document est convertit en une liste d'objets MoveSuggestion de Java (OpeningSuggestion pour les bases de donnÃ©es d'ouverture, etc.).
+Les requÃªtes vers chaque ressource ainsi que la conversion en objets Java sont effectuÃ©s en parallÃ¨le avec l'utilisation de {\it threads}.
 
 \subsection{Interface RESTful du serveur central}
-Pour effectuer les appels vers les ressources et surtout pour créer l'interface RESTful de notre serveur central nous avons choisi d'utiliser Jersey. Ce framework implémente l'interface de programmation Java \textit{Java API for RESTful Web Services} (JAX-RS) qui permet de créer des services web avec une architecture REST.
+Pour effectuer les appels vers les ressources et surtout pour crÃ©er l'interface RESTful de notre serveur central nous avons choisi d'utiliser Jersey. Ce framework implÃ©mente l'interface de programmation Java \textit{Java API for RESTful Web Services} (JAX-RS) qui permet de crÃ©er des services web avec une architecture REST.
 
-La première requête que doivent effectuer les clients qui souhaitent utiliser le serveur central est une requête HTTP POST pour créer la partie sur le serveur. Ils peuvent alors en profiter pour dire quel format de coups d'échecs ils souhaitent recevoir par la suite. Pour la suite de la partie, à chaque fois qu'un client veut l'avis du serveur central, il lui envoie l'état de l'échiquier sous forme de FEN avec une requête HTTP GET. A la fin de la partie, le client doit envoyer une requête HTTP DELETE avec le FEN final pour que le serveur central puisse mettre à jour la base de données et récompenser les ressources en fonction de l'issue de la partie (cf. \ref{confiance}).
+La premiÃ¨re requÃªte que doivent effectuer les clients qui souhaitent utiliser le serveur central est une requÃªte HTTP POST pour crÃ©er la partie sur le serveur. Ils peuvent alors en profiter pour indiquer quel format de coups d'Ã©checs ils souhaitent recevoir par la suite. Pour la suite de la partie, Ã  chaque fois qu'un client veut l'avis du serveur central, il lui envoie l'Ã©tat de l'Ã©chiquier sous forme de FEN avec une requÃªte HTTP GET. Ã€ la fin de la partie, le client doit envoyer une requÃªte HTTP DELETE avec le FEN final pour que le serveur central puisse mettre Ã  jour la base de donnÃ©es et rÃ©compenser les ressources en fonction de l'issue de la partie (cf. \ref{confiance}).
 
-Nous avons aussi ajouté la possibilité d'interroger le serveur central directement sans créer préalablement de partie, pour permettre aux utilisateurs de tester rapidement notre système. Dans cette hypothèse, sans suivi de la partie, le système ne pourra pas évoluer de manière autonome. Enfin, nous avons mis à disposition une URL pour pouvoir analyser le fonctionnement interne. Lorsque cette dernière est utilisée pour récupérer l'avis du serveur central, les informations ayant servi aux calculs sont affichées.
+Nous avons aussi ajoutÃ© la possibilitÃ© d'interroger le serveur central directement sans crÃ©er prÃ©alablement de partie, pour permettre aux utilisateurs de tester rapidement notre systÃ¨me. Dans cette hypothÃ¨se, sans suivi de la partie, le systÃ¨me ne pourra pas Ã©voluer de maniÃ¨re autonome. Enfin, nous avons mis Ã  disposition une URL pour pouvoir analyser le fonctionnement interne. Lorsque cette derniÃ¨re est utilisÃ©e pour rÃ©cupÃ©rer l'avis du serveur central, les informations ayant servi aux calculs sont affichÃ©es.
 
-\subsection{Listeners du serveur central}
-Nous avons créé trois listeners pour que le serveur central puisse les notifier de tous les évènements qui ont lieu. Le premier listener est avertit de tous les accès qui sont fait au serveur depuis les clients. Le second est notifié lors des accès à la base de données ainsi que lors des exceptions levées. Le dernier listener est appelé pour tous les évènements liés aux ressources, à la fois lorsqu'on les interroge et lorsqu'elles nous répondent.
-Cette façon de faire permettra à la personne qui reprendra notre code de développer une interface graphique plus complète que celle que nous avons fait en respectant le patron Modèle-Vue-Contrôleur.
+\subsection{{\it Listeners} du serveur central}
+Nous avons crÃ©Ã© trois listeners pour que le serveur central puisse les notifier de tous les Ã©vÃ¨nements qui ont lieu. Le premier listener est avertit de tous les accÃ¨s qui sont fait au serveur depuis les clients. Le second est notifiÃ© lors des accÃ¨s Ã  la base de donnÃ©es ainsi que lors des exceptions levÃ©es. Le dernier listener est appelÃ© pour tous les Ã©vÃ¨nements liÃ©s aux ressources, Ã  la fois lorsqu'on les interroge et lorsqu'elles nous rÃ©pondent.
+Cette faÃ§on de faire permettra Ã  la personne qui reprendra notre code de dÃ©velopper une interface graphique plus complÃ¨te que celle que nous avons fait en respectant le patron de conception ModÃ¨le-Vue-ContrÃ´leur.
 
 
 \section{Clients graphique}
-Afin de valoriser notre travail et de pouvoir tester de façon plus visuel le système, nous avons interfacé deux clients graphiques avec notre serveur central. De part l'utilisation de l'architecture REST, notre système peut être interfacé avec n'importe quel client graphique. Nous avons juste dû, pour chaque client, écrire les fonctions pour effectuer les différentes requêtes HTTP vers l'interface RESTful du serveur central.
+Afin de valoriser notre travail et de pouvoir tester de faÃ§on plus visuel le systÃ¨me, nous avons interfacÃ© deux clients graphiques avec notre serveur central. De part l'utilisation de l'architecture REST, notre systÃ¨me peut Ãªtre interfacÃ© avec n'importe quel client graphique. Nous avons juste dÃ», pour chaque client, Ã©crire les fonctions pour effectuer les diffÃ©rentes requÃªtes HTTP vers l'interface RESTful du serveur central.
 
-Le premier client avait été développé avec Unity 3D, nous avons donc dû écrire nos fonctions en C\#. Le second client était en JavaScript (et fonctionne donc sur mobile) et nous avons donc utilisé l'architecture AJAX pour effectuer les requêtes vers le serveur central. L'architecture AJAX utilise quelques requêtes particulières, appelées preflight \cite{ajax-preflight}. Cela nous a contraint a adapter l'interface RESTful du serveur central.
+Le premier client avait Ã©tÃ© dÃ©veloppÃ© avec Unity 3D, nous avons donc dÃ» Ã©crire nos fonctions en C\#. Le second client Ã©tait en JavaScript (et fonctionne donc sur mobile) et nous avons donc utilisÃ© l'architecture AJAX pour effectuer les requÃªtes vers le serveur central. L'architecture AJAX utilise quelques requÃªtes particuliÃ¨res, appelÃ©es preflight \cite{ajax-preflight}. Cela nous a contraint a adapter l'interface RESTful du serveur central.
 
 
 \section{Classement des suggestions de coups}
 
-	Les ressources seules ne permettent pas de choisir directement quel coup renvoyer au client. En effet, nous devons renvoyer un unique coup (considéré comme étant le meilleur) au client, mais les ressources interrogées nous en conseillent généralement plusieurs.
-De ce fait, nous avons donc créé un système permettant de renvoyer le meilleur coup (ou du moins considéré comme tel) au client, en tenant compte des informations renvoyées par les ressources et en intégrant les parties précédemment jouées.
+	Les ressources seules ne permettent pas de choisir directement quel coup renvoyer au client. En effet, nous devons renvoyer au client un unique coup (considÃ©rÃ© comme Ã©tant le meilleur), mais les ressources interrogÃ©es nous conseillent gÃ©nÃ©ralement des coups diffÃ©rents.
+De ce fait, nous avons donc crÃ©Ã© un systÃ¨me permettant de renvoyer le meilleur coup (ou du moins considÃ©rÃ© comme tel) au client, en tenant compte des informations renvoyÃ©es par les ressources et en intÃ©grant les parties prÃ©cÃ©demment jouÃ©es.
 
 \subsection{Calcul d'un score}
 \label{confiance-ressources}
-Comme nous l'avons vu en \ref{types-ressources}, il existe différents types de ressources nous communiquant différents types d'informations.
-Cependant, toutes les ressources nous renvoient au moins un coup ainsi que plusieurs informations sur ce coup (la probabilité de gagner et le nombre de fois que le coup a été joué pour les bases d'ouvertures et la profondeur de recherche ainsi que le score attribué au coup pour les bots).
+Comme nous l'avons vu en \ref{types-ressources}, il existe diffÃ©rents types de ressources nous communiquant diffÃ©rents types d'informations.
+Cependant, toutes les ressources nous renvoient au moins un coup ainsi que plusieurs informations sur ce coup (la probabilitÃ© de gagner et le nombre de fois que le coup a Ã©tÃ© jouÃ© pour les bases d'ouvertures et la profondeur de recherche ainsi que le score attribuÃ© au coup pour les bots).
 
-Partant du fait que nous avions pour chaque coup des informations justifiant son choix, nous avons décidé de calculer notre propre score associé à ce coup. Ainsi nous réutilisons les informations données par les ressources pour faire notre propre classement des meilleurs coups à jouer (le score renvoyé par les bots ne sera pas le score associé à ce coup, mais simplement une information).
-Notre première idée a donc été de sommer les différentes informations afin d'obtenir le score associé. Cependant, toutes les informations n'ont pas le même poids. On peut par exemple penser que le score associé par un bot est plus ou moins important par rapport à la profondeur de recherche. Ces différentes pondérations (\(a_{k}\)) sont choisies par l'utilisateur via la GUI. Ainsi, c'est lui qui détermine quelle information privilégier. 
+Partant du fait que nous avions pour chaque coup des informations justifiant son choix, nous avons dÃ©cidÃ© de calculer notre propre score associÃ© Ã  ce coup. Ainsi nous rÃ©utilisons les informations donnÃ©es par les ressources pour faire notre propre classement des meilleurs coups Ã  jouer (le score renvoyÃ© par les bots ne sera pas le score associÃ© Ã  ce coup, mais simplement une information).
+Notre premiÃ¨re idÃ©e a donc Ã©tÃ© de sommer les diffÃ©rentes informations afin d'obtenir le score associÃ©. Cependant, toutes les informations n'ont pas le mÃªme poids. On peut par exemple penser que le score associÃ© par un bot est plus ou moins important par rapport Ã  la profondeur de recherche. Ces diffÃ©rentes pondÃ©rations (\(a_{k}\)) sont choisies par l'utilisateur via la GUI. Ainsi, c'est lui qui dÃ©termine quelle information privilÃ©gier. 
 
-Nous avons donc \(Score(coup_{i})_{ressource_{j}}=\sum_{k=1}^na_{k}*f_{k}(x_{k})\) avec \(x_{k}\) la kième information donnée par la ressource sur le \(coup_{i}\) et \(f_{k}\) la fonction de traitement associée à l'information \(x_{k}\) (Voir section suivante pour la définition de \(f_{k}\)).
+Nous avons donc \(Score(coup_{i})_{ressource_{j}}=\sum_{k=1}^na_{k}*f_{k}(x_{k})\) avec \(x_{k}\) la kiÃ¨me information donnÃ©e par la ressource sur le \(coup_{i}\) et \(f_{k}\) la fonction de traitement associÃ©e Ã  l'information \(x_{k}\) (voir section suivante pour la dÃ©finition de \(f_{k}\)).
 
-Le score calculé précédemment est valable pour un coup proposé par une ressource. Généralement, chaque coup est proposé par plusieurs ressources. Pour obtenir le score total d'un coup, nous avons simplement effectué une somme pondérée des scores (sur les ressources) associé à ce coup. Les pondérations sont liées au fait que l'on fait plus ou moins confiance à chaque ressource. Par exemple, une base de données d'ouverture contenant les parties des plus grands maîtres d'échecs sera plus digne de confiance qu'une base contenant des parties de tournois amateurs. De plus, les pondérations des informations (les \(a_{k}\)) sont spécifiques à chaque type de ressource. En effet, les informations communiquées sont différentes en fonction du type de ressource et donc les pondérations sont également différentes. Nous avons donc la contrainte \(\sum_{k=1}^na_{k}=1\) afin que les ressources puissent être comparées entre elles.
+Le score calculÃ© prÃ©cÃ©demment est valable pour un coup proposÃ© par une ressource. GÃ©nÃ©ralement, chaque coup est proposÃ© par plusieurs ressources. Pour obtenir le score total d'un coup, nous avons simplement effectuÃ© une somme pondÃ©rÃ©e des scores (sur les ressources) associÃ© Ã  ce coup. Les pondÃ©rations sont liÃ©es au fait que l'on fait plus ou moins confiance Ã  chaque ressource. Par exemple, une base de donnÃ©es d'ouverture contenant les parties des plus grands maÃ®tres d'Ã©checs sera plus digne de confiance qu'une base contenant des parties de tournois amateurs. De plus, les pondÃ©rations des informations (les \(a_{k}\)) sont spÃ©cifiques Ã  chaque type de ressource. En effet, les informations communiquÃ©es sont diffÃ©rentes en fonction du type de ressource et donc les pondÃ©rations sont Ã©galement diffÃ©rentes. Nous avons donc la contrainte \(\sum_{k=1}^na_{k}=1\) afin que les ressources puissent Ãªtre comparÃ©es entre elles.
 
-Nous avons donc la formule suivante :\\ \(Score(coup_{i})=\sum_{k=1}^mT_{k}*Score(coup_{i})_{ressource_{k}}\) avec \(T_{k}\) la confiance accordée à la ressource k.
+Nous avons donc la formule suivante :\\ \(Score(coup_{i})=\sum_{k=1}^mT_{k}*Score(coup_{i})_{ressource_{k}}\) avec \(T_{k}\) la confiance accordÃ©e Ã  la ressource k.
 
-Ensuite, une fois ces scores calculés pour chaque coup, nous choisissons le coup ayant le score maximal. Ce coup est considéré comme étant le meilleur et est renvoyé au client.
+Ensuite, une fois ces scores calculÃ©s pour chaque coup, nous choisissons le coup ayant le score maximal. Ce coup est considÃ©rÃ© comme Ã©tant le meilleur et est renvoyÃ© au client.
 
 \subsection{Statistiques}
-Comme nous l'avons vu précédemment, les informations subissent des traitements (les fonctions \(f_{k}\)) avant d'être agrégées (via la somme). Ces traitements visent essentiellement à rendre comparable les différentes informations obtenues. En effet celles-ci se situent généralement dans des échelles différentes (une probabilité est entre 0 et 1 alors que le nombre de coup joué est potentiellement très élevé). Pour pouvoir mettre les informations à la même échelle, nous centrons puis nous réduisons les variables \(x_{k}\) à l'aide des fonctions f associées.
+Comme nous l'avons vu prÃ©cÃ©demment, les informations subissent des traitements (les fonctions \(f_{k}\)) avant d'Ãªtre agrÃ©gÃ©es (via la somme). Ces traitements visent essentiellement Ã  rendre comparable les diffÃ©rentes informations obtenues. En effet celles-ci se situent gÃ©nÃ©ralement dans des Ã©chelles diffÃ©rentes (une probabilitÃ© est entre 0 et 1 alors que le nombre de coup jouÃ© est potentiellement trÃ¨s Ã©levÃ©). Pour pouvoir mettre les informations Ã  la mÃªme Ã©chelle, nous centrons puis nous rÃ©duisons les variables \(x_{k}\) Ã  l'aide des fonctions f associÃ©es.
 
-Nous avons donc :\\ \(f_{k}(x_{k})=\frac{x_{k}-\bar{x_{k}}}{\vee(x_{k})}\).
+Nous avons donc : \(f_{k}(x_{k})=\frac{x_{k}-\bar{x_{k}}}{\vee(x_{k})}\).
 
-Afin d'obtenir ces statistiques, nous avons créé une classe qui s'occupe de gérer et de recalculer après chaque coup les statistiques liées aux différentes informations.
+Afin d'obtenir ces statistiques, nous avons crÃ©Ã© une classe qui s'occupe de gÃ©rer et de recalculer aprÃ¨s chaque coup les statistiques liÃ©es aux diffÃ©rentes informations.
 
-\subsection{Evolution des pondérations}
+\subsection{Ã‰volution des pondÃ©rations}
 \label{confiance}
-Le système décrit précédemment permet de bien prendre en compte la diversité des informations ainsi que l'hétérogénéité des ressources mais il reste encore figé. Pour rendre dynamique notre système, nous avons donc fait un système permettant de recalculer à chaque fin de partie la confiance que nous avons dans chaque ressource.
+Le systÃ¨me dÃ©crit prÃ©cÃ©demment permet de bien prendre en compte la diversitÃ© des informations ainsi que l'hÃ©tÃ©rogÃ©nÃ©itÃ© des ressources mais il reste encore figÃ©. Pour rendre dynamique notre systÃ¨me, nous avons donc fait un systÃ¨me permettant de recalculer Ã  chaque fin de partie la confiance que nous avons dans chaque ressource.
 
-Le principe de l'évolution de la confiance est basé sur un système de récompense. Si nous gagnons la partie, toutes les ressources nous ayant proposés au moins un coup joué lors de la partie seront récompensées positivement. Si nous perdons, elles le seront négativement et en cas de match nul, le système n'évolue pas. De plus, la récompense est proportionnelle à la confiance qu'avait la ressource dans le coup proposé. Plus elle est confiante, plus sa récompense augmente.
+Le principe de l'Ã©volution de la confiance est basÃ© sur un systÃ¨me de rÃ©compense. Si nous gagnons la partie, toutes les ressources nous ayant proposÃ©s au moins un coup jouÃ© lors de la partie seront rÃ©compensÃ©es positivement. Si nous perdons, elles le seront nÃ©gativement et en cas de match nul, le systÃ¨me n'Ã©volue pas. De plus, la rÃ©compense est proportionnelle Ã  la confiance qu'avait la ressource dans le coup proposÃ©. Plus elle est confiante, plus sa rÃ©compense augmente.
 
-Ainsi, nous avons un système qui permet d'utiliser les parties passées (via les statistiques et via la confiance dans les ressources) et les différentes informations communiquées par les ressources pour déterminer le meilleur coup à jouer.
-Ce système peut néanmoins être amélioré, notamment pour intégrer une notion de ressemblance entre les ressources. En effet, si deux ressources identiques ou se basant sur des données identiques sont appelées (notre système les considère comme différentes), il additionnera les scores associés aux coups proposés par ces ressources, sans s'apercevoir qu'elles sont en fait très proches. Le principe serait donc de calculer une "distance" entre les différentes ressources afin d'atténuer une ressource si une autre ressource "proche" a déjà été prise en compte.
+Ainsi, nous avons un systÃ¨me qui permet d'utiliser les parties passÃ©es (via les statistiques et via la confiance dans les ressources) et les diffÃ©rentes informations communiquÃ©es par les ressources pour dÃ©terminer le meilleur coup Ã  jouer.
+Ce systÃ¨me peut nÃ©anmoins Ãªtre amÃ©liorÃ©, notamment pour intÃ©grer une notion de ressemblance entre les ressources. En effet, si deux ressources identiques ou se basant sur des donnÃ©es identiques sont appelÃ©es (notre systÃ¨me les considÃ¨re comme diffÃ©rentes), il additionnera les scores associÃ©s aux coups proposÃ©s par ces ressources, sans s'apercevoir qu'elles sont en fait trÃ¨s proches. Le principe serait donc de calculer une \og distance \fg entre les diffÃ©rentes ressources afin d'attÃ©nuer une ressource si une autre ressource \og proche \fg a dÃ©jÃ  Ã©tÃ© prise en compte.
 
 
 \section{Conclusion} 
- Notre système permet donc d'interroger plusieurs ressources, de traiter les différentes informations obtenues pour renvoyer le meilleur coup. De plus, grâce aux deux clients développés, nous pouvons utiliser notre système via une interface agréable. Les différents outils développés (GUI, framework) devraient permettre à Loïc Héloüet de pouvoir poursuivre le développement du système plus aisément. Même si notre système a encore besoin d'être amélioré pour prendre en compte un plus large panel de ressources, il est actuellement fonctionnel. Enfin, d'un point de vue plus "personnel", ce premier long projet de développement en équipe nous a permis de nous confronter à des problématiques autres que techniques (répartition des tâches, travail collaboratif, rédaction de rapports) tout en nous permettant d'acquérir de nouvelles connaissances dans différents domaines (web services, architecture REST) et de mettre en pratique certains cours (JAVA, Base de Données, Acquisition de connaissance, Langages de Script).
+ Notre systÃ¨me permet donc d'interroger plusieurs ressources, de traiter les diffÃ©rentes informations obtenues pour renvoyer le meilleur coup. De plus, grÃ¢ce aux deux clients dÃ©veloppÃ©s, nous pouvons utiliser notre systÃ¨me via une interface agrÃ©able. Les diffÃ©rents outils dÃ©veloppÃ©s (GUI, framework) devraient permettre de poursuivre le dÃ©veloppement du systÃ¨me plus aisÃ©ment. MÃªme si notre systÃ¨me a encore besoin d'Ãªtre amÃ©liorÃ© pour prendre en compte un plus large panel de ressources, il est actuellement fonctionnel. Enfin, d'un point de vue plus personnel, ce premier long projet de dÃ©veloppement en Ã©quipe nous a permis de nous confronter Ã  des problÃ©matiques autres que techniques (rÃ©partition des tÃ¢ches, travail collaboratif, rÃ©daction de rapports) tout en nous permettant d'acquÃ©rir de nouvelles connaissances dans diffÃ©rents domaines (web services, architecture REST) et de mettre en pratique certains cours (Java, Base de DonnÃ©es, Acquisition de connaissance, Langages de Script).
 
 
 \bibliography{biblio-rapport}
