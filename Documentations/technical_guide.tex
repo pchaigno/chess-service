@@ -1,35 +1,61 @@
-\documentclass[a4paper,11pt]{article}
-\usepackage[utf8]{inputenc}
-\usepackage[french]{babel}
-\usepackage{listings}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     STYLE POUR LES EXPOSES TECHNIQUES 
+%         3e année INSA de Rennes
+%
+%             NE PAS MODIFIER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{Distributed Chess Services - Guide technique}
-\author{P. Chaignon, C. Gautrais, T. FranÃ§ois, D. Le Guen, B. Travers}
-\date{INSA Rennes - 2012-2013}
+\documentclass[a4paper,11pt]{article}
+
+\usepackage{exptech}       % Fichier (./exptech.sty) contenant les styles pour 
+                           % l'expose technique (ne pas le modifier)
+\usepackage{url}
+
+%\linespread{1,6}          % Pour une version destinée à un relecteur,
+                           % décommenter cette commande (double interligne) 
+                           
+% UTILISEZ SPELL (correcteur orthographique) à accès simplifié depuis XEmacs
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{ \textbf{Distributed Chess Service - Guide technique} }
+\markright{Distributed Chess Service - Guide technique} 
+                           % Pour avoir le titre de l'expose sur chaque page
+
+\author{Paul \textsc{Chaignon}, Thomas \textsc{François}, \\
+        Damien \textsc{Le Guen}, Clément \textsc{Gautrais}, \\
+				Benoit \textsc{Travers} \\
+        \\
+        Encadrants : Loïc \textsc{Hélouët}, Yann \textsc{Ricquebourg}}
+
+\date{}                    % Ne pas modifier
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \begin{document}
 \maketitle{}
 
-\section{Organisation gÃ©nÃ©rale}
+\section{Organisation générale}
 
-    Le serveur central du projet permet de coordonner les diffÃ©rents appels entre : les requÃªtes des clients d'une part, et les recherches de meilleur coup de chaque ressource d'autre part.
+    Le serveur central du projet permet de coordonner les différents appels entre : les requêtes des clients d'une part, et les recherches de meilleur coup de chaque ressource d'autre part.
 
-\section{RequÃªtes entrantes RESTful}
-    Afin d'orchestrer les diffÃ©rents appels entre chaque partie, le projet utilise le framework Grizzly, basÃ© sur une architecture de type RESTful. [dÃ©finition RESTful]
+\section{Requêtes entrantes RESTful}
+    Afin d'orchestrer les différents appels entre chaque partie, le projet utilise le framework Grizzly, basé sur une architecture de type RESTful. [définition RESTful]
     
-    Le serveur Grizzly est lanÃ§Ã© par la classe CentralServerResourceDeployer, qui Ã  la reception d'une requÃªte entrante va transmettre son dÃ©codage Ã  la classe CentralServerResource. Cette derniÃ¨re contient le coeur de l'architecture REST. En fonction du type de la requÃªte reÃ§ue (GET, POST, UPDATE, DELETE...) celle-ci exÃ©cute l'action correspondante puis renvoie la rÃ©ponse au client.
+    Le serveur Grizzly est lançé par la classe CentralServerResourceDeployer, qui à la reception d'une requête entrante va transmettre son décodage à la classe CentralServerResource. Cette dernière contient le coeur de l'architecture REST. En fonction du type de la requête reçue (GET, POST, UPDATE, DELETE...) celle-ci exécute l'action correspondante puis renvoie la réponse au client.
 
 \section{Gestion des ressources et des parties de jeux}
 
-    L'utilisation de bases de donnÃ©es s'est rÃ©vÃ©lÃ©e nÃ©cessaire pour deux parties du serveur. central. La premiÃ¨re liste toutes les ressources Ã  interroger pour obtenir le meilleur coup. La deuxiÃ¨me base enregistre quand Ã  elle chaque partie se dÃ©roulant sur le serveur. Ainsi, en plus d'obtenir des informations sur le nombre de parties jouÃ©s et leur dÃ©roulement, il est possible d'Ã©tablir des statistiques prÃ©cises sur les ressources choisies par le serveur pour donner le meilleur coup. Le framework DatabaseManager unifie l'utilisation de ces bases de donnÃ©es SQLite.
+    L'utilisation de bases de données s'est révélée nécessaire pour deux parties du serveur. central. La première liste toutes les ressources à interroger pour obtenir le meilleur coup. La deuxième base enregistre quand à elle chaque partie se déroulant sur le serveur. Ainsi, en plus d'obtenir des informations sur le nombre de parties joués et leur déroulement, il est possible d'établir des statistiques précises sur les ressources choisies par le serveur pour donner le meilleur coup. Le framework DatabaseManager unifie l'utilisation de ces bases de données SQLite.
 
 	
 
-    Les ressources peuvent Ãªtre de trois types : bases de donnÃ©es d'ouverture de partie (les meilleurs dÃ©buts de partie des grands champions d'Ã©checs), bots (Ã©valuant statistiquement le meilleur coup, efficace pour le milieu de partie), et bases de fermeture (meilleurs fin de parties). En interne, chacune possÃ¨de une rÃ©putation servant Ã  l'algorithme de sÃ©lection du coup Ã  renvoyer au client.
+    Les ressources peuvent être de trois types : bases de données d'ouverture de partie (les meilleurs débuts de partie des grands champions d'échecs), bots (évaluant statistiquement le meilleur coup, efficace pour le milieu de partie), et bases de fermeture (meilleurs fin de parties). En interne, chacune possède une réputation servant à l'algorithme de sélection du coup à renvoyer au client.
 
 \section{Outil graphique de configuration du serveur et de gestion des ressources}
-	[a dÃ©gager...]
-    Afin de faciliter la maintenance du serveur par le maximum de personnes, une interface graphique a Ã©tÃ© mise en place. En plus d'aider Ã  configurer les diffÃ©rents paramÃ¨tres du serveur (port d'Ã©coute des requÃªtes, temps maximum d'attente des rÃ©ponses, nom des bases de donnÃ©es...), cet outil permet de paramÃ©trer la liste des ressources disponibles et de modifier leur propriÃ©tÃ©s.
+	[a dégager...]
+    Afin de faciliter la maintenance du serveur par le maximum de personnes, une interface graphique a été mise en place. En plus d'aider à configurer les différents paramètres du serveur (port d'écoute des requêtes, temps maximum d'attente des réponses, nom des bases de données...), cet outil permet de paramétrer la liste des ressources disponibles et de modifier leur propriétés.
 
     Cet outil utilise la librairie SWT pour l'affichage de l'interface utilisateur.
 
