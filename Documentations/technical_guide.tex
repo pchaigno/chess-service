@@ -42,13 +42,17 @@
     
 \section{Ressources PHP}
 
+
+    Les ressources peuvent être de trois types : bases de données d'ouverture de partie (les meilleurs débuts de partie des grands champions d'échecs), bots (évaluant statistiquement le meilleur coup, efficace pour le milieu de partie), et bases de fermeture (meilleurs fin de parties). .
+
+
 \section{Ressources et MoveSuggestions}
 
-    L'utilisation de bases de données s'est révélée nécessaire pour deux parties du serveur. central. La première liste toutes les ressources à interroger pour obtenir le meilleur coup. La deuxième base enregistre quand à elle chaque partie se déroulant sur le serveur. Ainsi, en plus d'obtenir des informations sur le nombre de parties joués et leur déroulement, il est possible d'établir des statistiques précises sur les ressources choisies par le serveur pour donner le meilleur coup. Le framework DatabaseManager unifie l'utilisation de ces bases de données SQLite.
+	Une fois les ressources en état de communiquer avec le serveur central, il est bien entendu nécessaire que ce dernier soit au courant de leur existence afin de pouvoir les interroger. C'est le rôle de la classe ResourcesManager de gérer la liste des ressouces accessibles. En accédant à une base de données externe listant toutes ces ressources, elle peut ensuite pour chacune les représenter à l'aide d'une classe dérivant de la classe abstraite Resource en fonction de leur type : OpeningsDatabase, EndingsDatabase ou Bot.
 
-	
+	Il est à noter que l'utilisation d'une base de données s'est également révélée nécessaire dans une deuxième partie du serveur central. En plus de la table SQLite {\tt Resources}, il existe ainsi une deuxième table {\tt Games} exploitée par la classe GamesManager et qui enregistre chaque partie en cours sur le serveur. Ainsi, en plus d'obtenir des informations sur le nombre de parties joués et leur déroulement, il est possible d'établir des statistiques précises sur les ressources choisies par le serveur pour donner le meilleur coup. Au-dessus de ResourcesManager et GamesManager, la classe abstraite DatabaseManager unifie l'utilisation de ces bases de données SQLite et peut permettre d'ajouter simplement l'accès à une autre table SQLite.
 
-    Les ressources peuvent être de trois types : bases de données d'ouverture de partie (les meilleurs débuts de partie des grands champions d'échecs), bots (évaluant statistiquement le meilleur coup, efficace pour le milieu de partie), et bases de fermeture (meilleurs fin de parties). En interne, chacune possède une réputation servant à l'algorithme de sélection du coup à renvoyer au client.
+	Lors de la réception d'une requête, chaque ressource va être interrogé une à une. Dès l'arrivée d'une réponse, celle-ci sera stockée dans une dérivée de la classe MoveSuggestion (à nouveau en fonction du type de la ressource : OpeningsSuggestion, EndingsSuggestion ou BotSuggestion) accompagnée de toutes les informations qui lui sont associées, telles que son score, sa probabilité de gagner ou de faire match nul. Ce sont ces données qui serviront en fin de partie à obtenir des statistiques sur la performance des ressources.
 
 \section{Requêtes entrantes RESTful}
     Afin d'orchestrer les différents appels entre chaque partie, le projet utilise le framework Grizzly, basé sur une architecture de type RESTful. [définition RESTful]
