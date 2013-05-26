@@ -158,24 +158,26 @@ public class StatsManager {
 	 */
 	private static Statistic computeStats(Set<Double> values, Set<Double> scoreValues) {
 		double mean = 0, variance = 0, normalization_mean = 0, normalization_variance = 0;
-		
-		//We compute mean and variance(V(X)=E[X²]-(E[X])²) for the values
-		for(double value: values) {
-			mean += value;
-			variance += Math.pow(value, 2);
+
+		if(values.size()>0 && scoreValues.size() >0){
+			//We compute mean and variance(V(X)=E[X²]-(E[X])²) for the values
+			for(double value: values) {
+				mean += value;
+				variance += Math.pow(value, 2);
+			}
+			mean /= values.size();
+			variance /= values.size();
+			variance -= Math.pow(mean, 2);
+
+			//We compute mean and variance for the values' score (used for normalization)
+			for(double score: scoreValues) {
+				normalization_mean += score;
+				normalization_variance += Math.pow(score, 2);
+			}
+			normalization_mean /= scoreValues.size();
+			normalization_variance /= scoreValues.size();
+			normalization_variance -= Math.pow(normalization_mean, 2);
 		}
-		mean /= values.size();
-		variance /= values.size();
-		variance -= Math.pow(mean, 2);
-		
-		//We compute mean and variance for the values' score (used for normalization)
-		for(double score: scoreValues) {
-			normalization_mean += score;
-			normalization_variance += Math.pow(score, 2);
-		}
-		normalization_mean /= scoreValues.size();
-		normalization_variance /= scoreValues.size();
-		normalization_variance -= Math.pow(normalization_mean, 2);
 		
 		return new Statistic(mean, variance, normalization_mean, normalization_variance);
 	}
