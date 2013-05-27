@@ -41,8 +41,25 @@ Le serveur central du projet permet de coordonner les différents appels entre :
 les requêtes des clients d'une part, et les recherches de meilleur coup de chaque ressource d'autre part.
 
 
-\section{Ressources PHP}
-Les ressources peuvent être de trois types : bases de données d'ouverture de partie (les meilleurs débuts de partie des grands champions d'échecs), bots (évaluant statistiquement le meilleur coup, efficace pour le milieu de partie), et bases de fermeture (meilleurs fin de parties).
+\section{Framework PHP}
+Le framework PHP permet d'ajouter rapidement une interface entre le serveur central et une nouvelle ressource en ligne.
+Il est organisé en trois grandes parties, une pour chaque type de ressources (bases de données d'ouvertures, bases de données de fermetures et moteurs d'échec pour le milieu de partie).
+
+Il contient à la fois la structure REST, la gestion de version et les appels à la ressource en ligne.
+Ce dernier point se fait en utilisant la librairie PHP cURL.
+
+Le numéro de version contient aussi un caractère indiquant si la ressource retourne des notations SAN ou LAN (respectivement 's' ou 'l').
+Le framework détecte le type de requête HTTP qui doit être effectué à partir de l'URL donnée.
+Si elle contient \textit{\$url\_fen\$} alors la requête doit être GET, sinon elle doit être POST.
+Dans le cas d'une requête GET, ce paramètre dans l'URL sera remplacé par le FEN.
+
+Les résultats provenant de la ressource distante sont convertis en un document JSON à l'aide de la fonction de parsing fournie par l'utilisateur.
+Pour faire appel à cette fonction, le framework utilise la fonction PHP \textit{call\_user\_func}.
+Cette dernière permet d'appeler une fonction donnée sous la forme d'une chaîne de caractères en lui passant des arguments.
+
+La structure REST est adaptée en fonction de la ressource distante. Par exemple, si elle ne renvoie pas de coups d'ouverture ou si l'utilisateur ne désire par les utiliser, le framework ne disposera pas d'un répertoire \textit{openings} dans sa structure.
+
+Enfin, le framework s'occupe aussi d'adapter le FEN suivant les demandes de la ressource en ligne. En effet, certaines ressources requièrent des FEN sous une forme réduite, d'autres sous la forme longue.
 
 
 \section{Ressources et MoveSuggestions}
@@ -86,7 +103,20 @@ Elles servent à déterminer les autorisations données par le serveur.
 
 
 \section{Listeners}
+Le serveur central utilise trois \textit{listeners}. Il appelle les méthodes de ces interfaces dès qu'un évènement quelconque se produit.
+Par exemple, si un évènement en lien avec la base de données comme l'ajout ou la suppression d'une ressource se produit, les méthodes correspondantes du \textit{listener} \textit{DatabaseListener} seront appelées (voir figure \ref{fig:uml-listener-database}).
+De la même façon, si le serveur central contacte une ressource distante ou reçoit une réponse, le \textit{listener} \textit{ResourceListener} en sera notifié (voir figure \ref{fig:uml-listeners}).
+Enfin, pour tous les évènements liés à l'interface RESTful du serveur central, c'est l'interface \textit{CentralServerListener} qui en sera notifiée (voir figure \ref{fig:uml-listeners}).
 
+Pour chaque listener, une classe \textit{Adapter} correspondante permet d'implémenter que certaines méthodes selon les besoins.
+
+\FigureEPS{h,t,b,p}{9cm}{./uml-listener-database.eps}
+{Diagramme UML du listener DatabaseListener}   
+{fig:uml-listener-database}
+
+\FigureEPS{h,t,b,p}{14cm}{./uml-listeners.eps}
+{Diagramme UML des listeners}   
+{fig:uml-listeners}
 
 \section{Central Server}
 Le serveur central est (comme l'indique son nom) l'élément central de notre web-service (voir fig.\ref{fig:schema-centralserver}). En effet, c'est lui qui va être appelé par l'interface rest (celle que le client appelle) pour déterminer le meilleur coup. 
