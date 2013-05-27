@@ -37,8 +37,7 @@
 \maketitle{}
 
 \section{Organisation générale}
-Le serveur central du projet permet de coordonner les différents appels entre :
-les requêtes des clients d'une part, et les recherches de meilleur coup de chaque ressource d'autre part.
+Le serveur central du projet permet de coordonner les différents appels entre les requêtes des clients d'une part, et les recherches de meilleur coup de chaque ressource d'autre part.
 
 
 \section{Framework PHP}
@@ -60,19 +59,19 @@ Cette dernière permet d'appeler une fonction donnée sous la forme d'une chaîne d
 
 La structure REST est adaptée en fonction de la ressource distante. Par exemple, si elle ne renvoie pas de coups d'ouverture ou si l'utilisateur ne désire par les utiliser, le framework ne disposera pas d'un répertoire \textit{openings} dans sa structure.
 
-Enfin, le framework s'occupe aussi d'adapter le FEN suivant les demandes de la ressource en ligne. En effet, certaines ressources requièrent des FEN sous une forme réduite, d'autres sous la forme longue.
+Enfin, le framework s'occupe aussi d'adapter le FEN suivant les demandes de la ressource en ligne. En effet, certaines ressources requièrent des FEN sous une forme réduite, d'autres sous une forme longue.
 
 
 \section{Ressources et MoveSuggestions}
 \label{ressources_movesuggestion}
 Une fois les ressources en état de communiquer avec le serveur central, il est bien entendu nécessaire que ce dernier soit au courant de leur existence afin de pouvoir les interroger.
-C'est le rôle de la classe \textit{ResourcesManager} de gérer la liste des ressouces accessibles.
-En accédant à une base de données externe listant toutes ces ressources, elle peut ensuite pour chacune d'entre elles les représenter à l'aide d'une classe dérivant de la classe abstraite Resource en fonction de leur type : \textit{OpeningsDatabase}, \textit{EndingsDatabase} ou \textit{Bot}.
+C'est le rôle de la classe \textit{ResourcesManager} de gérer la liste des ressources accessibles.
+En accédant à une base de données externe listant toutes ces ressources, elle peut ensuite pour chacune d'entre elles les représenter à l'aide d'une classe dérivant de la classe abstraite \textit{Resource} en fonction de leur type : \textit{OpeningsDatabase}, \textit{EndingsDatabase} ou \textit{Bot}.
 
 Il est à noter que l'utilisation d'une base de données s'est également révélée nécessaire dans une deuxième partie du serveur central.
 En plus de la table SQLite {\tt Resources}, il existe ainsi deux tables {\tt Games} et {\tt Moves} exploitées par la classe \textit{GamesManager}
 et qui enregistrent respectivement chaque partie en cours sur le serveur et chaque coup joué.
-Ainsi, en plus d'obtenir des informations sur le nombre de parties joués et leur déroulement,
+Ainsi, en plus d'obtenir des informations sur le nombre de parties jouées et leur déroulement,
 il est possible d'établir des statistiques précises sur les ressources choisies par le serveur pour donner le meilleur coup.
 Au-dessus de \textit{ResourcesManager} et \textit{GamesManager}, la classe abstraite \textit{DatabaseManager} unifie l'utilisation
 de ces bases de données SQLite et peut permettre d'ajouter simplement l'accès à une autre table SQLite (cf. figure \ref{fig:uml-database-manager}).
@@ -82,7 +81,7 @@ de ces bases de données SQLite et peut permettre d'ajouter simplement l'accès à 
 {fig:uml-database-manager}
 
 Lors de la réception d'une requête, chaque ressource va être interrogée une à une.
-Dès l'arrivée d'une réponse, celle-ci sera stockée dans une dérivée de la classe MoveSuggestion
+Dès l'arrivée d'une réponse, celle-ci sera stockée dans une dérivée de la classe \textit{MoveSuggestion}
 (à nouveau en fonction du type de la ressource : OpeningsSuggestion, EndingsSuggestion ou BotSuggestion)
 accompagnée de toutes les informations qui lui sont associées, telles que son score, sa probabilité de gagner ou de faire match nul.
 Ce sont ces données qui serviront en fin de partie à obtenir des statistiques sur la performance des ressources.
@@ -100,7 +99,7 @@ La classe \textit{CentralServerResource} est ensuite chargée de réceptionner les
 Elle contient le c\oe{}ur de l'architecture REST.
 Elle capte les requêtes envoyées à l'URI \textit{rest/} et les traite en fonction du type.
 Si la requête est de type POST, elle crée une nouvelle partie.
-Si c'est un GET, elle lance le processus de mise à jours de suggestion de coups et de sélection du meilleur coup grâce au FEN fourni dans l'URL et renvoie le meilleur coup.
+Si c'est un GET, elle lance le processus de mise à jour de suggestion de coups et de sélection du meilleur coup grâce au FEN fourni dans l'URL et renvoie le meilleur coup.
 Enfin, dans le cas d'une requête de type DELETE, elle fait les appels de suppression de partie et de récompense.
 Des requêtes de type OPTIONS sont également réceptionnées.
 Ces requêtes sont inhérentes au script AJAX utilisé par les clients.
@@ -130,24 +129,24 @@ Le serveur central est (comme l'indique son nom) l'élément central de notre serv
 {fig:schema-centralserver}
 Ce premier appel est précédé de l'instanciation du serveur central par cette même ressource. Lors de l'instanciation, le serveur central va récupérer les différentes ressources présentes dans la table \textit{Resources} de la base de données spécifiée (dans le fichier conf.properties) au lancement du serveur Grizzly.
 Une fois le serveur central instancié, la classe \textit{CentralServerResource} peut demander au serveur central quel coup jouer. Pour cela, la \textit{CentralServerResource} doit lui envoyer au moins la FEN, donnée par le client.
-Avec cette FEN, le serveur central va demander aux différentes ressources actives de proposer une liste de coups (avec des informations sur ces coups (cf. \ref{ressources_movesuggestion})) à jouer dans cette situation de jeu.
-Ensuite, grâce aux informations que les ressources lui donne, le serveur central va déterminer quel est le meilleur coup (cf. \ref{calcul-coup}) à jouer.
+Avec cette FEN, le serveur central va demander aux différentes ressources actives de proposer une liste de coups (avec des informations sur ces coups (cf. section \ref{ressources_movesuggestion})) à jouer dans cette situation de jeu.
+Ensuite, grâce aux informations que les ressources lui donnent, le serveur central va déterminer quel est le meilleur coup (cf. section \ref{calcul-coup}) à jouer.
 Avant de renvoyer ce meilleur coup, le serveur central va mettre à jour la partie (mise à jour de la FEN courante et ajout des coups proposés dans la table \textit{Moves}) ainsi que les statistiques sur les coups.
 
-\section{Calcul du meilleur Coup}
+\section{Calcul du meilleur coup}
 \label{calcul-coup}
 Le calcul du meilleur coup constitue, avec les appels aux ressources, le principal contenu du serveur central.
 Ce calcul est effectué en plusieurs étapes.
-Tout d'abord, le serveur central va demander à chaque ressource (instance de classe dérivée de la classe Resource)
-de mettre à jour la liste de coup qu'elle propose.
+Tout d'abord, le serveur central va demander à chaque ressource (instance de classe dérivée de la classe \textit{Resource})
+de mettre à jour la liste de coups qu'elle propose.
 Pour cela, la ressource va effectuer une requête GET vers son URL (cf. figure\ref{fig:schema-centralserver}).
-Cette requête GET va lui permettre de récupérer les coups que la ressource distante (accessible via l'interface php associée) lui propose, au format JSON (cf. partie \ref{frameworkPHP}).
+Cette requête GET va lui permettre de récupérer les coups que la ressource distante (accessible via l'interface PHP associée) lui propose, au format JSON (cf. partie \ref{frameworkPHP}).
 Ce JSON va ensuite être analysé syntaxiquement et les suggestions de coups (instances de classes dérivées de \textit{MoveSuggestion}) créés vont former la liste de coups de la ressource.
-En plus de stocker les informations renvoyées par les ressources externes dans les suggestion de coups, on calcule un score pour chaque suggestion.
+En plus de stocker les informations renvoyées par les ressources externes dans les suggestions de coups, on calcule un score pour chaque suggestion.
 Ce score est calculé en prenant en compte les informations de la ressources ainsi que des statistiques (accessibles via \textit{StatsManager}) des parties précédentes (cf. rapport pour les formules).
 Une fois que toutes les ressources ont mis à jour leur liste de coups, le serveur central va calculer un score associé à chaque coup, prenant en compte les listes de coups de toutes les ressources (cf. rapport pour les formules).
 Une fois ces scores calculés, le coup qui a le score le plus élevé est renvoyé au client.
-Après avoir déterminé le meilleur coup, les statistiques sur les suggestion de coups sont mises à jour grâce à \textit{StatsManager}.
+Après avoir déterminé le meilleur coup, les statistiques sur les suggestions de coups sont mises à jour grâce à \textit{StatsManager}.
 
 
 \section{Évolution des confiances des ressources}
@@ -160,7 +159,7 @@ Cependant, chaque ressource propose généralement plusieurs coups pour une unique
 Il faut donc pondérer la récompense en fonction de la confiance que la ressource apporte dans le coup que nous avons choisi de jouer.
 Ainsi, si le score (celui que nous calculons) associé à un coup est maximum pour la ressource, on considèrera que la ressource a confiance en ce coup.
 A l'inverse, si le coup a un score faible par rapport au score des autres coups que la ressource propose, nous considèrerons que la ressource a peu confiance en ce coup.
-Toutes les confiances des coups d'une partie sont stockées dans la table moves.
+Toutes les confiances des coups d'une partie sont stockées dans la table \textit{moves}.
 A la fin d'une partie, chaque ressource est récompensée proportionnellement à la somme des confiances de tous les coups qu'elle a proposés et que nous avons joués durant cette partie.
 
 
@@ -169,14 +168,14 @@ Aux échecs, les représentations numériques du plateau et des coups sont normalis
 Ainsi, il existe une notation pour le plateau appelée FEN.
 Pour les coups, la notation algébrique est utilisée.
 Elle spécifie la case de départ et d'arrivée dans sa version longue et la pièce utilisée et la case d'arrivée dans sa version courte.
-Le fait que cette notation ait 2 formats nous a posé certains problèmes de compatibilité.
+Le fait que cette notation ait deux formats nous a posé certains problèmes de compatibilité.
 En effet, certaines ressources nous renvoyaient des coups en notation algébrique longue (LAN) et d'autres en notation algébrique courte (SAN).
 De plus, les clients graphiques exigent pour certains des coups au format LAN et d'autres au format SAN.
-Nous avons donc du écrire un analyseur syntaxique afin de pouvoir convertir tous les coups au même format.
+Nous avons donc dû écrire un analyseur syntaxique afin de pouvoir convertir tous les coups au même format.
 Cet analyseur est basé sur un déjà existant en JavaScript.
 Ce code JavaScript a été convertit en Java et il a été corrigé pour gérer certaines subtilités des échecs (en passant, pat, etc.).
 Cet analyseur est contenu dans le package parser.
-Étant donné que certaines ressources ne nous renvoie pas toujours des coups en notation algébrique (cela est rare mais néanmoins possible), les différentes méthodes de la classe \textit{ChessParser} effectuant des traitements sur des FEN (conversion de SAN en LAN et vice versa, vérification du en passant et de la mise en échec) peut lancer une exception (\textit{IncorrectFENException}) (voir figure\ref{fig:uml-parser}).
+Étant donné que certaines ressources ne nous renvoie pas toujours des coups en notation algébrique (cela est rare mais néanmoins possible), les différentes méthodes de la classe \textit{ChessParser} effectuant des traitements sur des FEN (conversion de SAN en LAN et vice versa, vérification du en passant et de la mise en échec) peuvent lancer des exceptions (\textit{IncorrectFENException} et \textit{IncorrectAlgebraicNotationException}) (voir figure \ref{fig:uml-parser}).
 \FigureEPS{h,t,b,p}{5cm}{./Parser.eps}
 {Diagramme UML de la classe ChessParser}   
 {fig:uml-parser}
