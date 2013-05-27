@@ -150,7 +150,7 @@ Dans le cadre d'un jeu d'échecs, il est rapidement possible d'être amené à v
 
 \subsection{Pré-requis}
 Avant de se lancer dans l'ajout d'une ressource, il est nécessaire de connaître quelques une de ses caractéristiques.
-Premièrement, il faut savoir si la ressource est une base de données de débuts de partie (Opening database), une base de données de fins de partie (Endgame database) ou un bot.
+Premièrement, il faut savoir si la ressource est une base de données de débuts de partie (Opening database), une base de données de fins de partie (Endgame database) ou un moteur d'échec (bot).
 Dans un second temps, il est nécessaire de connaître le type de FEN dont la ressource a besoin pour être interrogée.
 A savoir, les deux types de FEN existant sont ceux dits court lorsqu'il présente quatres champs et long lorsqu'il en possède six.
 Enfin dernier paramètre important à connaître pour la suite, le type de notation algébrique utilisé dans la réponse.
@@ -170,9 +170,9 @@ Dans ce fichier, il faut commencer par indiquer :
 \lstset{xleftmargin =-2.2cm}
 \begin{lstlisting}[language=php]
 	setDatabaseOpenings(\$url, \$version, \$san, \$parser, \$complete\_fen)
-	setCustomOpenings($function, $version, $san, $complete_fen)
+	setCustomOpenings(\$function, \$version, \$san, \$complete_fen)
 	setDatabaseEndings(\$url, \$version, \$san, \$parser, \$complete\_fen)
-	setCustomEndings($function, $version, $san, $complete_fen)
+	setCustomEndings(\$function, \$version, \$san, \$complete_fen)
 	setMiddleGame(\$function, \$version, \$san, \$complete\_fen)
 \end{lstlisting}
 	
@@ -202,7 +202,7 @@ Quelque soit le type de la ressource, le serveur central exige que le résultat 
 	\cline{2-3}
 	& probatowin & la probabilité de gagner associée au coup \\
 	\cline{2-3}
-	& probatonull & la probabilité de match nulle associée au coup \\
+	& probatodraw & la probabilité de match nulle associée au coup \\
 	\hline
 	\multirow{3}*{\begin{bf}Bots\end{bf}} & move & le coup en notation algébrique \\
 	\cline{2-3}
@@ -212,7 +212,7 @@ Quelque soit le type de la ressource, le serveur central exige que le résultat 
 	\hline
 	\multirow{3}*{\begin{bf}Endgame databases\end{bf}} & move & le coup en notation algébrique \\
 	\cline{2-3}
-	& result & le résultat de la partie le plus probable associé au coup\\
+	& result & le résultat de la partie associé au coup\\
 	\cline{2-3}
 	& nb\_move & le nombre de fois que le coups à été joué \\
 	\hline
