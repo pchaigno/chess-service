@@ -179,7 +179,7 @@ class ResourceWrapper {
 				$fen = rawurldecode($chars[1]);
 				$fen = str_replace('$', '/', $fen);
 				
-				if(!$middle_complete_fen) {
+				if(!$this->middle_complete_fen) {
 				//On enlève les deux derniers chiffres du fen
 					preg_match("#^(.+)((\s[0-9]+){2})$#", $fen, $matches);
 					if(count($matches)>0){
