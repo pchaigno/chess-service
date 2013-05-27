@@ -50,11 +50,11 @@ Ce dernier point se fait en utilisant la librairie PHP cURL.
 
 Le numéro de version contient aussi un caractère indiquant si la ressource retourne des notations SAN ou LAN (respectivement 's' ou 'l').
 Le framework détecte le type de requête HTTP qui doit être effectué à partir de l'URL donnée.
-Si elle contient \$url_fen\$ alors la requête doit être GET, sinon elle doit être POST.
+Si elle contient \textit{\$url\_fen\$} alors la requête doit être GET, sinon elle doit être POST.
 Dans le cas d'une requête GET, ce paramètre dans l'URL sera remplacé par le FEN.
 
 Les résultats provenant de la ressource distante sont convertis en un document JSON à l'aide de la fonction de parsing fournie par l'utilisateur.
-Pour faire appel à cette fonction, le framework utilise la fonction PHP \textit{call_user_func}.
+Pour faire appel à cette fonction, le framework utilise la fonction PHP \textit{call\_user\_func}.
 Cette dernière permet d'appeler une fonction donnée sous la forme d'une chaîne de caractères en lui passant des arguments.
 
 La structure REST est adaptée en fonction de la ressource distante. Par exemple, si elle ne renvoie pas de coups d'ouverture ou si l'utilisateur ne désire par les utiliser, le framework ne disposera pas d'un répertoire \textit{openings} dans sa structure.
