@@ -74,7 +74,11 @@ et qui enregistre chaque partie en cours sur le serveur.
 Ainsi, en plus d'obtenir des informations sur le nombre de parties joués et leur déroulement,
 il est possible d'établir des statistiques précises sur les ressources choisies par le serveur pour donner le meilleur coup.
 Au-dessus de ResourcesManager et GamesManager, la classe abstraite DatabaseManager unifie l'utilisation
-de ces bases de données SQLite et peut permettre d'ajouter simplement l'accès à une autre table SQLite.
+de ces bases de données SQLite et peut permettre d'ajouter simplement l'accès à une autre table SQLite (cf. figure \ref{fig:uml-database-manager}).
+
+\FigureEPS{h,t,b,p}{16cm}{./uml-database-manager.eps}
+{Diagramme UML des gestionnaires de base de données}   
+{fig:uml-database-manager}
 
 Lors de la réception d'une requête, chaque ressource va être interrogé une à une.
 Dès l'arrivée d'une réponse, celle-ci sera stockée dans une dérivée de la classe MoveSuggestion
@@ -105,8 +109,8 @@ Elles servent à déterminer les autorisations données par le serveur.
 \section{Listeners}
 Le serveur central utilise trois \textit{listeners}. Il appelle les méthodes de ces interfaces dès qu'un évènement quelconque se produit.
 Par exemple, si un évènement en lien avec la base de données comme l'ajout ou la suppression d'une ressource se produit, les méthodes correspondantes du \textit{listener} \textit{DatabaseListener} seront appelées (voir figure \ref{fig:uml-listener-database}).
-De la même façon, si le serveur central contacte une ressource distante ou reçoit une réponse, le \textit{listener} \textit{ResourceListener} en sera notifié (voir figure \ref{fig:uml-listeners}).
-Enfin, pour tous les évènements liés à l'interface RESTful du serveur central, c'est l'interface \textit{CentralServerListener} qui en sera notifiée (voir figure \ref{fig:uml-listeners}).
+De la même façon, si le serveur central contacte une ressource distante ou reçoit une réponse, le \textit{listener} \textit{ResourceListener} en sera notifié (cf. figure \ref{fig:uml-listeners}).
+Enfin, pour tous les évènements liés à l'interface RESTful du serveur central, c'est l'interface \textit{CentralServerListener} qui en sera notifiée (cf. figure \ref{fig:uml-listeners}).
 
 Pour chaque listener, une classe \textit{Adapter} correspondante permet d'implémenter que certaines méthodes selon les besoins.
 
@@ -119,11 +123,11 @@ Pour chaque listener, une classe \textit{Adapter} correspondante permet d'implém
 {fig:uml-listeners}
 
 \section{Central Server}
-Le serveur central est (comme l'indique son nom) l'élément central de notre web-service (voir fig.\ref{fig:schema-centralserver}). En effet, c'est lui qui va être appelé par l'interface rest (celle que le client appelle) pour déterminer le meilleur coup. 
+Le serveur central est (comme l'indique son nom) l'élément central de notre web-service (cf. fig.\ref{fig:schema-centralserver}). En effet, c'est lui qui va être appelé par l'interface rest (celle que le client appelle) pour déterminer le meilleur coup. 
 \FigureEPS{h,t,b,p}{11cm}{./SchemaCentralServer.eps}
 {Schéma de fonctionnement du serveur central}   
 {fig:schema-centralserver}
-Ce premier appel est précédé de l'insatnciation du serveur central par cette même ressource. Lors de l'instanciation, le serveur central va récupérer les différentes ressources présentes dans la table Resources de la base de données spécifiée (dans le fichier conf.properties) au lancement du serveur grizzly.
+Ce premier appel est précédé de l'instanciation du serveur central par cette même ressource. Lors de l'instanciation, le serveur central va récupérer les différentes ressources présentes dans la table Resources de la base de données spécifiée (dans le fichier conf.properties) au lancement du serveur grizzly.
 Une fois le serveur central instancié, la classe \textit{CentralServerResource} peut demander au serveur central quel coup jouer. Pour cela, la \textit{CentralServerResource} doit lui envoyer au moins la FEN, donnée par le client.
 Avec cette FEN, le serveur central va demander aux différentes ressources actives de proposer une liste de coups (avec des informations sur ces coups (cf. \ref{ressources_movesuggestion})) à jouer dans cette situation de jeu.
 Ensuite, grâce aux informations que les ressources lui donne, le serveur central va déterminer quel est le meilleur coup (cf. \ref{calcul-coup}) à jouer.
