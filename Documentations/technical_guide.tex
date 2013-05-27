@@ -123,7 +123,7 @@ Le serveur central est (comme l'indique son nom) l'élément central de notre web-
 \FigureEPS{h,t,b,p}{11cm}{./SchemaCentralServer.eps}
 {Schéma de fonctionnement du serveur central}   
 {fig:schema-centralserver}
-Ce premier appel est précédé de l'insatnciation du serveur central par cette même ressource. Lors de l'instanciation, le serveur central va récupérer les différentes ressources présentes dans la table Resources de la base de données spécifiée (dans le fichier conf.properties) au lancement du serveur grizzly.
+Ce premier appel est précédé de l'instanciation du serveur central par cette même ressource. Lors de l'instanciation, le serveur central va récupérer les différentes ressources présentes dans la table Resources de la base de données spécifiée (dans le fichier conf.properties) au lancement du serveur grizzly.
 Une fois le serveur central instancié, la classe \textit{CentralServerResource} peut demander au serveur central quel coup jouer. Pour cela, la \textit{CentralServerResource} doit lui envoyer au moins la FEN, donnée par le client.
 Avec cette FEN, le serveur central va demander aux différentes ressources actives de proposer une liste de coups (avec des informations sur ces coups (cf. \ref{ressources_movesuggestion})) à jouer dans cette situation de jeu.
 Ensuite, grâce aux informations que les ressources lui donne, le serveur central va déterminer quel est le meilleur coup (cf. \ref{calcul-coup}) à jouer.
