@@ -50,7 +50,7 @@ Ce dernier point se fait en utilisant la librairie PHP cURL.
 
 Le numéro de version contient aussi un caractère indiquant si la ressource retourne des notations SAN ou LAN (respectivement 's' ou 'l').
 Le framework détecte le type de requête HTTP qui doit être effectué à partir de l'URL donnée.
-Si elle contient \$url_fen\$ alors la requête doit être GET, sinon elle doit être POST.
+Si elle contient \$url\_fen\$ alors la requête doit être GET, sinon elle doit être POST.
 Dans le cas d'une requête GET, ce paramètre dans l'URL sera remplacé par le FEN.
 
 Les résultats provenant de la ressource distante sont convertis en un document JSON à l'aide de la fonction de parsing fournie par l'utilisateur.
@@ -65,17 +65,17 @@ Enfin, le framework s'occupe aussi d'adapter le FEN suivant les demandes de la r
 \section{Ressources et MoveSuggestions}
 Une fois les ressources en état de communiquer avec le serveur central, il est bien entendu nécessaire que ce dernier soit au courant de leur existence afin de pouvoir les interroger.
 C'est le rôle de la classe ResourcesManager de gérer la liste des ressouces accessibles.
-En accédant à une base de données externe listant toutes ces ressources, elle peut ensuite pour chacune les représenter à l'aide d'une classe dérivant de la classe abstraite Resource en fonction de leur type : OpeningsDatabase, EndingsDatabase ou Bot.
+En accédant à une base de données externe listant toutes ces ressources, elle peut ensuite pour chacune d'entre elles les représenter à l'aide d'une classe dérivant de la classe abstraite Resource en fonction de leur type : OpeningsDatabase, EndingsDatabase ou Bot.
 
 Il est à noter que l'utilisation d'une base de données s'est également révélée nécessaire dans une deuxième partie du serveur central.
-En plus de la table SQLite {\tt Resources}, il existe ainsi une deuxième table {\tt Games} exploitée par la classe GamesManager
-et qui enregistre chaque partie en cours sur le serveur.
+En plus de la table SQLite {\tt Resources}, il existe ainsi deux tables {\tt Games} et {\tt Moves} exploitées par la classe GamesManager
+et qui enregistrent respectivement chaque partie en cours sur le serveur et chaque coup joué.
 Ainsi, en plus d'obtenir des informations sur le nombre de parties joués et leur déroulement,
 il est possible d'établir des statistiques précises sur les ressources choisies par le serveur pour donner le meilleur coup.
 Au-dessus de ResourcesManager et GamesManager, la classe abstraite DatabaseManager unifie l'utilisation
 de ces bases de données SQLite et peut permettre d'ajouter simplement l'accès à une autre table SQLite.
 
-Lors de la réception d'une requête, chaque ressource va être interrogé une à une.
+Lors de la réception d'une requête, chaque ressource va être interrogée une à une.
 Dès l'arrivée d'une réponse, celle-ci sera stockée dans une dérivée de la classe MoveSuggestion
 (à nouveau en fonction du type de la ressource : OpeningsSuggestion, EndingsSuggestion ou BotSuggestion)
 accompagnée de toutes les informations qui lui sont associées, telles que son score, sa probabilité de gagner ou de faire match nul.
