@@ -54,10 +54,10 @@
 
 	Lors de la réception d'une requête, chaque ressource va être interrogé une à une. Dès l'arrivée d'une réponse, celle-ci sera stockée dans une dérivée de la classe MoveSuggestion (à nouveau en fonction du type de la ressource : OpeningsSuggestion, EndingsSuggestion ou BotSuggestion) accompagnée de toutes les informations qui lui sont associées, telles que son score, sa probabilité de gagner ou de faire match nul. Ce sont ces données qui serviront en fin de partie à obtenir des statistiques sur la performance des ressources.
 
-\section{Requêtes entrantes RESTful}
-    Afin d'orchestrer les différents appels entre chaque partie, le projet utilise le framework Grizzly, basé sur une architecture de type RESTful. [définition RESTful]
+\section{CentralServerResource}
+    Afin d'orchestrer les différents appels entre chaque partie, le projet utilise le framework Grizzly, basé sur une architecture de type RESTful. Avoir une architecture RESTful permet de mieux exploiter le protocole HTTP. Les objets ne se manipulent pas seulement avec les méthodes GET et POST, mais aussi avec PUT et DELETE. De plus, chaque objet est associé à un URL. Un objet est ainsi manipulable grâce à son URL auquel on effectue des appels avec les méthodes HTTP.
     
-    Le serveur Grizzly est lançé par la classe CentralServerResourceDeployer, qui à la reception d'une requête entrante va transmettre son décodage à la classe CentralServerResource. Cette dernière contient le coeur de l'architecture REST. En fonction du type de la requête reçue (GET, POST, UPDATE, DELETE...) celle-ci exécute l'action correspondante puis renvoie la réponse au client.
+    Dans notre cas, le serveur central est déployé sur le serveur Grizzly par la classe CentralServerResourceDeployer. La classe CentralServerResource est ensuite chargée de réceptionner les requêtes. Elle contient le coeur de l'architecture REST. Elle capte les requêtes envoyées à l'URI \textit{rest/} et les traite en fonction du type. Si la requête est de type POST, elle crée une nouvelle partie. Si c'est un GET, elle lance le processus de mise à jours de suggestion de coups et de sélection du meilleur coup grâce au FEN fourni dans l'URL et renvoie le meilleur coup. Enfin, dans le cas d'une requête de type DELETE, elle fait les appels de suppression de partie et de récompense. Des requêtes de type OPTIONS sont également réceptionnées. Ces requêtes sont inhérantes au script AJAX utilisé par les clients. Elles servent à déterminer les autorisations données par le serveur.
 
 \section{Listeners}
 
