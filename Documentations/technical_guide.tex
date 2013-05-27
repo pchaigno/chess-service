@@ -42,6 +42,7 @@ les requêtes des clients d'une part, et les recherches de meilleur coup de chaqu
 
 
 \section{Framework PHP}
+\label{frameworkPHP}
 Le framework PHP permet d'ajouter rapidement une interface entre le serveur central et une nouvelle ressource en ligne.
 Il est organisé en trois grandes parties, une pour chaque type de ressources (bases de données d'ouvertures, bases de données de fermetures et moteurs d'échec pour le milieu de partie).
 
@@ -80,7 +81,7 @@ de ces bases de données SQLite et peut permettre d'ajouter simplement l'accès à 
 {Diagramme UML des gestionnaires de base de données}   
 {fig:uml-database-manager}
 
-Lors de la réception d'une requête, chaque ressource va être interrogé une à une.
+Lors de la réception d'une requête, chaque ressource va être interrogée une à une.
 Dès l'arrivée d'une réponse, celle-ci sera stockée dans une dérivée de la classe MoveSuggestion
 (à nouveau en fonction du type de la ressource : OpeningsSuggestion, EndingsSuggestion ou BotSuggestion)
 accompagnée de toutes les informations qui lui sont associées, telles que son score, sa probabilité de gagner ou de faire match nul.
@@ -112,7 +113,7 @@ Par exemple, si un évènement en lien avec la base de données comme l'ajout ou la
 De la même façon, si le serveur central contacte une ressource distante ou reçoit une réponse, le \textit{listener} \textit{ResourceListener} en sera notifié (cf. figure \ref{fig:uml-listeners}).
 Enfin, pour tous les évènements liés à l'interface RESTful du serveur central, c'est l'interface \textit{CentralServerListener} qui en sera notifiée (cf. figure \ref{fig:uml-listeners}).
 
-Pour chaque listener, une classe \textit{Adapter} correspondante permet d'implémenter que certaines méthodes selon les besoins.
+Pour chaque listener, une classe \textit{Adapter} correspondante permet de n'implémenter que certaines méthodes selon les besoins.
 
 \FigureEPS{h,t,b,p}{9cm}{./uml-listener-database.eps}
 {Diagramme UML du listener DatabaseListener}   
@@ -123,11 +124,11 @@ Pour chaque listener, une classe \textit{Adapter} correspondante permet d'implém
 {fig:uml-listeners}
 
 \section{Central Server}
-Le serveur central est (comme l'indique son nom) l'élément central de notre web-service (cf. fig.\ref{fig:schema-centralserver}). En effet, c'est lui qui va être appelé par l'interface rest (celle que le client appelle) pour déterminer le meilleur coup. 
+Le serveur central est (comme l'indique son nom) l'élément central de notre web-service (voir figure\ref{fig:schema-centralserver}). En effet, c'est lui qui va être appelé par l'interface rest (celle que le client appelle) pour déterminer le meilleur coup. 
 \FigureEPS{h,t,b,p}{11cm}{./SchemaCentralServer.eps}
 {Schéma de fonctionnement du serveur central}   
 {fig:schema-centralserver}
-Ce premier appel est précédé de l'instanciation du serveur central par cette même ressource. Lors de l'instanciation, le serveur central va récupérer les différentes ressources présentes dans la table Resources de la base de données spécifiée (dans le fichier conf.properties) au lancement du serveur grizzly.
+Ce premier appel est précédé de l'instanciation du serveur central par cette même ressource. Lors de l'instanciation, le serveur central va récupérer les différentes ressources présentes dans la table \textit{Resources} de la base de données spécifiée (dans le fichier conf.properties) au lancement du serveur grizzly.
 Une fois le serveur central instancié, la classe \textit{CentralServerResource} peut demander au serveur central quel coup jouer. Pour cela, la \textit{CentralServerResource} doit lui envoyer au moins la FEN, donnée par le client.
 Avec cette FEN, le serveur central va demander aux différentes ressources actives de proposer une liste de coups (avec des informations sur ces coups (cf. \ref{ressources_movesuggestion})) à jouer dans cette situation de jeu.
 Ensuite, grâce aux informations que les ressources lui donne, le serveur central va déterminer quel est le meilleur coup (cf. \ref{calcul-coup}) à jouer.
@@ -135,23 +136,21 @@ Avant de renvoyer ce meilleur coup, le serveur central va mettre à jour la parti
 
 \section{Calcul du meilleur Coup}
 \label{calcul-coup}
-[A degager...?]
 Le calcul du meilleur coup constitue, avec les appels aux ressources, le principal contenu du serveur central.
 Ce calcul est effectué en plusieurs étapes.
 Tout d'abord, le serveur central va demander à chaque ressource (instance de classe dérivée de la classe Resource)
 de mettre à jour la liste de coup qu'elle propose.
-Pour cela, la ressource va effectuer un requête GET à son uri.
-Cette requête GET va lui permettre de récupérer les coups que la ressource distante (accessible via l'interface php associée) lui propose, au format JSON.
-Ce JSON va ensuite être analysé syntaxiquement et les suggestions de coup (instances de classes dérivées de MoveSuggestion) créées vont former la liste de coups de la ressource.
+Pour cela, la ressource va effectuer un requête GET à son uri (cf figure\ref{fig:schema-centralserver}).
+Cette requête GET va lui permettre de récupérer les coups que la ressource distante (accessible via l'interface php associée) lui propose, au format JSON (cf. partie \ref{frameworkPHP}).
+Ce JSON va ensuite être analysé syntaxiquement et les suggestions de coup (instances de classes dérivées de \textit{MoveSuggestion}) créées vont former la liste de coups de la ressource.
 En plus de stocker les informations renvoyées par les ressources externes dans les suggestion de coups, on calcule un score pour chaque suggestion.
-Ce score est calculé en prenant en compte les informations de la ressources ainsi que des statistiques (accessibles via StatsManager) des parties précédentes (voir rapport pour les formules).
+Ce score est calculé en prenant en compte les informations de la ressources ainsi que des statistiques (accessibles via \textit{StatsManager}) des parties précédentes (voir le rapport pour les formules).
 Une fois que toutes les ressources ont mis à jour leur liste de coups, le serveur central va calculer un score associé à chaque coup, prenant en compte les listes de coups de toutes les ressources (voir rapport pour les formules).
 Une fois ces scores calculés, le coup qui a le score le plus élevé est renvoyé au client.
-Après avoir déterminé le meilleur coup, les statistiques sur les suggestion de coups sont mises à jour grâce à StatsManager.
+Après avoir déterminé le meilleur coup, les statistiques sur les suggestion de coups sont mises à jour grâce à \textit{StatsManager}.
 
 
 \section{Evolution des confiances des ressources}
-[A degager...?]
 Comme précisé dans le rapport, nous attribuons une certaine confiance à chaque ressource afin de pondérer son influence en fonction de la confiance que nous lui accordons.
 Le principe de confiance est semblable à un système de récompense.
 Si une ressource nous permet de gagner une partie, elle est récompensée positivement (la confiance que nous lui accordons augmente);
@@ -162,11 +161,10 @@ Il faut donc pondérer la récompense en fonction de la confiance que la ressource
 Ainsi, si le score (celui que nous calculons) associé à un coup est maximum pour la ressource, on considérera que la ressource a confiance en ce coup.
 A l'inverse, si le coup a un score faible par rapport au score des autres coups que la ressource propose, nous considérerons que la ressource a peu confiance en ce coup.
 Toutes les confiances des coups d'une partie sont stockées dans la table moves.
-A la fin d'une partie chaque ressource est récompensée proportionnellement à la somme des confiance de tous les coups qu'elle a proposés et que nous avons joués durant cette partie.
+A la fin d'une partie, chaque ressource est récompensée proportionnellement à la somme des confiances de tous les coups qu'elle a proposés et que nous avons joués durant cette partie.
 
 
 \section{Gestion des notations d'échecs}
-[A degager...?]
 Aux échecs, les représentations numériques du plateau et des coups sont normalisées.
 Ainsi, il existe une notation pour le plateau appelée FEN.
 Pour les coups, la notation algébrique est utilisée.
@@ -178,6 +176,7 @@ Nous avons donc du écrire un analyseur syntaxique afin de pouvoir convertir tous
 Cet analyseur est basé sur un déjà existant en javascript.
 Ce code javascript a été convertit en Java et il a été corrigé pour gérer certaines subtilités des échecs (en passant, pat, etc.).
 Cet analyseur est contenu dans le package parser.
+Etant donné que certaines ressources ne nous renvoie pas toujours des coups en notation algébrique (cela est rare mais néanmoins possible), les différentes méthodes de la classe \textit{ChessParser} effectuant des traitements sur des FEN (conversion de SAN en LAn et vice versa, vérification du en passant et de la mise en échec) peut lancer une exception (\textit{IncorrectFENException}).
 
 
 \end{document}
