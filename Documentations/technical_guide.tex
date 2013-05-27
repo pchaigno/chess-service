@@ -37,42 +37,103 @@
 \maketitle{}
 
 \section{Organisation générale}
+Le serveur central du projet permet de coordonner les différents appels entre :
+les requêtes des clients d'une part, et les recherches de meilleur coup de chaque ressource d'autre part.
 
-    Le serveur central du projet permet de coordonner les différents appels entre : les requêtes des clients d'une part, et les recherches de meilleur coup de chaque ressource d'autre part.
-    
+
 \section{Ressources PHP}
-
-
-    Les ressources peuvent être de trois types : bases de données d'ouverture de partie (les meilleurs débuts de partie des grands champions d'échecs), bots (évaluant statistiquement le meilleur coup, efficace pour le milieu de partie), et bases de fermeture (meilleurs fin de parties). .
+Les ressources peuvent être de trois types : bases de données d'ouverture de partie (les meilleurs débuts de partie des grands champions d'échecs), bots (évaluant statistiquement le meilleur coup, efficace pour le milieu de partie), et bases de fermeture (meilleurs fin de parties).
 
 
 \section{Ressources et MoveSuggestions}
+Une fois les ressources en état de communiquer avec le serveur central, il est bien entendu nécessaire que ce dernier soit au courant de leur existence afin de pouvoir les interroger.
+C'est le rôle de la classe ResourcesManager de gérer la liste des ressouces accessibles.
+En accédant à une base de données externe listant toutes ces ressources, elle peut ensuite pour chacune les représenter à l'aide d'une classe dérivant de la classe abstraite Resource en fonction de leur type : OpeningsDatabase, EndingsDatabase ou Bot.
 
-	Une fois les ressources en état de communiquer avec le serveur central, il est bien entendu nécessaire que ce dernier soit au courant de leur existence afin de pouvoir les interroger. C'est le rôle de la classe ResourcesManager de gérer la liste des ressouces accessibles. En accédant à une base de données externe listant toutes ces ressources, elle peut ensuite pour chacune les représenter à l'aide d'une classe dérivant de la classe abstraite Resource en fonction de leur type : OpeningsDatabase, EndingsDatabase ou Bot.
+Il est à noter que l'utilisation d'une base de données s'est également révélée nécessaire dans une deuxième partie du serveur central.
+En plus de la table SQLite {\tt Resources}, il existe ainsi une deuxième table {\tt Games} exploitée par la classe GamesManager
+et qui enregistre chaque partie en cours sur le serveur.
+Ainsi, en plus d'obtenir des informations sur le nombre de parties joués et leur déroulement,
+il est possible d'établir des statistiques précises sur les ressources choisies par le serveur pour donner le meilleur coup.
+Au-dessus de ResourcesManager et GamesManager, la classe abstraite DatabaseManager unifie l'utilisation
+de ces bases de données SQLite et peut permettre d'ajouter simplement l'accès à une autre table SQLite.
 
-	Il est à noter que l'utilisation d'une base de données s'est également révélée nécessaire dans une deuxième partie du serveur central. En plus de la table SQLite {\tt Resources}, il existe ainsi une deuxième table {\tt Games} exploitée par la classe GamesManager et qui enregistre chaque partie en cours sur le serveur. Ainsi, en plus d'obtenir des informations sur le nombre de parties joués et leur déroulement, il est possible d'établir des statistiques précises sur les ressources choisies par le serveur pour donner le meilleur coup. Au-dessus de ResourcesManager et GamesManager, la classe abstraite DatabaseManager unifie l'utilisation de ces bases de données SQLite et peut permettre d'ajouter simplement l'accès à une autre table SQLite.
+Lors de la réception d'une requête, chaque ressource va être interrogé une à une.
+Dès l'arrivée d'une réponse, celle-ci sera stockée dans une dérivée de la classe MoveSuggestion
+(à nouveau en fonction du type de la ressource : OpeningsSuggestion, EndingsSuggestion ou BotSuggestion)
+accompagnée de toutes les informations qui lui sont associées, telles que son score, sa probabilité de gagner ou de faire match nul.
+Ce sont ces données qui serviront en fin de partie à obtenir des statistiques sur la performance des ressources.
 
-	Lors de la réception d'une requête, chaque ressource va être interrogé une à une. Dès l'arrivée d'une réponse, celle-ci sera stockée dans une dérivée de la classe MoveSuggestion (à nouveau en fonction du type de la ressource : OpeningsSuggestion, EndingsSuggestion ou BotSuggestion) accompagnée de toutes les informations qui lui sont associées, telles que son score, sa probabilité de gagner ou de faire match nul. Ce sont ces données qui serviront en fin de partie à obtenir des statistiques sur la performance des ressources.
 
 \section{Requêtes entrantes RESTful}
-    Afin d'orchestrer les différents appels entre chaque partie, le projet utilise le framework Grizzly, basé sur une architecture de type RESTful. [définition RESTful]
+Afin d'orchestrer les différents appels entre chaque partie, le projet utilise le framework Grizzly, basé sur une architecture de type RESTful.
+Avoir une architecture RESTful permet de mieux exploiter le protocole HTTP.
+Les objets ne se manipulent pas seulement avec les méthodes GET et POST, mais aussi avec PUT et DELETE.
+De plus, chaque objet est associé à un URL.
+Un objet est ainsi manipulable grâce à son URL auquel on effectue des appels avec les méthodes HTTP.
     
-    Le serveur Grizzly est lançé par la classe CentralServerResourceDeployer, qui à la reception d'une requête entrante va transmettre son décodage à la classe CentralServerResource. Cette dernière contient le coeur de l'architecture REST. En fonction du type de la requête reçue (GET, POST, UPDATE, DELETE...) celle-ci exécute l'action correspondante puis renvoie la réponse au client.
+Dans notre cas, le serveur central est déployé sur le serveur Grizzly par la classe CentralServerResourceDeployer.
+La classe CentralServerResource est ensuite chargée de réceptionner les requêtes.
+Elle contient le coeur de l'architecture REST.
+Elle capte les requêtes envoyées à l'URI \textit{rest/} et les traite en fonction du type.
+Si la requête est de type POST, elle crée une nouvelle partie.
+Si c'est un GET, elle lance le processus de mise à jours de suggestion de coups et de sélection du meilleur coup grâce au FEN fourni dans l'URL et renvoie le meilleur coup.
+Enfin, dans le cas d'une requête de type DELETE, elle fait les appels de suppression de partie et de récompense.
+Des requêtes de type OPTIONS sont également réceptionnées.
+Ces requêtes sont inhérantes au script AJAX utilisé par les clients.
+Elles servent à déterminer les autorisations données par le serveur.
+
 
 \section{Listeners}
 
+
 \section{Central Server}
+
 
 \section{Calcul du meilleur Coup}
 [A degager...?]
-Le calcul du meilleur coup constitue, avec les appels aux ressources, le principal contenu du serveur central. Ce calcul est effectué en plusieurs étapes. Tout d'abord, le serveur central va demander à chaque ressource (instance de classe dérivée de la classe Resource) de mettre à jour la liste de coup qu'elle propose. Pour cela, la ressource va effectuer un requête GET à son uri. Cette requête GET va lui permettre de récupérer les coups que la ressource distante (accessible via l'interface php associée) lui propose, au format JSON. Ce JSON va ensuite être analysé syntaxiquement et les suggestions de coup (instances de classes dérivées de MoveSuggestion) créées vont former la liste de coups de la ressource. En plus de stocker les informations renvoyées par les ressources externes dans les suggestion de coups, on calcule un score pour chaque suggestion. Ce score est calculé en prenant en compte les informations de la ressources ainsi que des statistiques (accessibles via StatsManager) des parties précédentes (voir rapport pour les formules). Une fois que toutes les ressources ont mis à jour leur liste de coups, le serveur central va calculer un score associé à chaque coup, prenant en compte les listes de coups de toutes les ressources (voir rapport pour les formules). Une fois ces scores calculés, le coup qui a le score le plus élevé est renvoyé au client. Après avoir déterminé le meilleur coup, les statistiques sur les suggestion de coups sont mises à jour grâce à StatsManager.
+Le calcul du meilleur coup constitue, avec les appels aux ressources, le principal contenu du serveur central.
+Ce calcul est effectué en plusieurs étapes.
+Tout d'abord, le serveur central va demander à chaque ressource (instance de classe dérivée de la classe Resource)
+de mettre à jour la liste de coup qu'elle propose.
+Pour cela, la ressource va effectuer un requête GET à son uri.
+Cette requête GET va lui permettre de récupérer les coups que la ressource distante (accessible via l'interface php associée) lui propose, au format JSON.
+Ce JSON va ensuite être analysé syntaxiquement et les suggestions de coup (instances de classes dérivées de MoveSuggestion) créées vont former la liste de coups de la ressource.
+En plus de stocker les informations renvoyées par les ressources externes dans les suggestion de coups, on calcule un score pour chaque suggestion.
+Ce score est calculé en prenant en compte les informations de la ressources ainsi que des statistiques (accessibles via StatsManager) des parties précédentes (voir rapport pour les formules).
+Une fois que toutes les ressources ont mis à jour leur liste de coups, le serveur central va calculer un score associé à chaque coup, prenant en compte les listes de coups de toutes les ressources (voir rapport pour les formules).
+Une fois ces scores calculés, le coup qui a le score le plus élevé est renvoyé au client.
+Après avoir déterminé le meilleur coup, les statistiques sur les suggestion de coups sont mises à jour grâce à StatsManager.
+
 
 \section{Evolution des confiances des ressources}
 [A degager...?]
-Comme précisé dans le rapport, nous attribuons une certaine confiance à chaque ressource afin de pondérer son influence en fonction de la confiance que nous lui accordons. Le principe de confiance est semblable à un système de récompense. Si une ressource nous permet de gagner une partie, elle est récompensée positivement (la confiance que nous lui accordons augmente); à l'inverse, si elle nous a conseillé lors d'une défaite, elle est récompensée négativement. Seules les ressources nous ayant proposé au moins un coup que nous avons joué sont récompensées. Cependant, chaque ressource propose généralement plusieurs coups pour une unique situation. Il faut donc pondérer la récompense en fonction de la confiance que la ressource apporte dans le coup que nous avons choisi de jouer. Ainsi, si le score (celui que nous calculons) associé à un coup est maximum pour la ressource, on considérera que la ressource a confiance en ce coup. A l'inverse, si le coup a un score faible par rapport au score des autres coups que la ressource propose, nous considérerons que la ressource a peu confiance en ce coup. Toutes les confiances des coups d'une partie sont stockées dans la table moves. A la fin d'une partie chaque ressource est récompensée proportionnellement à la somme des confiance de tous les coups qu'elle a proposés et que nous avons joués durant cette partie.
+Comme précisé dans le rapport, nous attribuons une certaine confiance à chaque ressource afin de pondérer son influence en fonction de la confiance que nous lui accordons.
+Le principe de confiance est semblable à un système de récompense.
+Si une ressource nous permet de gagner une partie, elle est récompensée positivement (la confiance que nous lui accordons augmente);
+à l'inverse, si elle nous a conseillé lors d'une défaite, elle est récompensée négativement.
+Seules les ressources nous ayant proposé au moins un coup que nous avons joué sont récompensées.
+Cependant, chaque ressource propose généralement plusieurs coups pour une unique situation.
+Il faut donc pondérer la récompense en fonction de la confiance que la ressource apporte dans le coup que nous avons choisi de jouer.
+Ainsi, si le score (celui que nous calculons) associé à un coup est maximum pour la ressource, on considérera que la ressource a confiance en ce coup.
+A l'inverse, si le coup a un score faible par rapport au score des autres coups que la ressource propose, nous considérerons que la ressource a peu confiance en ce coup.
+Toutes les confiances des coups d'une partie sont stockées dans la table moves.
+A la fin d'une partie chaque ressource est récompensée proportionnellement à la somme des confiance de tous les coups qu'elle a proposés et que nous avons joués durant cette partie.
+
 
 \section{Gestion des notations d'échecs}
 [A degager...?]
-Aux échecs, les représentations numériques du plateau et des coups sont normalisées. Ainsi, il existe une notation pour le plateau appelée FEN. Pour les coups, la notation algébrique est utilisée. Elle spécifie la case de départ et d'arrivée dans sa version longue et la pièce utilisée et la case d'arrivée dans sa version courte. Le fait que cette notation ait 2 formats nous a posé certains problèmes de compatibilité. En effet, certaines ressources nous renvoyaient des coups en notation algébrique longue (LAN) et d'autres en notation algébrique courte (SAN). De plus, les clients graphiques exigent pour certains des coups au format LAN et d'autres au format SAN. Nous avons donc du écrire un analyseur syntaxique afin de pouvoir convertir tous les coups au même format. Cet analyseur est basé sur un déjà existant en javascript. Ce code javascript a été convertit en Java et il a été corrigé pour gérer certaines subtilités des échecs (en passant, pat, etc.). Cet analyseur est contenu dans le package parser.
-	
+Aux échecs, les représentations numériques du plateau et des coups sont normalisées.
+Ainsi, il existe une notation pour le plateau appelée FEN.
+Pour les coups, la notation algébrique est utilisée.
+Elle spécifie la case de départ et d'arrivée dans sa version longue et la pièce utilisée et la case d'arrivée dans sa version courte.
+Le fait que cette notation ait 2 formats nous a posé certains problèmes de compatibilité.
+En effet, certaines ressources nous renvoyaient des coups en notation algébrique longue (LAN) et d'autres en notation algébrique courte (SAN).
+De plus, les clients graphiques exigent pour certains des coups au format LAN et d'autres au format SAN.
+Nous avons donc du écrire un analyseur syntaxique afin de pouvoir convertir tous les coups au même format.
+Cet analyseur est basé sur un déjà existant en javascript.
+Ce code javascript a été convertit en Java et il a été corrigé pour gérer certaines subtilités des échecs (en passant, pat, etc.).
+Cet analyseur est contenu dans le package parser.
+
+
 \end{document}
