@@ -63,6 +63,7 @@ Enfin, le framework s'occupe aussi d'adapter le FEN suivant les demandes de la r
 
 
 \section{Ressources et MoveSuggestions}
+\label{ressources_movesuggestion}
 Une fois les ressources en état de communiquer avec le serveur central, il est bien entendu nécessaire que ce dernier soit au courant de leur existence afin de pouvoir les interroger.
 C'est le rôle de la classe ResourcesManager de gérer la liste des ressouces accessibles.
 En accédant à une base de données externe listant toutes ces ressources, elle peut ensuite pour chacune les représenter à l'aide d'une classe dérivant de la classe abstraite Resource en fonction de leur type : OpeningsDatabase, EndingsDatabase ou Bot.
@@ -118,9 +119,18 @@ Pour chaque listener, une classe \textit{Adapter} correspondante permet d'implém
 {fig:uml-listeners}
 
 \section{Central Server}
-
+Le serveur central est (comme l'indique son nom) l'élément central de notre web-service (voir fig.\ref{fig:schema-centralserver}). En effet, c'est lui qui va être appelé par l'interface rest (celle que le client appelle) pour déterminer le meilleur coup. 
+\FigureEPS{h,t,b,p}{11cm}{./SchemaCentralServer.eps}
+{Schéma de fonctionnement du serveur central}   
+{fig:schema-centralserver}
+Ce premier appel est précédé de l'insatnciation du serveur central par cette même ressource. Lors de l'instanciation, le serveur central va récupérer les différentes ressources présentes dans la table Resources de la base de données spécifiée (dans le fichier conf.properties) au lancement du serveur grizzly.
+Une fois le serveur central instancié, la classe \textit{CentralServerResource} peut demander au serveur central quel coup jouer. Pour cela, la \textit{CentralServerResource} doit lui envoyer au moins la FEN, donnée par le client.
+Avec cette FEN, le serveur central va demander aux différentes ressources actives de proposer une liste de coups (avec des informations sur ces coups (cf. \ref{ressources_movesuggestion})) à jouer dans cette situation de jeu.
+Ensuite, grâce aux informations que les ressources lui donne, le serveur central va déterminer quel est le meilleur coup (cf. \ref{calcul-coup}) à jouer.
+Avant de renvoyer ce meilleur coup, le serveur central va mettre à jour la partie (mise à jour du FEN courant ainsi que ajout des coups proposés dans la table \textit{Moves}) ainsi que les statistiques sur les coups.
 
 \section{Calcul du meilleur Coup}
+\label{calcul-coup}
 [A degager...?]
 Le calcul du meilleur coup constitue, avec les appels aux ressources, le principal contenu du serveur central.
 Ce calcul est effectué en plusieurs étapes.
