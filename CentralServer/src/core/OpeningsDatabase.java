@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import parser.ChessParser;
+import parser.IncorrectAlgebraicNotationException;
 import parser.IncorrectFENException;
 
 /**
@@ -62,8 +63,11 @@ public class OpeningsDatabase extends Resource {
 					parser = new ChessParser(fen);
 					move = parser.convertLANToSAN(move);
 				} catch (IncorrectFENException e) {
-					// Shouldn't happen !
 					System.err.println("parseJSONMove :"+e.getMessage());
+					continue;
+				} catch(IncorrectAlgebraicNotationException e) {
+					System.err.println("parseJSONMove: "+e.getMessage());
+					continue;
 				}
 			}
 			double probaWin = json.getDouble(JSON_PROBA_WIN);
