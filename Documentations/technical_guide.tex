@@ -86,7 +86,20 @@ Elles servent à déterminer les autorisations données par le serveur.
 
 
 \section{Listeners}
+Le serveur central utilise trois \textit{listeners}. Il appelle les méthodes de ces interfaces dès qu'un évènement quelconque se produit.
+Par exemple, si un évènement en lien avec la base de données comme l'ajout ou la suppression d'une ressource se produit, les méthodes correspondantes du \textit{listener} \textit{DatabaseListener} seront appelées (voir figure \ref{fig:uml-listener-database}).
+De la même façon, si le serveur central contacte une ressource distante ou reçoit une réponse, le \textit{listener} \textit{ResourceListener} en sera notifié (voir figure \ref{fig:uml-listeners}).
+Enfin, pour tous les évènements liés à l'interface RESTful du serveur central, c'est l'interface \textit{CentralServerListener} qui en sera notifiée (voir figure \ref{fig:uml-listeners}).
 
+Pour chaque listener, une classe \textit{Adapter} correspondante permet d'implémenter que certaines méthodes selon les besoins.
+
+\FigureEPS{h,t,b,p}{9cm}{./uml-listener-database.eps}
+{Diagramme UML du listener DatabaseListener}   
+{fig:uml-listener-database}
+
+\FigureEPS{h,t,b,p}{14cm}{./uml-listeners.eps}
+{Diagramme UML des listeners}   
+{fig:uml-listeners}
 
 \section{Central Server}
 Le serveur central est (comme l'indique son nom) l'élément central de notre web-service (voir fig.\ref{fig:schema-centralserver}). En effet, c'est lui qui va être appelé par l'interface rest (celle que le client appelle) pour déterminer le meilleur coup. 
