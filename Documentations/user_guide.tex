@@ -1,160 +1,3 @@
-<<<<<<< HEAD
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%     STYLE POUR LES EXPOSES TECHNIQUES 
-%         3e année INSA de Rennes
-%
-%             NE PAS MODIFIER
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\documentclass[a4paper,11pt]{article}
-
-\usepackage{exptech}       % Fichier (./exptech.sty) contenant les styles pour 
-                           % l'expose technique (ne pas le modifier)
-\usepackage{url}
-\usepackage{listings}
-
-%\linespread{1,6}          % Pour une version destinée à un relecteur,
-                           % décommenter cette commande (double interligne) 
-                           
-% UTILISEZ SPELL (correcteur orthographique) à accès simplifié depuis XEmacs
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\title{ \textbf{Distributed Chess Service - Guide d'utilisation} }
-\markright{Distributed Chess Service - Guide d'utilisation} 
-                           % Pour avoir le titre de l'expose sur chaque page
-
-\author{Paul \textsc{Chaignon}, Thomas \textsc{François}, \\
-        Damien \textsc{Le Guen}, Clément \textsc{Gautrais}, \\
-				Benoit \textsc{Travers} \\
-        \\
-        Encadrants : Loïc \textsc{Hélouët}, Yann \textsc{Ricquebourg}}
-
-\date{}                    % Ne pas modifier
- 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-\begin{document}
-\maketitle{}
-
-{\em Ce guide vous apprendra à utiliser le Distributed Chess Services afin d'ajouter à un projet de jeu d'échecs une intelligence artificielle distante. Deux aspects seront abordés : la connexion d'un jeu avec le service distant et, dans un deuxième temps, l'ajout et la modification de base de connaissances au service}
-
-
-\subsection*{Contexte}
-        Afin de simuler une intelligence artificielle de jeu d'échecs, il existe de nombreuses ressources disponibles. Celles-ci prennent la forme de bases de connaissances répertoriant les meilleurs coups à jouer d'après les parties d'échecs de grands champions, ainsi que de nombreux bots (robots) pouvant, à partir d'une situation d'échiquier donnée, choisir le coup suivant le plus efficace. Cependant, inclure toutes ces ressources au sein même du jeu peut se révéler délicat. Cela nécessite en effet une mise à jour du programme dès la moindre modification des informations. Et ce genre de recherche demandant une puissance de calcul importante de la part de la plateforme, le portage du logiciel sur une plateforme moins puissante (notamment mobile) devient un casse-tête d'optimisation.
-        
-        Déléguer cette partie du jeu d'échecs à un service tiers peut constituer une solution élégante. Ce service distant fait office de serveur centralisant toutes les opérations de recherche et de calculs. Un jeu d'échecs (ici en position de client) pourra envoyer à ce serveur une requête web et obtenir en retour le meilleur coup à jouer. En plus de libérer le client de la lourde tâche de calculs (permettant ainsi le portage théorique sur toute plateforme disposant d'une simple connexion Internet), cela permet aussi de garder un certain contôle sur l'accès des joueurs aux données. Et ainsi tirer des statistiques sur la performance des algorithmes mis en place.
-
-\FigureEPS{h,t,b,p}{11cm}{./ArchitectureSimple.eps}
-{Schéma général du système}
-{fig:schema-systeme}
-
-
-\section{Déployer le serveur central}
-		Afin de pouvoir tester le serveur central, il est au préalable nécessaire de le lier à des ressources (bases de données et bots) placées sur des serveurs.
-
-\subsection{Déployer les ressources existantes}
-		Rendre une ressource accessible à distance nécessitera de pouvoir lancer un serveur Apache et PHP sur la machine hôte. Nous prendrons ici l'exemple de déployer la ressource Chessok fourni avec le code du serveur et contenant une base d'ouverture de parties d'échecs. Nous nous placerons ici dans le cas d'utilisation d'un serveur local à l'aide de Wamp. Avant de démarrer, il est indispensable de vérifier que l'extension Apache {\tt Redirect} et l'extension PHP {\tt cURL} ont bien été activés dans les options de Wamp.
-		
-		Dans le cas de Chessok, seuls deux fichiers sont à copier dans le répertoire {\tt www} de Wamp : chessok.php et resourcewrapper.class.php (ce dernier fichier sera expliqué en détail dans la dernière partie de ce guide). Il faut ensuite activer la redirection Apache vers le fichier chessok.php, en ajoutant dans le fichier httpd.conf :
-\\{\tt	RewriteEngine On\\
-RewriteCond \%{REQUEST\_URI} \^/chessok/.*\$ [NC]\\
-RewriteRule \^(.*)\$ /chessok.php [L] }\\
-		Une fois le serveur Wamp relancé, Chessok sera alors accessible par le serveur central à l'adresse {\tt http://localhost/chessok/}. Il est tout à fait possible de déployer une ressource supplémentaire sur le même serveur en accordant les règles de réécriture Apache avec la nouvelle ressource.
-		
-\subsection{Utilisation de l'outil graphique de configuration}
-		La méthode recommandé pour référencer les ressources déployées auprès du serveur central est de passer par l'outil graphique fourni avec le projet. En lançant l'interface CentralServer.gui, vous aurez alors accès à plusieurs actions de configurations du serveur :
-\begin{itemize}
-	\item {\tt Set options} : la configuration propre au serveur central est modifiable depuis cette fenêtre. Sont notamment modifiables : le port d'accès et les délais d'attentes maximums de réponse des ressources autorisés par le serveur central.
-	\item {\tt Change database} : depuis cette boîte de dialogue, il est possible de définir la base de données qui contiendra les informations concernant l'accès aux ressources. Cette base de données sera placée dans le répertoire indiqué dans la fenêtre Set options. En indiquant un nom de base inexistant, celle-ci sera automatiquement générée et prête pour ajouter de nouvelles ressources. Il est aussi possible de définir une base comme celle étant à utiiser par défaut au démarrage du serveur.
-   \item {\tt Table des ressources} : cette table occupant la majeure partie de l'interface iste toutes les ressources accessibles par le serveur. En faisant un clic-droit sur cette table, un menu contextuel apparaît, permettant d'ajouter, d'éditer ou de supprimer des ressources.
-   \item {\tt Etat du serveur} : une fois toutes les ressources nécessaires ajoutées, il est possible de lancer et de stopper le serveur central depuis le menu File.
-\end{itemize}
-\subsection{Lancer le serveur central}
-		Pour lancer le serveur, deux méthodes sont disponibles. La première est, nous l'avons vu précédemment, de passer par l'outil de configuration.
-		...[TODO]
-
-\section{Interfaçage client et serveur central}
-        On supposera l'existence préalable du programme capable de gérer la logique et les règles du jeu d'échecs (déplacement correct des différentes pièces, connaissance du joueur devant jouer le prochain coup, reconnaissance des situtaions particulières telles que l'échec et l'échec et mat...) ainsi que de l'aspect graphique du plateau. Prenons le cas d'un logiciel sachant déjà gérer une partie d'échecs entre deux joueurs humains en local. L'ajout d'un mode humain contre ordinateur s'effectuera en remplaçant la logique de jeu du deuxième joueur par l'envoi de requêtes au serveur central via une adresse respectant l'architecture REST. 
-
-
-\subsection{Création d'une partie}
-        Au démarrage de la partie, il est nécessaire d'envoyer au serveur une première requête visant à authentifier le jeu et lui allouer un identificateur (GameID) unique. Il y a deux intérêts à effectuer cette requête. Le premier est de pouvoir ainsi suivre et enregistrer le déroulement de la partie du côté serveur et pouvoir établir en fin de partie des statistiques sur les ressources ayant donné les meilleurs résultats. Le deuxième intérêt est qu'il est possible de paramétrer le format de réception des coups à jouer. En effet, certains clients préfèrent recevoir le coup en notation algébrique longue (LAN), par exemple {\tt e2e4} pour un pion ou {\tt b1c3} pour un cavalier ; tandis que d'autres attendent une notation alébrique courte (SAN), les exemples précédents deviennent {\tt e4} et {\tt Nc3}.
-
-
-        L'appel à envoyer est alors une simple requête POST à l'adresse du serveur, prenant comme donnée d'envoi un booléen indiquant si le format de retour doit être au format SAN ou non.
-\\{\tt POST http://localhost:9998/rest\\
-PostData : {\em san=false}\\
-Return : Integer {\em (par exemple : 1234)} }\\
-
-
-\subsection{Obtenir le prochain coup à jouer}
-        Dès que le joueur humain aura effectué son déplacement de pièce, une requête GET doit alors être envoyé au serveur. Cette URI nécessite deux informations : le GameID obtenu par la première requête POST et l'état actuel de l'échiquier au format normalisé FEN (pour Forsyth-Edwards Notation). Prenons ici par exemple ce code FEN: 
-\\{\tt rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR {\bf b} KQkq - 0 1}\\
-Celui-ci est divisé en trois sections principales :
-\begin{itemize}
-   \item La première partie, la plus longue, la position de chaque pièce sur le plateau. Ici, l'échiquier est en position de départ à l'exception du pion devant le roi blanc, qui a avancé de 2 cases.
-   \item Le '{\bf b}' indique que c'est aux noirs (black) de jouer.
-   \item Les derniers caractères contiennent plusieurs informations propres aux règles specifiques des échecs (tels que le roque ou le coup du pion en passant) et ne seront pas détaillés dans ce guide. Pour plus de détails sur le système FEN, des liens sont disponibles en fin de guide 
-\end{itemize}
-        Pour un envoi correct, les slashes '/' et les espaces présents dans le code FEN devront être modifiés respectivement par des symboles dollars '\$' et par le code HTML de l'espace, '\%20'. Ainsi le FEN précédent devra être modifié de la façon suivante :
-\\{\tt rnbqkbnr\$pppppppp\$8\$8\$4P34\$8\$PPPP1PPP\$RNBQKBNR\%20b\%20KQkq\%20-\%200\%201}
-        
-        Comme nous l'avons vu précedemment, la réponse du serveur est reçu en notation algébrique longue ou courte (LAN ou SAN) selon le paramétrage effectué. Ainsi, avancer de deux cases le pion blanc placé en e4 s'écrira {\tt e4e6}.
-\\{\tt GET http://localhost:9998/rest/{\em GameID}/{\em FEN}\\
-Return : String {\em (par exemple : "e4e6")} }\\
-        
-
-
-\subsection{Fin de partie}
-        Une fois la partie d'échecs terminée, il est important d'envoyer une requête DELETE afin que le serveur puisse effectuer en interne des valorisations ou dévaluations des ressources ayant influé en bien ou en mal sur l'issue de la partie et effacer l'ID de la base de données. Cette requête DELETE attend les mêmes informations que la requête GET précédente : 
-\\{\tt DELETE http://localhost:9998/rest/{\em GameID}/{\em FENfinal}}
-
-
-\section{Ajout de ressources au serveur central}
-         Dans le cadre d'un jeu d'échecs, il est rapidement possible d'être amené à vouloir déployer et modifier ses propres ressources (bots et bases de données de coups) afin de paramétrer au mieux le choix des coups par le serveur.
-        
-[TODO: Comment déployer de nouvelles ressources : utilisation du framework et parseur vers JSON.]
-
-\subsection{Pré-requis}
-	Avant de se lancer dans l'ajout d'une ressource, il est nécessaire de connaitre quelques une de ses caractéristiques. Premièrement, il faut savoir si la ressource est une base de données de débuts de partie (Opening database), une base de données de fins de partie (Endgame database) ou un bot. Dans un second temps, il est nécessaire de connaître le type de FEN dont la ressource a besoin pour être interrogée. A savoir, les deux types de FEN existant sans ceux dits court lorsqu'il présente quatres champs et long lorsqu'il en possède six. Enfin dernier paramètre à connaître, le type de notation algébrique utilisé dans la réponse. Il s'agit des deux types de notation algébrique évoquée précédemment : LAN et SAN.
-	
-     
-\subsection{Utilisation du framework}
-	Une fois que l'on connait les principales caractéristiques de la ressource à ajouter, il est possible de l'ajouter. L'ajout d'une ressource s'effectue par l'intermédiaire du framework resourcewrapper.class.php. Pour ce faire, il est nécessaire de créer un fichier PHP dédié à la ressource que nous souhaitons ajouter. Dans ce fichier, il faut commencer par indiquer : 
-	\begin{lstlisting}
-	require('resourcewrapper.class.php');
-	\end{lstlisting} 
-	Cette ligne nous indique que le fichier resourcewrapper.class.php est requis pour l'exécution de la suite du code. Après cela, il est nécessaire de déclarer un nouvel objet ResourceWrapper à l'aide du constructeur de la classe sur lequel vous appliquerez l'une des fonctions dont voici les prototypes :
-
-\begin{lstlisting}
-	public function setDatabaseOpenings($url, $version, $san, $parser = null, $complete_fen);
-	public function setDatabaseEndings($url, $version, $san, $parser = null, $complete_fen);
-	public function setMiddleGame($function, $version, $san, $complete_fen);
-\end{lstlisting}
-	
-avec :
-
-\begin{itemize}
-	\item \$url : l'url de la ressource à ajouter
-	\item \$version : la version de notre ressource (généralement, la version )
-	\item \$san : vrai si le résultat renvoyé est sous la forme d'un san, faux sinon
-	\item \$parser : la fonction permettant de renvoyer le résultat au format Json (détaillée dans la partie suivante)
-	\item \$complete\_fen : vrai si la ressource nécessite un FEN long, faux sinon.
-	\item \$function : dans le cas d'un bot, la fonction permettant d'interroger celui-ci. 
-\end{itemize}
-Enfin, lorsque l'une de ces fonctions est appelée, il faut appeler la méthode rest() sur l'objet ResourceWrapper que l'on a créé précédemment.
-	
-\subsection{Parser Json}
-	
- 
-	
-        
-
-\end{document}
-=======
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     STYLE POUR LES EXPOSES TECHNIQUES 
 %         3e année INSA de Rennes
@@ -203,8 +46,7 @@ Deux aspects seront abordés : la connexion d'un jeu avec le service distant et, 
 Afin de simuler une intelligence artificielle de jeu d'échecs, il existe de nombreuses ressources disponibles.
 Celles-ci prennent la forme de bases de connaissances répertoriant les meilleurs coups à jouer d'après les parties d'échecs de grands champions, ainsi que de nombreux bots (robots) pouvant, à partir d'une situation d'échiquier donnée, choisir le coup suivant le plus efficace.
 Cependant, inclure toutes ces ressources au sein même du jeu peut se révéler délicat.
-Cela nécessite en effet une mise à jour du programme dès la moindre modification des informations.
-Et ce genre de recherche demandant une puissance de calcul importante de la part de la plateforme, le portage du logiciel sur une plateforme moins puissante (notamment mobile) devient un casse-tête d'optimisation.
+Cela nécessite en effet une mise à jour du programme dès la moindre modification des informations. Et ce genre de recherche demandant une puissance de calcul importante de la part de la plateforme, le portage du logiciel sur une plateforme moins puissante (notamment mobile) devient un casse-tête d'optimisation.
         
 Déléguer cette partie du jeu d'échecs à un service tiers peut constituer une solution élégante.
 Ce service distant fait office de serveur centralisant toutes les opérations de recherche et de calculs.
@@ -244,8 +86,7 @@ En lançant l'interface CentralServer.gui, vous aurez alors accès à plusieurs act
    \item {\tt Etat du serveur} : une fois toutes les ressources nécessaires ajoutées, il est possible de lancer et de stopper le serveur central depuis le menu File.
 \end{itemize}
 \subsection{Lancer le serveur central}
-Pour lancer le serveur, deux méthodes sont disponibles.
-La première est, nous l'avons vu précédemment, de passer par l'outil de configuration.
+Pour lancer le serveur, deux méthodes sont disponibles. La première est, nous l'avons vu précédemment, de passer par l'outil de configuration.
 		...[TODO]
 
 \section{Interfaçage client et serveur central}
@@ -259,7 +100,9 @@ Au démarrage de la partie, il est nécessaire d'envoyer au serveur une première r
 Il y a deux intérêts à effectuer cette requête.
 Le premier est de pouvoir ainsi suivre et enregistrer le déroulement de la partie du côté serveur et pouvoir établir en fin de partie des statistiques sur les ressources ayant donné les meilleurs résultats.
 Le deuxième intérêt est qu'il est possible de paramétrer le format de réception des coups à jouer.
-En effet, certains clients préfèrent recevoir le coup en notation algébrique longue (LAN), par exemple {\tt e2e4} pour un pion ou {\tt b1c3} pour un cavalier ; tandis que d'autres attendent une notation alébrique courte (SAN), les exemples précédents deviennent {\tt e4} et {\tt Nc3}.
+En effet, certains clients préfèrent recevoir le coup en notation algébrique longue (LAN), par exemple {\tt e2e4} pour un pion ou {\tt b1c3} pour un cavalier ;
+tandis que d'autres attendent une notation alébrique courte (SAN), les exemples précédents deviennent {\tt e4} et {\tt Nc3}.
+
 
 L'appel à envoyer est alors une simple requête POST à l'adresse du serveur, prenant comme donnée d'envoi un booléen indiquant si le format de retour doit être au format SAN ou non.
 \\{\tt POST http://localhost:9998/rest\\
@@ -269,8 +112,7 @@ Return : Integer {\em (par exemple : 1234)} }\\
 
 \subsection{Obtenir le prochain coup à jouer}
 Dès que le joueur humain aura effectué son déplacement de pièce, une requête GET doit alors être envoyé au serveur.
-Cette URI nécessite deux informations : le GameID obtenu par la première requête POST et l'état actuel de l'échiquier au format normalisé FEN (pour Forsyth-Edwards Notation).
-Prenons ici par exemple ce code FEN : 
+Cette URI nécessite deux informations : le GameID obtenu par la première requête POST et l'état actuel de l'échiquier au format normalisé FEN (pour Forsyth-Edwards Notation). Prenons ici par exemple ce code FEN : 
 \\{\tt rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR {\bf b} KQkq - 0 1}\\
 Celui-ci est divisé en trois sections principales :
 \begin{itemize}
@@ -301,23 +143,23 @@ Dans le cadre d'un jeu d'échecs, il est rapidement possible d'être amené à voulo
 [TODO: Comment déployer de nouvelles ressources : utilisation du framework et parseur vers JSON.]
 
 \subsection{Pré-requis}
-Avant de se lancer dans l'ajout d'une ressource, il est nécessaire de connaitre quelques une de ses caractéristiques.
-Premièrement, il faut savoir si la ressource est une base de données de débuts de partie (Opening database), une base de données de fins de partie (Endgame database) ou un bot.
-Dans un second temps, il est nécessaire de connaître le type de FEN dont la ressource a besoin pour être interrogée.
-A savoir, les deux types de FEN existant sans ceux dits court lorsqu'il présente quatres champs et long lorsqu'il en possède six.
-Enfin dernier paramètre à connaître, le type de notation algébrique utilisé dans la réponse.
-Il s'agit des deux types de notation algébrique évoquée précédemment : LAN et SAN.
+	Avant de se lancer dans l'ajout d'une ressource, il est nécessaire de connaitre quelques une de ses caractéristiques.
+	Premièrement, il faut savoir si la ressource est une base de données de débuts de partie (Opening database), une base de données de fins de partie (Endgame database) ou un bot.
+	Dans un second temps, il est nécessaire de connaître le type de FEN dont la ressource a besoin pour être interrogée.
+	A savoir, les deux types de FEN existant sans ceux dits court lorsqu'il présente quatres champs et long lorsqu'il en possède six.
+	Enfin dernier paramètre à connaître, le type de notation algébrique utilisé dans la réponse.
+	Il s'agit des deux types de notation algébrique évoquée précédemment : LAN et SAN.
 	
      
 \subsection{Utilisation du framework}
 Une fois que l'on connait les principales caractéristiques de la ressource à ajouter, il est possible de l'ajouter.
 L'ajout d'une ressource s'effectue par l'intermédiaire du framework resourcewrapper.class.php.
-Pour ce faire, il est nécessaire de créer un fichier PHP dédié à la ressource que nous souhaitons ajouter.
-Dans ce fichier, il faut commencer par indiquer : 
+Pour ce faire, il est nécessaire de créer un fichier PHP dédié à la ressource que nous souhaitons ajouter. Dans ce fichier, il faut commencer par indiquer : 
 	\begin{lstlisting}
 	require('resourcewrapper.class.php');
 	\end{lstlisting} 
-	Cette ligne nous indique que le fichier resourcewrapper.class.php est requis pour l'exécution de la suite du code. Après cela, il est nécessaire de déclarer un nouvel objet ResourceWrapper à l'aide du constructeur de la classe sur lequel vous appliquerez l'une des fonctions dont voici les prototypes :
+Cette ligne nous indique que le fichier resourcewrapper.class.php est requis pour l'exécution de la suite du code.
+Après cela, il est nécessaire de déclarer un nouvel objet ResourceWrapper à l'aide du constructeur de la classe sur lequel vous appliquerez l'une des fonctions dont voici les prototypes :
 
 \begin{lstlisting}
 	public function setDatabaseOpenings($url, $version, $san, $parser = null, $complete_fen);
@@ -344,4 +186,3 @@ Enfin, lorsque l'une de ces fonctions est appelée, il faut appeler la méthode re
         
 
 \end{document}
->>>>>>> da260a17cd689e096ad8841f4e695cb2918d79f6
