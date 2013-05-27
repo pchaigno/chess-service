@@ -126,15 +126,15 @@ Pour chaque listener, une classe \textit{Adapter} correspondante permet de n'imp
 {fig:uml-listeners}
 
 \section{Central Server}
-Le serveur central est (comme l'indique son nom) l'élément central de notre web-service (voir figure\ref{fig:schema-centralserver}). En effet, c'est lui qui va être appelé par l'interface rest (celle que le client appelle) pour déterminer le meilleur coup. 
+Le serveur central est (comme l'indique son nom) l'élément central de notre service web (cf. figure \ref{fig:schema-centralserver}). En effet, c'est lui qui va être appelé par l'interface REST (celle que le client appelle) pour déterminer le meilleur coup. 
 \FigureEPS{h,t,b,p}{11cm}{./SchemaCentralServer.eps}
 {Schéma de fonctionnement du serveur central}   
 {fig:schema-centralserver}
-Ce premier appel est précédé de l'instanciation du serveur central par cette même ressource. Lors de l'instanciation, le serveur central va récupérer les différentes ressources présentes dans la table \textit{Resources} de la base de données spécifiée (dans le fichier conf.properties) au lancement du serveur grizzly.
+Ce premier appel est précédé de l'instanciation du serveur central par cette même ressource. Lors de l'instanciation, le serveur central va récupérer les différentes ressources présentes dans la table \textit{Resources} de la base de données spécifiée (dans le fichier conf.properties) au lancement du serveur Grizzly.
 Une fois le serveur central instancié, la classe \textit{CentralServerResource} peut demander au serveur central quel coup jouer. Pour cela, la \textit{CentralServerResource} doit lui envoyer au moins la FEN, donnée par le client.
 Avec cette FEN, le serveur central va demander aux différentes ressources actives de proposer une liste de coups (avec des informations sur ces coups (cf. \ref{ressources_movesuggestion})) à jouer dans cette situation de jeu.
 Ensuite, grâce aux informations que les ressources lui donne, le serveur central va déterminer quel est le meilleur coup (cf. \ref{calcul-coup}) à jouer.
-Avant de renvoyer ce meilleur coup, le serveur central va mettre à jour la partie (mise à jour du FEN courant ainsi que ajout des coups proposés dans la table \textit{Moves}) ainsi que les statistiques sur les coups.
+Avant de renvoyer ce meilleur coup, le serveur central va mettre à jour la partie (mise à jour de la FEN courante et ajout des coups proposés dans la table \textit{Moves}) ainsi que les statistiques sur les coups.
 
 \section{Calcul du meilleur Coup}
 \label{calcul-coup}
@@ -142,12 +142,12 @@ Le calcul du meilleur coup constitue, avec les appels aux ressources, le princip
 Ce calcul est effectué en plusieurs étapes.
 Tout d'abord, le serveur central va demander à chaque ressource (instance de classe dérivée de la classe Resource)
 de mettre à jour la liste de coup qu'elle propose.
-Pour cela, la ressource va effectuer un requête GET à son uri (cf figure\ref{fig:schema-centralserver}).
+Pour cela, la ressource va effectuer une requête GET vers son URL (cf. figure\ref{fig:schema-centralserver}).
 Cette requête GET va lui permettre de récupérer les coups que la ressource distante (accessible via l'interface php associée) lui propose, au format JSON (cf. partie \ref{frameworkPHP}).
-Ce JSON va ensuite être analysé syntaxiquement et les suggestions de coup (instances de classes dérivées de \textit{MoveSuggestion}) créées vont former la liste de coups de la ressource.
+Ce JSON va ensuite être analysé syntaxiquement et les suggestions de coups (instances de classes dérivées de \textit{MoveSuggestion}) créés vont former la liste de coups de la ressource.
 En plus de stocker les informations renvoyées par les ressources externes dans les suggestion de coups, on calcule un score pour chaque suggestion.
-Ce score est calculé en prenant en compte les informations de la ressources ainsi que des statistiques (accessibles via \textit{StatsManager}) des parties précédentes (voir le rapport pour les formules).
-Une fois que toutes les ressources ont mis à jour leur liste de coups, le serveur central va calculer un score associé à chaque coup, prenant en compte les listes de coups de toutes les ressources (voir rapport pour les formules).
+Ce score est calculé en prenant en compte les informations de la ressources ainsi que des statistiques (accessibles via \textit{StatsManager}) des parties précédentes (cf. rapport pour les formules).
+Une fois que toutes les ressources ont mis à jour leur liste de coups, le serveur central va calculer un score associé à chaque coup, prenant en compte les listes de coups de toutes les ressources (cf. rapport pour les formules).
 Une fois ces scores calculés, le coup qui a le score le plus élevé est renvoyé au client.
 Après avoir déterminé le meilleur coup, les statistiques sur les suggestion de coups sont mises à jour grâce à \textit{StatsManager}.
 
