@@ -43,7 +43,7 @@ Le serveur central du projet permet de coordonner les différents appels entre le
 \section{Framework PHP}
 \label{frameworkPHP}
 Le framework PHP permet d'ajouter rapidement une interface entre le serveur central et une nouvelle ressource en ligne.
-Il est organisé en trois grandes parties, une pour chaque type de ressources (bases de données d'ouvertures, bases de données de fermetures et moteurs d'échec pour le milieu de partie).
+Il est organisé en trois grandes parties, une pour chaque type de ressources (bases de données d'ouvertures, bases de données de fermetures et moteurs d'échecs pour le milieu de partie).
 
 Il contient à la fois la structure REST, la gestion de version et les appels à la ressource en ligne.
 Ce dernier point se fait en utilisant la librairie PHP cURL.
@@ -159,7 +159,7 @@ Cependant, chaque ressource propose généralement plusieurs coups pour une unique
 Il faut donc pondérer la récompense en fonction de la confiance que la ressource apporte dans le coup que nous avons choisi de jouer.
 Ainsi, si le score (celui que nous calculons) associé à un coup est maximum pour la ressource, on considèrera que la ressource a confiance en ce coup.
 A l'inverse, si le coup a un score faible par rapport au score des autres coups que la ressource propose, nous considèrerons que la ressource a peu confiance en ce coup.
-Toutes les confiances des coups d'une partie sont stockées dans la table \textit{moves}.
+Toutes les confiances des coups d'une partie sont stockées dans la table \textit{Moves}.
 A la fin d'une partie, chaque ressource est récompensée proportionnellement à la somme des confiances de tous les coups qu'elle a proposés et que nous avons joués durant cette partie.
 
 

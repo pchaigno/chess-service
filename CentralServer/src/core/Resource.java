@@ -275,9 +275,15 @@ public abstract class Resource {
 			if(status != 200) {
 				this.connected = false;
 			} else {
-				this.connected = true;
-				this.san = ('s' == response.charAt(response.length()-1));
-				this.version = response.substring(0, response.length()-1);
+				if(response.length()<4) {
+					// The version number returned is incorrect, we remove the resource.
+					this.connected = false;
+					System.err.println("Version number incorrect for "+this.name+" at "+this.uri);
+				} else {
+					this.connected = true;
+					this.san = ('s' == response.charAt(response.length()-1));
+					this.version = response.substring(0, response.length()-1);
+				}
 			}
 		} catch(ClientHandlerException e) {
 			this.connected = false;

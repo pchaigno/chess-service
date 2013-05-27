@@ -45,7 +45,7 @@ Deux aspects seront abordés : la connexion d'un jeu avec le service distant et, 
 
 \subsection*{Contexte}
 Afin de simuler une intelligence artificielle de jeu d'échecs, il existe de nombreuses ressources disponibles.
-Celles-ci prennent la forme de bases de connaissances répertoriant les meilleurs coups à jouer d'après les parties d'échecs de grands champions, ainsi que de nombreux bots (robots) pouvant, à partir d'une situation d'échiquier donnée, choisir le coup suivant le plus efficace.
+Celles-ci prennent la forme de bases de connaissances répertoriant les meilleurs coups à jouer d'après les parties d'échecs de grands champions, ainsi que de nombreux moteurs d'échecs (bots) pouvant, à partir d'une situation d'échiquier donnée, choisir le coup suivant le plus efficace.
 Cependant, inclure toutes ces ressources au sein même du jeu peut se révéler délicat.
 Cela nécessite en effet une mise à jour du programme dès la moindre modification des informations. Et ce genre de recherche demandant une puissance de calcul importante de la part de la plateforme, le portage du logiciel sur une plateforme moins puissante (notamment mobile) devient un casse-tête d'optimisation.
 
@@ -62,7 +62,7 @@ Et ainsi tirer des statistiques sur la performance des algorithmes mis en place.
 
 
 \section{Déployer le serveur central}
-Afin de pouvoir tester le serveur central, il est au préalable nécessaire de le lier à des ressources (bases de données et bots) placées sur des serveurs.
+Afin de pouvoir tester le serveur central, il est au préalable nécessaire de le lier à des ressources (bases de données et moteur d'échecs) placées sur des serveurs.
 
 \subsection{Déployer les ressources existantes}
 Rendre une ressource accessible à distance nécessitera de pouvoir lancer un serveur Apache et PHP sur la machine hôte.
@@ -79,19 +79,19 @@ Une fois le serveur Wamp relancé, Chessok sera alors accessible par le serveur c
 Il est tout à fait possible de déployer une ressource supplémentaire sur le même serveur en accordant les règles de réécriture Apache avec la nouvelle ressource.
 		
 \subsection{Utilisation de l'outil graphique de configuration}
-La méthode recommandé pour référencer les ressources déployées auprès du serveur central est de passer par l'outil graphique fourni avec le projet.
+La méthode recommandée pour référencer les ressources déployées auprès du serveur central est de passer par l'outil graphique fourni avec le projet.
 En lançant l'interface graphique CentralServer, vous aurez alors accès à plusieurs actions de configurations du serveur :
 \begin{itemize}
-	\item {\tt Set options} : la configuration propre au serveur central est modifiable depuis cette fenêtre. Sont notamment modifiables : le port d'accès et les délais d'attentes maximums de réponse des ressources autorisés par le serveur central.
+	\item {\tt Set options} : la configuration propre au serveur central est modifiable depuis cette fenêtre. Sont notamment modifiables : le port d'accès et les délais d'attentes maximums de réponse des ressources autorisés par le serveur central (il faut faire attention à avoir un \textit{read\_timeout} supérieur au délai de réponse de Crafty dans le cas de l'utilisation de ce dernier).
 	\item {\tt Change database} : depuis cette boîte de dialogue, il est possible de définir la base de données qui contiendra les informations concernant l'accès aux ressources. Cette base de données sera placée dans le répertoire indiqué dans la fenêtre Set options. En indiquant un nom de base inexistant, celle-ci sera automatiquement générée et prête pour ajouter de nouvelles ressources. Il est aussi possible de définir une base comme celle étant à utiliser par défaut au démarrage du serveur.
    \item {\tt Table des ressources} : cette table occupant la majeure partie de l'interface liste toutes les ressources accessibles par le serveur. En faisant un clic-droit sur cette table, un menu contextuel apparaît, permettant d'ajouter, d'éditer ou de supprimer des ressources.
-   \item {\tt Etat du serveur} : une fois toutes les ressources nécessaires ajoutées, il est possible de lancer et de stopper le serveur central depuis le menu File.
+   \item {\tt Etat du serveur} : une fois toutes les ressources nécessaires ajoutées, il est possible de lancer et de stopper le serveur central depuis le menu File ou via le raccourci clavier Ctrl+S.
 \end{itemize}
+
+
 \subsection{Lancer le serveur central}
+La seule étape restante consiste à lancer le serveur. Comme vu précédemment, cela est possible via l'interface graphique. Il est alors possible de jouer avec le client 3D ou le client JavaScript. Pour ce dernier l'adresse du serveur central peut être changée en début du fichier \textit{centralserver.js}.
 
-Pour lancer le serveur, deux méthodes sont disponibles. La première est, nous l'avons vu précédemment, de passer par l'outil de configuration.
-
-		...[TODO]
 
 \section{Interfaçage client et serveur central}
 On supposera l'existence préalable du programme capable de gérer la logique et les règles du jeu d'échecs (déplacement correct des différentes pièces, connaissance du joueur devant jouer le prochain coup, reconnaissance des situations particulières telles que l'échec et l'échec et mat...) ainsi que de l'aspect graphique du plateau.
@@ -125,7 +125,7 @@ Celui-ci est divisé en trois sections principales :
 \begin{itemize}
    \item La première partie, la plus longue, la position de chaque pièce sur le plateau. Ici, l'échiquier est en position de départ à l'exception du pion devant le roi blanc, qui a avancé de 2 cases.
    \item Le '{\bf b}' indique que c'est aux noirs (black) de jouer.
-   \item Les derniers caractères contiennent plusieurs informations propres aux règles spécifiques des échecs (tels que le roque ou le coup du pion en passant) et ne seront pas détaillés dans ce guide. Pour plus de détails sur le système FEN, des liens sont disponibles en fin de guide 
+   \item Les derniers caractères contiennent plusieurs informations propres aux règles spécifiques des échecs (tels que le roque ou le coup du pion en passant) et ne seront pas détaillés dans ce guide.
 \end{itemize}
 Pour un envoi correct, les slashes '/' et les espaces présents dans le code FEN devront être modifiés respectivement par des symboles dollars '\$' et par le code HTML de l'espace, '\%20'.
 Ainsi le FEN précédent devra être modifié de la façon suivante :
@@ -150,7 +150,7 @@ Dans le cadre d'un jeu d'échecs, il est rapidement possible d'être amené à voulo
 
 \subsection{Pré-requis}
 Avant de se lancer dans l'ajout d'une ressource, il est nécessaire de connaître quelques une de ses caractéristiques.
-Premièrement, il faut savoir si la ressource est une base de données de débuts de partie (openings database), une base de données de fins de partie (endings database) ou un moteur d'échec (bot).
+Premièrement, il faut savoir si la ressource est une base de données de débuts de partie (openings database), une base de données de fins de partie (endings database) ou un moteur d'échecs (bot).
 Dans un second temps, il est nécessaire de connaître le type de FEN dont la ressource a besoin pour être interrogée.
 A savoir, les deux types de FEN existant sont ceux dits court lorsqu'il présente quatre champs et long lorsqu'il en possède six.
 Enfin dernier paramètre important à connaître pour la suite, le type de notation algébrique utilisé dans la réponse.
