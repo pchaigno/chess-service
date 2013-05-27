@@ -73,7 +73,7 @@ Avant de démarrer, il est indispensable de vérifier que l'extension Apache {\tt 
 Dans le cas de Chessok, seuls deux fichiers sont à copier dans le répertoire {\tt www} de Wamp : \textit{chessok.php} et \textit{resourcewrapper.class.php} (ce dernier fichier sera expliqué en détail dans la dernière partie de ce guide).
 Il faut ensuite activer la redirection Apache vers le fichier \textit{chessok.php}, en ajoutant dans le fichier \textit{httpd.conf} :
 \\{\tt	RewriteEngine On\\
-RewriteCond \%{REQUEST\_URI} \^/chessok/.*\$ [NC]\\
+RewriteCond \%\{REQUEST\_URI\} \^/chessok/.*\$ [NC]\\
 RewriteRule \^(.*)\$ /chessok.php [L] }\\
 Une fois le serveur Wamp relancé, Chessok sera alors accessible par le serveur central à l'adresse {\tt http://localhost/chessok/}.
 Il est tout à fait possible de déployer une ressource supplémentaire sur le même serveur en accordant les règles de réécriture Apache avec la nouvelle ressource.
