@@ -65,7 +65,7 @@ Enfin, le framework s'occupe aussi d'adapter le FEN suivant les demandes de la r
 \section{Ressources et MoveSuggestions}
 \label{ressources_movesuggestion}
 Une fois les ressources en état de communiquer avec le serveur central, il est bien entendu nécessaire que ce dernier soit au courant de leur existence afin de pouvoir les interroger.
-C'est le rôle de la classe \textit{ResourcesManager} de gérer la liste des ressouces accessibles.
+C'est le rôle de la classe \textit{ResourcesManager} de gérer la liste des ressources accessibles.
 En accédant à une base de données externe listant toutes ces ressources, elle peut ensuite pour chacune d'entre elles les représenter à l'aide d'une classe dérivant de la classe abstraite \textit{Resource} en fonction de leur type : \textit{OpeningsDatabase}, \textit{EndingsDatabase} ou \textit{Bot}.
 
 Il est à noter que l'utilisation d'une base de données s'est également révélée nécessaire dans une deuxième partie du serveur central.
@@ -81,7 +81,7 @@ de ces bases de données SQLite et peut permettre d'ajouter simplement l'accès à 
 {fig:uml-database-manager}
 
 Lors de la réception d'une requête, chaque ressource va être interrogée une à une.
-Dès l'arrivée d'une réponse, celle-ci sera stockée dans une dérivée de la classe MoveSuggestion
+Dès l'arrivée d'une réponse, celle-ci sera stockée dans une dérivée de la classe \textit{MoveSuggestion}
 (à nouveau en fonction du type de la ressource : OpeningsSuggestion, EndingsSuggestion ou BotSuggestion)
 accompagnée de toutes les informations qui lui sont associées, telles que son score, sa probabilité de gagner ou de faire match nul.
 Ce sont ces données qui serviront en fin de partie à obtenir des statistiques sur la performance des ressources.
@@ -140,7 +140,7 @@ Ce calcul est effectué en plusieurs étapes.
 Tout d'abord, le serveur central va demander à chaque ressource (instance de classe dérivée de la classe \textit{Resource})
 de mettre à jour la liste de coups qu'elle propose.
 Pour cela, la ressource va effectuer une requête GET vers son URL (cf. figure\ref{fig:schema-centralserver}).
-Cette requête GET va lui permettre de récupérer les coups que la ressource distante (accessible via l'interface php associée) lui propose, au format JSON (cf. partie \ref{frameworkPHP}).
+Cette requête GET va lui permettre de récupérer les coups que la ressource distante (accessible via l'interface PHP associée) lui propose, au format JSON (cf. partie \ref{frameworkPHP}).
 Ce JSON va ensuite être analysé syntaxiquement et les suggestions de coups (instances de classes dérivées de \textit{MoveSuggestion}) créés vont former la liste de coups de la ressource.
 En plus de stocker les informations renvoyées par les ressources externes dans les suggestions de coups, on calcule un score pour chaque suggestion.
 Ce score est calculé en prenant en compte les informations de la ressources ainsi que des statistiques (accessibles via \textit{StatsManager}) des parties précédentes (cf. rapport pour les formules).
@@ -159,7 +159,7 @@ Cependant, chaque ressource propose généralement plusieurs coups pour une unique
 Il faut donc pondérer la récompense en fonction de la confiance que la ressource apporte dans le coup que nous avons choisi de jouer.
 Ainsi, si le score (celui que nous calculons) associé à un coup est maximum pour la ressource, on considèrera que la ressource a confiance en ce coup.
 A l'inverse, si le coup a un score faible par rapport au score des autres coups que la ressource propose, nous considèrerons que la ressource a peu confiance en ce coup.
-Toutes les confiances des coups d'une partie sont stockées dans la table moves.
+Toutes les confiances des coups d'une partie sont stockées dans la table \textit{moves}.
 A la fin d'une partie, chaque ressource est récompensée proportionnellement à la somme des confiances de tous les coups qu'elle a proposés et que nous avons joués durant cette partie.
 
 
@@ -175,7 +175,7 @@ Nous avons donc dû écrire un analyseur syntaxique afin de pouvoir convertir tous
 Cet analyseur est basé sur un déjà existant en JavaScript.
 Ce code JavaScript a été convertit en Java et il a été corrigé pour gérer certaines subtilités des échecs (en passant, pat, etc.).
 Cet analyseur est contenu dans le package parser.
-Étant donné que certaines ressources ne nous renvoie pas toujours des coups en notation algébrique (cela est rare mais néanmoins possible), les différentes méthodes de la classe \textit{ChessParser} effectuant des traitements sur des FEN (conversion de SAN en LAN et vice versa, vérification du en passant et de la mise en échec) peuvent lancer une exception (\textit{IncorrectFENException}) (voir figure \ref{fig:uml-parser}).
+Étant donné que certaines ressources ne nous renvoie pas toujours des coups en notation algébrique (cela est rare mais néanmoins possible), les différentes méthodes de la classe \textit{ChessParser} effectuant des traitements sur des FEN (conversion de SAN en LAN et vice versa, vérification du en passant et de la mise en échec) peuvent lancer des exceptions (\textit{IncorrectFENException} et \textit{IncorrectAlgebraicNotationException}) (voir figure \ref{fig:uml-parser}).
 \FigureEPS{h,t,b,p}{5cm}{./Parser.eps}
 {Diagramme UML de la classe ChessParser}   
 {fig:uml-parser}
