@@ -16,6 +16,7 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import parser.ChessParser;
+import parser.IncorrectAlgebraicNotationException;
 import parser.IncorrectFENException;
 
 /**
@@ -191,11 +192,13 @@ public class CentralServerResource {
 				try {
 					parser = new ChessParser(fen);
 					move = parser.convertSANToLAN(move);
-				} catch (IncorrectFENException e) {
-					// Shouldn't happen !
+				} catch(IncorrectFENException e) {
 					System.err.println(e.getMessage());
 					return respondBadRequest(e.getMessage());
-				}	
+				} catch(IncorrectAlgebraicNotationException e) {
+					System.err.println(e.getMessage());
+					return respondBadRequest(e.getMessage());
+				}
 			}
 		}
 		

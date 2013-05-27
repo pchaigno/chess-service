@@ -7,6 +7,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import parser.ChessParser;
+import parser.IncorrectAlgebraicNotationException;
 import parser.IncorrectFENException;
 
 /**
@@ -64,9 +65,12 @@ public class Bot extends Resource {
 				try {
 					parser = new ChessParser(fen);
 					move = parser.convertLANToSAN(move);
-				} catch (IncorrectFENException e) {
-					// Shouldn't happen !
-					System.err.println("parseJSONMove :"+e.getMessage());
+				} catch(IncorrectFENException e) {
+					System.err.println("parseJSONMove: "+e.getMessage());
+					continue;
+				} catch(IncorrectAlgebraicNotationException e) {
+					System.err.println("parseJSONMove: "+e.getMessage());
+					continue;
 				}
 			}
 			int depth = json.getInt(JSON_DEPTH);

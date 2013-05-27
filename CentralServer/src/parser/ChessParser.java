@@ -46,9 +46,10 @@ public class ChessParser {
 	 * Convert a LAN to a SAN.
 	 * @param lan The Long Algebraic Notation.
 	 * @return The Short Algebraic Notation.
-	 * @throws IncorrectFENException An IncorrectFENException
+	 * @throws IncorrectFENException If the FEN is incorrect.
+	 * @throws IncorrectAlgebraicNotationException If the long algebraic notation is incorrect.
 	 */
-	public String convertLANToSAN(String lan) throws IncorrectFENException {
+	public String convertLANToSAN(String lan) throws IncorrectFENException, IncorrectAlgebraicNotationException {
 		if(lan.matches("(O-O-O|O-O)\\+?")) {
 			return lan;
 		}
@@ -59,9 +60,10 @@ public class ChessParser {
 	 * Convert a SAN to a LAN.
 	 * @param san The Short Algebraic Notation.
 	 * @return The Long Algebraic Notation.
-	 * @throws IncorrectFENException An IncorrectFENException
+	 * @throws IncorrectFENException If the FEN is incorrect.
+	 * @throws IncorrectAlgebraicNotationException If the short algebraic notation is incorrect.
 	 */
-	public String convertSANToLAN(String san) throws IncorrectFENException {
+	public String convertSANToLAN(String san) throws IncorrectFENException, IncorrectAlgebraicNotationException {
 		// Castling:
 		if(san.matches("(O-O-O|O-O)\\+?")) {
 			return san;
@@ -70,7 +72,7 @@ public class ChessParser {
 		if(san.matches("[RBQKPN]?[a-h]?[1-8]?[x]?[a-h][1-8][=]?[QNRB]?[+#]?")) {
 			return parseMove(this.board, san);
 		}
-		throw new IllegalArgumentException("Illegal SAN: "+san);
+		throw new IncorrectAlgebraicNotationException("The SAN is neither a castling nor a regular move.");
 	}
 	
 	/**
@@ -78,13 +80,39 @@ public class ChessParser {
 	 * @param ucimove The Long Algebraic Notation.
 	 * @param board The chess board.
 	 * @return The Short Algebraic Notation.
-	 * @throws IncorrectFENException An IncorrectFENException
+	 * @throws IncorrectFENException If the FEN is incorrect.
+	 * @throws IncorrectAlgebraicNotationException If the long algebraic notation is incorrect.
 	 */
-	private static String UCItoPGN(String ucimove, ChessBoard board) throws IncorrectFENException {
+	private static String UCItoPGN(String ucimove, ChessBoard board) throws IncorrectFENException, IncorrectAlgebraicNotationException {
+		if(ucimove.length()<4) {
+			throw new IncorrectAlgebraicNotationException("The LAN misses parameters.");
+		}
+		
 		char fromX = ucimove.charAt(0);
-		int fromY = Integer.parseInt(String.valueOf(ucimove.charAt(1)));
+		int fromY = -1;
+		try {
+			fromY = Integer.parseInt(String.valueOf(ucimove.charAt(1)));
+		} catch(NumberFormatException e) {
+			throw new IncorrectAlgebraicNotationException("The origin coordinate of the LAN is incorrect.");
+		}
 		char toX = ucimove.charAt(2);
-		int toY = Integer.parseInt(String.valueOf(ucimove.charAt(3)));
+		int toY = -1;
+		try {
+			toY = Integer.parseInt(String.valueOf(ucimove.charAt(3)));
+		} catch(NumberFormatException e) {
+			throw new IncorrectAlgebraicNotationException("The destination coordinate of the LAN is incorrect.");
+		}
+		
+		// Check the origin coordinate:
+		if(!letter.containsKey(fromX) || fromY<1 || fromY>8) {
+			throw new IncorrectAlgebraicNotationException("The origin coordinate of the LAN is incorrect.");
+		}
+		
+		// Check the destination coordinate:
+		if(!letter.containsKey(toX) || toY<1 ||  toY>8) {
+			throw new IncorrectAlgebraicNotationException("The destination coordinate of the LAN is incorrect.");
+		}
+		
 		PieceType piece = board.squares.get(fromX)[fromY].piece.type;
 		boolean capture = false;
 
@@ -142,9 +170,10 @@ public class ChessParser {
 	 * @param board The chess board.
 	 * @param token The Short Algebraic Notation.
 	 * @return The Long Algebraic Notation.
-	 * @throws IncorrectFENException An IncorrectFENException
+	 * @throws IncorrectFENException If the FEN is incorrect.
+	 * @throws IncorrectAlgebraicNotationException If the short algebraic notation is incorrect.
 	 */
-	private static String parseMove(ChessBoard board, String token) throws IncorrectFENException {
+	private static String parseMove(ChessBoard board, String token) throws IncorrectFENException, IncorrectAlgebraicNotationException {
 		Matcher matcher = Pattern.compile("([RBQKPN])?([a-h])?([1-8])?([x])?([a-h])([1-8])([=]?)([QNRB]?)([+#]?)").matcher(token);
 		char[] moveArray = new char[6];
 		if(matcher.find()) {
@@ -158,6 +187,8 @@ public class ChessParser {
 					moveArray[i] = 0;
 				}
 			}
+		} else {
+			throw new IncorrectAlgebraicNotationException("The short algebraic notation is irregular.");
 		}
 		
 		// Parse the type of the piece:
@@ -170,7 +201,11 @@ public class ChessParser {
 		}
 		int fromY = -1;
 		if(moveArray[2]!=0) {
-			fromY = Integer.parseInt(String.valueOf(moveArray[2]));
+			try {
+				fromY = Integer.parseInt(String.valueOf(moveArray[2]));
+			} catch(NumberFormatException e) {
+				throw new IncorrectAlgebraicNotationException("The origin coordinate of the SAN is incorrect.");
+			}
 		}
 
 		// Parse the capture character:
@@ -189,7 +224,16 @@ public class ChessParser {
 			toX = moveArray[4];
 		}
 		if(moveArray[5]!=0) {
-			toY = Integer.parseInt(String.valueOf(moveArray[5]));
+			try {
+				toY = Integer.parseInt(String.valueOf(moveArray[5]));
+			} catch(NumberFormatException e) {
+				throw new IncorrectAlgebraicNotationException("The destination coordinate of the SAN is incorrect.");
+			}
+		}
+		
+		// Check the destination coordinate:
+		if(!letter.containsKey(toX) || toY<1 || toY>8) {
+			throw new IncorrectAlgebraicNotationException("The destination coordinate of the SAN is incorrect.");
 		}
 
 		// Determine the location of the piece to move using chess rules and incomplete information about it.
