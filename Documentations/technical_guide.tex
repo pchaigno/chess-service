@@ -97,11 +97,13 @@ Un objet est ainsi manipulable grâce à son URL auquel on effectue des appels ave
     
 Dans notre cas, le serveur central est déployé sur le serveur Grizzly par la classe CentralServerResourceDeployer.
 La classe CentralServerResource est ensuite chargée de réceptionner les requêtes.
-Elle contient le coeur de l'architecture REST.
-Elle capte les requêtes envoyées à l'URI \textit{rest/} et les traite en fonction du type.
-Si la requête est de type POST, elle crée une nouvelle partie.
-Si c'est un GET, elle lance le processus de mise à jours de suggestion de coups et de sélection du meilleur coup grâce au FEN fourni dans l'URL et renvoie le meilleur coup.
-Enfin, dans le cas d'une requête de type DELETE, elle fait les appels de suppression de partie et de récompense.
+Elle contient le c\oe{}ur de l'architecture REST.
+Elle capte les requêtes envoyées à l'URI \textit{rest/} grâce à l'annotation Jersey \textit{@Path(``rest/'')} et les traite en fonction du type.
+Si la requête est de type POST, elle est captée par l'annotation \textit{@POST}. Elle crée une nouvelle partie en appelant la classe GamesManager, puis renvoie l'id attribuée. Le fait que cet id soit renvoyé est indiqué par l'annotation \textit{@Produces(``text/plain'')}.
+
+Pour qu'une requête GET soit captée par l'annotation \textit{@GET}, il faut que le path contienne d'autres informations : l'id de la partie et le fen. Ces informations renseignées dans l'URL sont captées par l'annotation \textit{@Path} puis réutilisées en tant que paramètres de la fonction grâce à l'annotation \textit{@PathParam}. La fonction lance le processus de mise à jour de suggestion de coups et de sélection du meilleur coup grâce au FEN fourni dans l'URL et renvoie le meilleur coup.
+
+Enfin, dans le cas d'une requête de type DELETE, elle fait les appels de suppression de partie et de récompense grâce à l'id et le fen final récupérés comme précédemment.
 Des requêtes de type OPTIONS sont également réceptionnées.
 Ces requêtes sont inhérantes au script AJAX utilisé par les clients.
 Elles servent à déterminer les autorisations données par le serveur.
