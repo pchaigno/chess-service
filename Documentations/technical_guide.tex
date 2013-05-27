@@ -165,18 +165,13 @@ A la fin d'une partie, chaque ressource est récompensée proportionnellement à la
 
 
 \section{Gestion des notations d'échecs}
-Aux échecs, les représentations numériques du plateau et des coups sont normalisées.
-Ainsi, il existe une notation pour le plateau appelée FEN.
-Pour les coups, la notation algébrique est utilisée.
-Elle spécifie la case de départ et d'arrivée dans sa version longue et la pièce utilisée et la case d'arrivée dans sa version courte.
-Le fait que cette notation ait 2 formats nous a posé certains problèmes de compatibilité.
-En effet, certaines ressources nous renvoyaient des coups en notation algébrique longue (LAN) et d'autres en notation algébrique courte (SAN).
+Certaines ressources nous renvoient des coups en notation algébrique longue (LAN) et d'autres en notation algébrique courte (SAN).
 De plus, les clients graphiques exigent pour certains des coups au format LAN et d'autres au format SAN.
 Nous avons donc du écrire un analyseur syntaxique afin de pouvoir convertir tous les coups au même format.
-Cet analyseur est basé sur un déjà existant en javascript.
-Ce code javascript a été convertit en Java et il a été corrigé pour gérer certaines subtilités des échecs (en passant, pat, etc.).
+Cet analyseur est basé sur un algorithme déjà existant en JavaScript.
+Ce code JavaScript a été convertit en Java et il a été corrigé pour gérer correctement certaines subtilités des échecs (en passant, pat, etc.).
 Cet analyseur est contenu dans le package parser.
-Etant donné que certaines ressources ne nous renvoie pas toujours des coups en notation algébrique (cela est rare mais néanmoins possible), les différentes méthodes de la classe \textit{ChessParser} effectuant des traitements sur des FEN (conversion de SAN en LAn et vice versa, vérification du en passant et de la mise en échec) peut lancer une exception (\textit{IncorrectFENException}).
+Etant donné que certaines ressources ne nous renvoient pas toujours des coups avec une notation correcte (cela est rare mais néanmoins possible), les différentes méthodes de la classe \textit{ChessParser} effectuant des traitements sur des FEN (conversion de SAN en LAN et vice versa, vérification du en passant et de la mise en échec) peuvent lever une exception (\textit{IncorrectFENException} ou \textit{IncorrectAlgebraicNotationException}).
 
 
 \end{document}
