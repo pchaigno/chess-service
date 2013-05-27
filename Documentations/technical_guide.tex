@@ -145,7 +145,7 @@ Le calcul du meilleur coup constitue, avec les appels aux ressources, le princip
 Ce calcul est effectué en plusieurs étapes.
 Tout d'abord, le serveur central va demander à chaque ressource (instance de classe dérivée de la classe \textit{Resource})
 de mettre à jour la liste de coups qu'elle propose.
-Pour cela, la ressource va effectuer une requête GET vers son URL (cf. figure\ref{fig:schema-centralserver}).
+Pour cela, la ressource va effectuer une requête GET vers son URL (cf. figure \ref{fig:schema-centralserver}).
 Cette requête GET va lui permettre de récupérer les coups que la ressource distante (accessible via l'interface PHP associée) lui propose, au format JSON (cf. partie \ref{frameworkPHP}).
 Ce JSON va ensuite être analysé syntaxiquement et les suggestions de coups (instances de classes dérivées de \textit{MoveSuggestion}) créés vont former la liste de coups de la ressource.
 En plus de stocker les informations renvoyées par les ressources externes dans les suggestions de coups, on calcule un score pour chaque suggestion.
