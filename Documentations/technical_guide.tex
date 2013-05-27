@@ -36,12 +36,12 @@
 \begin{document}
 \maketitle{}
 
-{\em Ce guide décrit l'organisation technique du projet. Vous y trouverez une description technique des différents modules de notre système. Ce rapport ne décrit donc pas le fonctionnement global du système mais porte sur la réalisation technique (au sens des technologies et architectures mises en place) du projet}.
+{\em Ce guide décrit l'organisation technique du projet. Vous y trouverez une description détaillée des différents modules de notre système. Ce rapport ne décrit donc pas le fonctionnement global du système mais porte sur la réalisation technique (au sens des technologies et architectures mises en place) du projet}.
 
 \subsection*{Contexte}
 Notre système s'organise en trois entités (cf. figure \ref{fig:schema-systeme}). Tout d'abord, nous avons les ressources externes. Ces ressources nous donnent une liste de coups à jouer dans une situation précise de jeu d'échecs. Ces ressources nous envoient également différentes informations sur ces coups. Il existe trois types de ressources : des bases de données d'ouvertures pour le début de partie, des bots (robots) pour le milieu de partie et des bases de données de fermetures pour la fin de partie.
 
-Tout l'intelligence de notre système réside dans la seconde entité. Cette entité est un serveur qui va utiliser les ressources afin de déterminer le meilleur coup à jouer. Une fois ce coup déterminé, il va le renvoyer à la dernière entité, des clients (jeux d'échecs classiques).
+Toute l'intelligence de notre système réside dans la seconde entité. Cette entité est un serveur qui va utiliser les ressources afin de déterminer le meilleur coup à jouer. Une fois ce coup déterminé, il va le renvoyer à la dernière entité : des clients (jeux d'échecs classiques).
 \FigureEPS{h,t,b,p}{11cm}{./ArchitectureSimple.eps}
 {Schéma général du système}
 {fig:schema-systeme}
