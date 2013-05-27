@@ -70,8 +70,8 @@ Nous prendrons ici l'exemple de déployer la ressource Chessok fourni avec le cod
 Nous nous placerons ici dans le cas d'utilisation d'un serveur local à l'aide de Wamp.
 Avant de démarrer, il est indispensable de vérifier que l'extension Apache {\tt Redirect} et l'extension PHP {\tt cURL} ont bien été activés dans les options de Wamp.
 		
-Dans le cas de Chessok, seuls deux fichiers sont à copier dans le répertoire {\tt www} de Wamp : chessok.php et resourcewrapper.class.php (ce dernier fichier sera expliqué en détail dans la dernière partie de ce guide).
-Il faut ensuite activer la redirection Apache vers le fichier chessok.php, en ajoutant dans le fichier httpd.conf :
+Dans le cas de Chessok, seuls deux fichiers sont à copier dans le répertoire {\tt www} de Wamp : \textit{chessok.php} et \textit{resourcewrapper.class.php} (ce dernier fichier sera expliqué en détail dans la dernière partie de ce guide).
+Il faut ensuite activer la redirection Apache vers le fichier \textit{chessok.php}, en ajoutant dans le fichier \textit{httpd.conf} :
 \\{\tt	RewriteEngine On\\
 RewriteCond \%{REQUEST\_URI} \^/chessok/.*\$ [NC]\\
 RewriteRule \^(.*)\$ /chessok.php [L] }\\
@@ -80,7 +80,7 @@ Il est tout à fait possible de déployer une ressource supplémentaire sur le même
 		
 \subsection{Utilisation de l'outil graphique de configuration}
 La méthode recommandé pour référencer les ressources déployées auprès du serveur central est de passer par l'outil graphique fourni avec le projet.
-En lançant l'interface CentralServer.gui, vous aurez alors accès à plusieurs actions de configurations du serveur :
+En lançant l'interface graphique CentralServer, vous aurez alors accès à plusieurs actions de configurations du serveur :
 \begin{itemize}
 	\item {\tt Set options} : la configuration propre au serveur central est modifiable depuis cette fenêtre. Sont notamment modifiables : le port d'accès et les délais d'attentes maximums de réponse des ressources autorisés par le serveur central.
 	\item {\tt Change database} : depuis cette boîte de dialogue, il est possible de définir la base de données qui contiendra les informations concernant l'accès aux ressources. Cette base de données sera placée dans le répertoire indiqué dans la fenêtre Set options. En indiquant un nom de base inexistant, celle-ci sera automatiquement générée et prête pour ajouter de nouvelles ressources. Il est aussi possible de définir une base comme celle étant à utiiser par défaut au démarrage du serveur.
@@ -150,7 +150,7 @@ Dans le cadre d'un jeu d'échecs, il est rapidement possible d'être amené à voulo
 
 \subsection{Pré-requis}
 Avant de se lancer dans l'ajout d'une ressource, il est nécessaire de connaître quelques une de ses caractéristiques.
-Premièrement, il faut savoir si la ressource est une base de données de débuts de partie (Opening database), une base de données de fins de partie (Endgame database) ou un moteur d'échec (bot).
+Premièrement, il faut savoir si la ressource est une base de données de débuts de partie (openings database), une base de données de fins de partie (endings database) ou un moteur d'échec (bot).
 Dans un second temps, il est nécessaire de connaître le type de FEN dont la ressource a besoin pour être interrogée.
 A savoir, les deux types de FEN existant sont ceux dits court lorsqu'il présente quatres champs et long lorsqu'il en possède six.
 Enfin dernier paramètre important à connaître pour la suite, le type de notation algébrique utilisé dans la réponse.
@@ -159,13 +159,13 @@ Il s'agit des deux types de notation algébrique évoquée précédemment : LAN et SA
      
 \subsection{Utilisation du framework}
 Les principales caractéristiques des ressources étant définies, il est à présent possible d'apprendre à ajouter une ressource.
-Afin de rendre la tâche plus aisée, l'ajout d'une ressource s'effectue par l'intermédiaire du framework resourcewrapper.class.php.
+Afin de rendre la tâche plus aisée, l'ajout d'une ressource s'effectue par l'intermédiaire du framework \textit{resourcewrapper.class.php}.
 Pour ce faire, il est nécessaire de créer un fichier PHP dédié à la ressource que nous souhaitons ajouter.
 Dans ce fichier, il faut commencer par indiquer : 
 	\begin{lstlisting}
 	require('resourcewrapper.class.php');
 	\end{lstlisting} 
-	Cette ligne nous indique que le fichier resourcewrapper.class.php est requis pour l'exécution de la suite du code. Après cela, il est nécessaire de déclarer un nouvel objet ResourceWrapper à l'aide du constructeur de la classe. En fonction du type de la ressource à ajouter, il suffit d'appliquer à l'objet tout juste créé, l'une des méthodes suivantes :
+	Cette ligne nous indique que le fichier resourcewrapper.class.php est requis pour l'exécution de la suite du code. Après cela, il est nécessaire de déclarer un nouvel objet \textit{ResourceWrapper} à l'aide du constructeur de la classe. En fonction du type de la ressource à ajouter, il suffit d'appliquer à l'objet tout juste créé, l'une des méthodes suivantes :
 
 \lstset{xleftmargin =-2.2cm}
 \begin{lstlisting}[language=php]
@@ -180,7 +180,7 @@ où :
 
 \begin{itemize}
 	\item \$url correspond à l'url de la ressource à ajouter.
-	\item \$version correspond à la version de notre ressource (il s'agit généralement de la version du serveur que l'on peut trouver dans la classe CentralServer.java du package core du serveur central).
+	\item \$version correspond à la version de notre ressource (il s'agit généralement de la version du serveur que l'on peut trouver dans la classe \textit{CentralServer} du package core du serveur central).
 	\item \$san est vrai si le résultat renvoyé est sous la forme d'un SAN, faux sinon.
 	\item \$parser correspond à la fonction permettant de renvoyer le résultat au format JSON (détaillée dans la partie suivante).
 	\item \$complete\_fen est vrai si la ressource nécessite un FEN long, faux sinon.
