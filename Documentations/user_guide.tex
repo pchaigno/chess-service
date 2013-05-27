@@ -83,7 +83,7 @@ La méthode recommandé pour référencer les ressources déployées auprès du serveur
 En lançant l'interface CentralServer.gui, vous aurez alors accès à plusieurs actions de configurations du serveur :
 \begin{itemize}
 	\item {\tt Set options} : la configuration propre au serveur central est modifiable depuis cette fenêtre. Sont notamment modifiables : le port d'accès et les délais d'attentes maximums de réponse des ressources autorisés par le serveur central.
-	\item {\tt Change database} : depuis cette boîte de dialogue, il est possible de définir la base de données qui contiendra les informations concernant l'accès aux ressources. Cette base de données sera placée dans le répertoire indiqué dans la fenêtre Set options. En indiquant un nom de base inexistant, celle-ci sera automatiquement générée et prête pour ajouter de nouvelles ressources. Il est aussi possible de définir une base comme celle étant à utiiser par défaut au démarrage du serveur.
+	\item {\tt Change database} : depuis cette boîte de dialogue, il est possible de définir la base de données qui contiendra les informations concernant l'accès aux ressources. Cette base de données sera placée dans le répertoire indiqué dans la fenêtre Set options. En indiquant un nom de base inexistant, celle-ci sera automatiquement générée et prête pour ajouter de nouvelles ressources. Il est aussi possible de définir une base comme celle étant à utiliser par défaut au démarrage du serveur.
    \item {\tt Table des ressources} : cette table occupant la majeure partie de l'interface liste toutes les ressources accessibles par le serveur. En faisant un clic-droit sur cette table, un menu contextuel apparaît, permettant d'ajouter, d'éditer ou de supprimer des ressources.
    \item {\tt Etat du serveur} : une fois toutes les ressources nécessaires ajoutées, il est possible de lancer et de stopper le serveur central depuis le menu File.
 \end{itemize}
@@ -94,7 +94,7 @@ Pour lancer le serveur, deux méthodes sont disponibles. La première est, nous l'
 		...[TODO]
 
 \section{Interfaçage client et serveur central}
-On supposera l'existence préalable du programme capable de gérer la logique et les règles du jeu d'échecs (déplacement correct des différentes pièces, connaissance du joueur devant jouer le prochain coup, reconnaissance des situtaions particulières telles que l'échec et l'échec et mat...) ainsi que de l'aspect graphique du plateau.
+On supposera l'existence préalable du programme capable de gérer la logique et les règles du jeu d'échecs (déplacement correct des différentes pièces, connaissance du joueur devant jouer le prochain coup, reconnaissance des situations particulières telles que l'échec et l'échec et mat...) ainsi que de l'aspect graphique du plateau.
 Prenons le cas d'un logiciel sachant déjà gérer une partie d'échecs entre deux joueurs humains en local.
 L'ajout d'un mode humain contre ordinateur s'effectuera en remplaçant la logique de jeu du deuxième joueur par l'envoi de requêtes au serveur central via une adresse respectant l'architecture REST. 
 
@@ -125,13 +125,13 @@ Celui-ci est divisé en trois sections principales :
 \begin{itemize}
    \item La première partie, la plus longue, la position de chaque pièce sur le plateau. Ici, l'échiquier est en position de départ à l'exception du pion devant le roi blanc, qui a avancé de 2 cases.
    \item Le '{\bf b}' indique que c'est aux noirs (black) de jouer.
-   \item Les derniers caractères contiennent plusieurs informations propres aux règles specifiques des échecs (tels que le roque ou le coup du pion en passant) et ne seront pas détaillés dans ce guide. Pour plus de détails sur le système FEN, des liens sont disponibles en fin de guide 
+   \item Les derniers caractères contiennent plusieurs informations propres aux règles spécifiques des échecs (tels que le roque ou le coup du pion en passant) et ne seront pas détaillés dans ce guide. Pour plus de détails sur le système FEN, des liens sont disponibles en fin de guide 
 \end{itemize}
 Pour un envoi correct, les slashes '/' et les espaces présents dans le code FEN devront être modifiés respectivement par des symboles dollars '\$' et par le code HTML de l'espace, '\%20'.
 Ainsi le FEN précédent devra être modifié de la façon suivante :
 \\{\tt rnbqkbnr\$pppppppp\$8\$8\$4P34\$8\$PPPP1PPP\$RNBQKBNR\%20b\%20KQkq\%20-\%200\%201}
         
-Comme nous l'avons vu précedemment, la réponse du serveur est reçu en notation algébrique longue ou courte (LAN ou SAN) selon le paramétrage effectué.
+Comme nous l'avons vu précédemment, la réponse du serveur est reçu en notation algébrique longue ou courte (LAN ou SAN) selon le paramétrage effectué.
 Ainsi, avancer de deux cases le pion blanc placé en e4 s'écrira {\tt e4e6}.
 \\{\tt GET http://localhost:9998/rest/{\em GameID}/{\em FEN}\\
 Return : String {\em (par exemple : "e4e6")} }\\
@@ -152,7 +152,7 @@ Dans le cadre d'un jeu d'échecs, il est rapidement possible d'être amené à voulo
 Avant de se lancer dans l'ajout d'une ressource, il est nécessaire de connaître quelques une de ses caractéristiques.
 Premièrement, il faut savoir si la ressource est une base de données de débuts de partie (Opening database), une base de données de fins de partie (Endgame database) ou un moteur d'échec (bot).
 Dans un second temps, il est nécessaire de connaître le type de FEN dont la ressource a besoin pour être interrogée.
-A savoir, les deux types de FEN existant sont ceux dits court lorsqu'il présente quatres champs et long lorsqu'il en possède six.
+A savoir, les deux types de FEN existant sont ceux dits court lorsqu'il présente quatre champs et long lorsqu'il en possède six.
 Enfin dernier paramètre important à connaître pour la suite, le type de notation algébrique utilisé dans la réponse.
 Il s'agit des deux types de notation algébrique évoquée précédemment : LAN et SAN.
 	
@@ -179,7 +179,7 @@ Dans ce fichier, il faut commencer par indiquer :
 où :
 
 \begin{itemize}
-	\item \$url correspond à l'url de la ressource à ajouter.
+	\item \$url correspond à l'URL de la ressource à ajouter.
 	\item \$version correspond à la version de notre ressource (il s'agit généralement de la version du serveur que l'on peut trouver dans la classe CentralServer.java du package core du serveur central).
 	\item \$san est vrai si le résultat renvoyé est sous la forme d'un SAN, faux sinon.
 	\item \$parser correspond à la fonction permettant de renvoyer le résultat au format JSON (détaillée dans la partie suivante).
