@@ -41,7 +41,7 @@
 \subsection*{Contexte}
 Notre système s'organise en trois entités (cf. figure \ref{fig:schema-systeme}). Tout d'abord, nous avons les ressources externes. Ces ressources nous donnent une liste de coups à jouer dans une situation précise de jeu d'échecs. Ces ressources nous envoient également différentes informations sur ces coups. Il existe trois types de ressources : des bases de données d'ouvertures pour le début de partie, des moteurs d'échecs (robots) pour le milieu de partie et des bases de données de fermetures pour la fin de partie.
 
-Toute l'intelligence de notre système réside dans la seconde entité. Cette entité est un serveur qui va utiliser les ressources afin de déterminer le meilleur coup à jouer. Une fois ce coup déterminé, il va le renvoyer à la dernière entité : des clients (jeux d'échecs classiques).
+Toute l'intelligence de notre système réside dans la seconde entité. Cette entité est un serveur qui va utiliser les ressources afin de déterminer le meilleur coup à jouer. Une fois ce coup déterminé, il va le renvoyer à la dernière entité : un client (jeu d'échecs classique).
 \FigureEPS{h,t,b,p}{11cm}{./ArchitectureSimple.eps}
 {Schéma général du système}
 {fig:schema-systeme}
