@@ -97,11 +97,13 @@ Un objet est ainsi manipulable grâce à son URL auquel on effectue des appels ave
     
 Dans notre cas, le serveur central est déployé sur le serveur Grizzly par la classe CentralServerResourceDeployer.
 La classe CentralServerResource est ensuite chargée de réceptionner les requêtes.
-Elle contient le coeur de l'architecture REST.
-Elle capte les requêtes envoyées à l'URI \textit{rest/} et les traite en fonction du type.
-Si la requête est de type POST, elle crée une nouvelle partie.
-Si c'est un GET, elle lance le processus de mise à jours de suggestion de coups et de sélection du meilleur coup grâce au FEN fourni dans l'URL et renvoie le meilleur coup.
-Enfin, dans le cas d'une requête de type DELETE, elle fait les appels de suppression de partie et de récompense.
+Elle contient le c\oe{}ur de l'architecture REST.
+Elle capte les requêtes envoyées à l'URI \textit{rest/} grâce à l'annotation Jersey \textit{@Path(``rest/'')} et les traite en fonction du type.
+Si la requête est de type POST, elle est captée par l'annotation \textit{@POST}. Elle crée une nouvelle partie en appelant la classe GamesManager, puis renvoie l'id attribuée. Le fait que cet id soit renvoyé est indiqué par l'annotation \textit{@Produces(``text/plain'')}.
+
+Pour qu'une requête GET soit captée par l'annotation \textit{@GET}, il faut que le path contienne d'autres informations : l'id de la partie et le fen. Ces informations renseignées dans l'URL sont captées par l'annotation \textit{@Path} puis réutilisées en tant que paramètres de la fonction grâce à l'annotation \textit{@PathParam}. La fonction lance le processus de mise à jour de suggestion de coups et de sélection du meilleur coup grâce au FEN fourni dans l'URL et renvoie le meilleur coup.
+
+Enfin, dans le cas d'une requête de type DELETE, elle fait les appels de suppression de partie et de récompense grâce à l'id et le fen final récupérés comme précédemment.
 Des requêtes de type OPTIONS sont également réceptionnées.
 Ces requêtes sont inhérantes au script AJAX utilisé par les clients.
 Elles servent à déterminer les autorisations données par le serveur.
@@ -165,18 +167,13 @@ A la fin d'une partie, chaque ressource est récompensée proportionnellement à la
 
 
 \section{Gestion des notations d'échecs}
-Aux échecs, les représentations numériques du plateau et des coups sont normalisées.
-Ainsi, il existe une notation pour le plateau appelée FEN.
-Pour les coups, la notation algébrique est utilisée.
-Elle spécifie la case de départ et d'arrivée dans sa version longue et la pièce utilisée et la case d'arrivée dans sa version courte.
-Le fait que cette notation ait 2 formats nous a posé certains problèmes de compatibilité.
-En effet, certaines ressources nous renvoyaient des coups en notation algébrique longue (LAN) et d'autres en notation algébrique courte (SAN).
+Certaines ressources nous renvoient des coups en notation algébrique longue (LAN) et d'autres en notation algébrique courte (SAN).
 De plus, les clients graphiques exigent pour certains des coups au format LAN et d'autres au format SAN.
 Nous avons donc du écrire un analyseur syntaxique afin de pouvoir convertir tous les coups au même format.
-Cet analyseur est basé sur un déjà existant en javascript.
-Ce code javascript a été convertit en Java et il a été corrigé pour gérer certaines subtilités des échecs (en passant, pat, etc.).
+Cet analyseur est basé sur un algorithme déjà existant en JavaScript.
+Ce code JavaScript a été convertit en Java et il a été corrigé pour gérer correctement certaines subtilités des échecs (en passant, pat, etc.).
 Cet analyseur est contenu dans le package parser.
-Etant donné que certaines ressources ne nous renvoie pas toujours des coups en notation algébrique (cela est rare mais néanmoins possible), les différentes méthodes de la classe \textit{ChessParser} effectuant des traitements sur des FEN (conversion de SAN en LAn et vice versa, vérification du en passant et de la mise en échec) peut lancer une exception (\textit{IncorrectFENException}).
+Etant donné que certaines ressources ne nous renvoient pas toujours des coups avec une notation correcte (cela est rare mais néanmoins possible), les différentes méthodes de la classe \textit{ChessParser} effectuant des traitements sur des FEN (conversion de SAN en LAN et vice versa, vérification du en passant et de la mise en échec) peuvent lever une exception (\textit{IncorrectFENException} ou \textit{IncorrectAlgebraicNotationException}).
 
 
 \end{document}
