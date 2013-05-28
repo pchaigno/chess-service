@@ -1,5 +1,9 @@
 package parser;
 
+/**
+ * Exception for incorrect algebraic notations.
+ * @author Paul Chaignon
+ */
 @SuppressWarnings("serial")
 public class IncorrectAlgebraicNotationException extends Exception {
 
