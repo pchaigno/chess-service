@@ -1,7 +1,5 @@
 package parser;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,38 +10,29 @@ import parser.BoardPiece.PieceType;
 
 /**
  * Regroups all the methods to parse notations.
+ * It is through this method that the user accesses the parser package.
+ * Regroups methods to check the notations, get information from it or convert it.
  * @author Clement Gautrais
  * @author Paul Chaignon
  */
 public class ChessParser {
-	@SuppressWarnings("serial")
-	private static final Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
-		this.put('a', 1);
-		this.put('b', 2);
-		this.put('c', 3);
-		this.put('d', 4);
-		this.put('e', 5);
-		this.put('f', 6);
-		this.put('g', 7);
-		this.put('h', 8);
-	}};
 	private ChessBoard board;
 	private String fen;
 
 	/**
 	 * Constructor
+	 * Initialize the chess board with the FEN.
 	 * @param fen The FEN.
-	 * @throws IncorrectFENException 
+	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
 	public ChessParser(String fen) throws IncorrectFENException {
 		this.fen = fen;
-		
 		this.board = new ChessBoard();
 		this.board.loadFEN(this.fen);
 	}
 
 	/**
-	 * Convert a LAN to a SAN.
+	 * Convert a LAN to a SAN using the FEN.
 	 * @param lan The Long Algebraic Notation.
 	 * @return The Short Algebraic Notation.
 	 * @throws IncorrectFENException If the FEN is incorrect.
@@ -57,7 +46,7 @@ public class ChessParser {
 	}
 	
 	/**
-	 * Convert a SAN to a LAN.
+	 * Convert a SAN to a LAN using the FEN.
 	 * @param san The Short Algebraic Notation.
 	 * @return The Long Algebraic Notation.
 	 * @throws IncorrectFENException If the FEN is incorrect.
@@ -104,12 +93,12 @@ public class ChessParser {
 		}
 		
 		// Check the origin coordinate:
-		if(!letter.containsKey(fromX) || fromY<1 || fromY>8) {
+		if(!ChessBoard.letter.containsKey(fromX) || fromY<1 || fromY>8) {
 			throw new IncorrectAlgebraicNotationException("The origin coordinate of the LAN is incorrect.");
 		}
 		
 		// Check the destination coordinate:
-		if(!letter.containsKey(toX) || toY<1 ||  toY>8) {
+		if(!ChessBoard.letter.containsKey(toX) || toY<1 ||  toY>8) {
 			throw new IncorrectAlgebraicNotationException("The destination coordinate of the LAN is incorrect.");
 		}
 		
@@ -121,7 +110,7 @@ public class ChessParser {
 		}
 		
 		// Castling:
-		if(piece==PieceType.KING && Math.abs(letter.get(fromX)-letter.get(toX))==2) {
+		if(piece==PieceType.KING && Math.abs(ChessBoard.letter.get(fromX)-ChessBoard.letter.get(toX))==2) {
 			if(toX == 'g') {
 				return "O-O";
 			}
@@ -232,7 +221,7 @@ public class ChessParser {
 		}
 		
 		// Check the destination coordinate:
-		if(!letter.containsKey(toX) || toY<1 || toY>8) {
+		if(!ChessBoard.letter.containsKey(toX) || toY<1 || toY>8) {
 			throw new IncorrectAlgebraicNotationException("The destination coordinate of the SAN is incorrect.");
 		}
 
@@ -244,7 +233,7 @@ public class ChessParser {
 	}
 	
 	/**
-	 * Set enPassant parameter at - in fen if no pawn can play enPassant.
+	 * Set enPassant parameter at - in FEN if no pawn can play enPassant.
 	 * @throws IncorrectFENException If the FEN is incorrect.
 	 */
 	public void checkEnPassant() throws IncorrectFENException {
@@ -268,37 +257,16 @@ public class ChessParser {
 			char enPassantDroite = enPassantX;
 			enPassantDroite += 1;
 
-			if(enPassantX=='a') {
-				if(this.board.squares.get(enPassantDroite)[enPassantY-mod]!=null) {
-					if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece!=null) {
-						if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN && this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.color==board.currentMove) {
-							needEnPassant = true;
-						}
-					}
-				}
-			} else if(enPassantX=='h') {
-				if(this.board.squares.get(enPassantGauche)[enPassantY-mod]!=null) {
-					if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece!=null) {
-						if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN && this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.color==board.currentMove) {
-							needEnPassant = true;
-						}
-					}
-				}
-			} else {
-				if(this.board.squares.get(enPassantGauche)[enPassantY-mod]!=null) {
-					if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece!=null) {
-						if(this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN && this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.color==board.currentMove) {
-							needEnPassant = true;
-						}
-					}
-				}
-				if(!needEnPassant && this.board.squares.get(enPassantDroite)[enPassantY-mod]!=null) {
-					if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece!=null) {
-						if(this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN && this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.color==board.currentMove) {
-							needEnPassant = true;
-						}
-					}
-				}
+			if(enPassantX!='a' && this.board.squares.get(enPassantGauche)[enPassantY-mod]!=null 
+					&& this.board.squares.get(enPassantGauche)[enPassantY-mod].piece!=null 
+					&& this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.type==PieceType.PAWN 
+					&& this.board.squares.get(enPassantGauche)[enPassantY-mod].piece.color==board.currentMove) {
+				needEnPassant = true;
+			} else if(enPassantX!='h' && this.board.squares.get(enPassantDroite)[enPassantY-mod]!=null 
+					&& this.board.squares.get(enPassantDroite)[enPassantY-mod].piece!=null 
+					&& this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.type==PieceType.PAWN 
+					&& this.board.squares.get(enPassantDroite)[enPassantY-mod].piece.color==board.currentMove) {
+				needEnPassant = true;
 			}
 		}
 		if(!needEnPassant) {

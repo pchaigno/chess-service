@@ -11,7 +11,10 @@ import parser.IncorrectAlgebraicNotationException;
 import parser.IncorrectFENException;
 
 /**
- * Represent a bot.
+ * Represent a chess engine.
+ * The chess engine used for now is Crafty.
+ * It returns a score and a computation depth.
+ * A bot contains BotSuggestion as move suggestions.
  * @author Paul Chaignon
  */
 public class Bot extends Resource {
@@ -21,6 +24,7 @@ public class Bot extends Resource {
 	
 	/**
 	 * Constructor
+	 * Initialize the bot with default trust.
 	 * @param uri The URI.
 	 * @param name The name.
 	 * @param active True if the resource is active.

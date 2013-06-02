@@ -20,7 +20,7 @@ import parser.IncorrectAlgebraicNotationException;
 import parser.IncorrectFENException;
 
 /**
- * This class will handle the call from the client to the central server and will send the answer.
+ * This class will handle calls from the client to the central server and will send the answers.
  * @author Clement Gautrais
  * @author Paul Chaignon
  */

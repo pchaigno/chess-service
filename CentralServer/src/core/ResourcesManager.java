@@ -12,6 +12,9 @@ import java.util.Set;
 
 /**
  * Handle all the accesses to the SQLite database for the resources.
+ * Contains static methods to delete, add and retrieve resources from the database.
+ * Fire events to the database listeners.
+ * Extends DatabaseManager that contains the database listeners and the connection methods.
  * @author Paul Chaignon
  */
 public class ResourcesManager extends DatabaseManager {
@@ -25,6 +28,8 @@ public class ResourcesManager extends DatabaseManager {
 	
 	/**
 	 * Get the resources from the database.
+	 * It's possible to select only the active resources.
+	 * Fire a resource recovery event.
 	 * @param active If true then this method will only return the active resources.
 	 * @return All resources from the database.
 	 */
@@ -67,7 +72,8 @@ public class ResourcesManager extends DatabaseManager {
 	}
 	
 	/**
-	 * Add a resource to the database and set the resource id with the one used in the sql table
+	 * Add a resource to the database and set the resource id with the one used in the SQL table.
+	 * Fire a resource added event.
 	 * @param resource The resource to add.
 	 * @return The resource added with the id set or null if an error occurred.
 	 */
@@ -118,6 +124,8 @@ public class ResourcesManager extends DatabaseManager {
 	
 	/**
 	 * Remove a resource from the database.
+	 * As always, the resource is identified by its id.
+	 * Fire a resource removed event.
 	 * @param resource The resource to remove.
 	 * @return True if the operation succeed, false otherwise.
 	 */
@@ -149,6 +157,8 @@ public class ResourcesManager extends DatabaseManager {
 	
 	/**
 	 * Remove resources from the database.
+	 * As always, the resources are identified by their id.
+	 * Fire a resources removed event.
 	 * @param resources The resources to remove.
 	 * @return The resources that weren't removed.
 	 */
@@ -183,7 +193,8 @@ public class ResourcesManager extends DatabaseManager {
 	
 	/**
 	 * Update a resource in the database.
-	 * All fields except the URI can be updated.
+	 * All fields except the URI are updated.
+	 * Fire a resource updated event.
 	 * @param resource The resource to update.
 	 * @return True if the update succeed, false otherwise.
 	 */
@@ -227,6 +238,8 @@ public class ResourcesManager extends DatabaseManager {
 	
 	/**
 	 * Update the trust parameter of resources.
+	 * The trust is increased with the resource involvement value if the game was won, decreased if the game was lost.
+	 * Fire a resources trust updated event.
 	 * @param resourceInvolvements A map with the id of the resources as key and the value that need to be add to the trust of the resource.
 	 * @param gameResult The result of the game: -1 for lose, 1 for win, 0 for draw.
 	 * @return The id of the resources that weren't updated.
@@ -266,6 +279,7 @@ public class ResourcesManager extends DatabaseManager {
 	
 	/**
 	 * Update the active parameter of resources.
+	 * Fire a resources active updated event.
 	 * @param resources The resources whose active parameter is to update.
 	 * @return The resources that weren't updated.
 	 */
@@ -300,8 +314,7 @@ public class ResourcesManager extends DatabaseManager {
 	}
 	
 	/**
-	 * Get the resources that weren't successfully submitted from the list of resources submitted
-	 * and the results from the database.
+	 * Get the resources that weren't successfully submitted from the list of resources submitted and the results from the database.
 	 * @param resources The resources submitted.
 	 * @param results Results of each operations: one operation per resource.
 	 * @return The resources that weren't successfully submitted.
@@ -317,8 +330,7 @@ public class ResourcesManager extends DatabaseManager {
 	}
 	
 	/**
-	 * Get the resources that weren't successfully submitted from the list of resources submitted
-	 * and the results from the database.
+	 * Get the resources that weren't successfully submitted from the list of resources submitted and the results from the database.
 	 * @param resources The id of the resources submitted.
 	 * @param results Results of each operations: one operation per resource.
 	 * @return The resource ids that weren't successfully submitted.

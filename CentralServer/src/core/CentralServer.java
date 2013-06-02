@@ -7,7 +7,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Manage the list of resources.
+ * The central class: restore the resources, check the versions, get the best move suggestion, reward the resources, etc.
+ * It gets the suggestions from the online resources on separated threads.
  * @author Benoit Travers
  * @author Paul Chaignon
  * @author Clement Gautrais

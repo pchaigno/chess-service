@@ -79,7 +79,8 @@ public class TestResourcesManager extends TestCase {
 	}
 	
 	/**
-	 * Test the primary key of the database.
+	 * Test the URI field of the database.
+	 * It shouldn't be possible to add two resources with the same URI.
 	 */
 	public static void testPrimaryKey() {
 		Bot bot = new Bot("test123.com", "TestBot", 50, true, -1);
@@ -89,48 +90,5 @@ public class TestResourcesManager extends TestCase {
 		Bot bot2 = new Bot("test123.com", "TestBot", 50, true, -1);
 		assertEquals(null, ResourcesManager.addResource(bot2));
 		ResourcesManager.removeResource(bot);
-	}
-	
-	/**
-	 * Test the concurrency by doing a lot of simultaneous write actions.
-	 * @throws InterruptedException 
-	 */
-	public static void testConcurrency() throws InterruptedException {
-		class MyThread extends Thread {
-			private Resource resource;
-			
-			public MyThread(Resource resource) {
-				this.resource = resource;
-			}
-			
-			@Override
-			public void run() {
-				this.resource = ResourcesManager.addResource(this.resource);
-				if(this.resource==null) {
-					System.out.println(this.resource+" failed to be added.");
-				} else {
-					System.out.println(this.resource+" added successfully!");
-				}
-			}
-		}
-		
-		Set<Resource> resources = new HashSet<Resource>();
-		for(int i=0 ; i<30 ; i++) {
-			resources.add(new Bot("uri"+i+".com", "bot"+i, 1, true, -1));
-		}
-		
-		Set<MyThread> threads = new HashSet<MyThread>();
-		for(Resource resource: resources) {
-			threads.add(new MyThread(resource));
-		}
-		for(MyThread thread: threads) {
-			thread.start();
-		}
-		for(MyThread thread: threads) {
-			thread.join();
-		}
-		
-		resources = ResourcesManager.removeResources(resources);
-		System.out.println(resources);
 	}
 }

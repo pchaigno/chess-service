@@ -1,7 +1,8 @@
 package core;
 
 /**
- * Represent the suggestion of opening move made by a databases.
+ * Represent the suggestion of opening move made by an openings database.
+ * Openings databases send a the number of time the move as been played, a winning probability and a drawing probability.
  * @author Clement Gautrais
  */
 public class OpeningSuggestion extends MoveSuggestion {
@@ -13,6 +14,7 @@ public class OpeningSuggestion extends MoveSuggestion {
 	
 	/**
 	 * Constructor
+	 * Compute the score at the end.
 	 * @param move The move suggested.
 	 * @param nbPlay The number of times the move has been played.
 	 * @param probaWin The probability of winning.
@@ -28,6 +30,8 @@ public class OpeningSuggestion extends MoveSuggestion {
 	
 	/**
 	 * Compute the score associated to nbPlay.
+	 * Use saved properties from the StatsManager.
+	 * @see StatsManager
 	 * Formula:score=nbPlay-E[nbPlay]
 	 * @return The score.
 	 */

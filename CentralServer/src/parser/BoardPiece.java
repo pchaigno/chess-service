@@ -2,6 +2,7 @@ package parser;
 
 /**
  * Represent a piece on the board.
+ * It contains a reference to the board square where the piece is.
  * @author Paul Chaignon
  */
 public class BoardPiece {

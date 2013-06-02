@@ -1,32 +1,17 @@
 package parser;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import parser.BoardPiece.*;
 
 /**
  * Regroups the chess rules for each pieces and special moves.
+ * These methods are used to search for a piece on the boarde knowing some of its parameters and using 
+ * the movement rules for the piece in question.
  * @author Paul Chaignon
  */
 public class ChessRules {
-	/**
-	 * Letters-digit correspondance.
-	 */
-	@SuppressWarnings("serial")
-	private static final Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
-		this.put('a', 1);
-		this.put('b', 2);
-		this.put('c', 3);
-		this.put('d', 4);
-		this.put('e', 5);
-		this.put('f', 6);
-		this.put('g', 7);
-		this.put('h', 8);
-	}};
-	private static final char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 
 	/**
 	 * Found the position of a piece on the board.
@@ -43,7 +28,7 @@ public class ChessRules {
 	private static BoardSquare pawn(ChessBoard board, PieceColor color, char fromX, int fromY, char toX, int toY, boolean capture) {
 		List<BoardPiece> legalPawns = new LinkedList<BoardPiece>();
 		BoardSquare result = null;
-		int toXnum = letter.get(toX);
+		int toXnum = ChessBoard.letter.get(toX);
 		BoardPiece pawn;
 		int pawnX;
 		int pawnY;
@@ -60,7 +45,7 @@ public class ChessRules {
 		List<Integer> pawns = board.getPiece(PieceType.PAWN, color, fromX, -1);
 		for(int i=0 ; i<pawns.size() ; i++) {
 			pawn = board.pieces.get(pawns.get(i));
-			pawnX = letter.get(pawn.square.x);
+			pawnX = ChessBoard.letter.get(pawn.square.x);
 			pawnY = pawn.square.y;
 			// Check if pawn could move to the the given square:
 			if((!capture && (toY == pawnY + mod * 2 || toY == pawnY + mod) && toXnum == pawnX)
@@ -98,12 +83,12 @@ public class ChessRules {
 		BoardPiece knight;
 		int knightX;
 		int knightY;
-		int toXnum = letter.get(toX);
+		int toXnum = ChessBoard.letter.get(toX);
 		List<Integer> knights = board.getPiece(PieceType.KNIGHT, color, fromX, fromY);
 
 		for(int i=0 ; i<knights.size() ; i++) {
 			knight = board.pieces.get(knights.get(i));
-			knightX = letter.get(knight.square.x);
+			knightX = ChessBoard.letter.get(knight.square.x);
 			knightY = knight.square.y;
 			if((Math.abs(toY-knightY)==1 && Math.abs(toXnum-knightX)==2) || (Math.abs(toY-knightY)==2 && Math.abs(toXnum-knightX)==1)) {
 				legalKnights.add(knight);
@@ -139,11 +124,11 @@ public class ChessRules {
 		boolean blocked;
 		BoardPiece bishop;
 
-		int toXnum = letter.get(toX);
+		int toXnum = ChessBoard.letter.get(toX);
 		List<Integer> bishops = board.getPiece(PieceType.BISHOP, color, fromX, fromY);
 		for(int i=0 ; i<bishops.size() ; i++) {
 			bishop = board.pieces.get(bishops.get(i));
-			bishopX = letter.get(bishop.square.x);
+			bishopX = ChessBoard.letter.get(bishop.square.x);
 			bishopY = bishop.square.y;
 			xDiff = toXnum - bishopX;
 			yDiff = toY - bishopY;
@@ -164,7 +149,7 @@ public class ChessRules {
 					modY = -1;
 				}
 				for(int j=1 ; j<Math.abs(xDiff) ; j++) {
-					if(board.squares.get(letters[toXnum - modX * j])[toY - modX * modY * j].piece != null) {
+					if(board.squares.get(ChessBoard.letters[toXnum - modX * j])[toY - modX * modY * j].piece != null) {
 						blocked = true;
 					}
 				}
@@ -200,11 +185,11 @@ public class ChessRules {
 		boolean blocked;
 		BoardPiece rook;
 
-		int toXnum = letter.get(toX);
+		int toXnum = ChessBoard.letter.get(toX);
 		List<Integer> rooks = board.getPiece(PieceType.ROOK, color, fromX, fromY);
 		for(int i=0 ; i<rooks.size() ; i++) {
 			rook = board.pieces.get(rooks.get(i));
-			rookX = letter.get(rook.square.x);
+			rookX = ChessBoard.letter.get(rook.square.x);
 			rookY = rook.square.y;
 			// If we could make that move
 			if(toY == rookY || toXnum == rookX) {
@@ -223,9 +208,9 @@ public class ChessRules {
 					modA = -1;
 				}
 				for(int j=1 ; j<Math.abs(diff) ; j++) {
-					if(modY && board.squares.get(letters[rookX])[toY - modA * j].piece != null) {
+					if(modY && board.squares.get(ChessBoard.letters[rookX])[toY - modA * j].piece != null) {
 						blocked = true;
-					} else if(!modY && board.squares.get(letters[toXnum - modA * j])[toY].piece != null) {
+					} else if(!modY && board.squares.get(ChessBoard.letters[toXnum - modA * j])[toY].piece != null) {
 						blocked = true;
 					}
 				}
@@ -265,11 +250,11 @@ public class ChessRules {
 		boolean blocked;
 		BoardPiece queen;
 
-		int toXnum = letter.get(toX);
+		int toXnum = ChessBoard.letter.get(toX);
 		List<Integer> queens = board.getPiece(PieceType.QUEEN, color, fromX, fromY);
 		for(int i=0 ; i<queens.size() ; i++) {
 			queen = board.pieces.get(queens.get(i));
-			queenX = letter.get(queen.square.x);
+			queenX = ChessBoard.letter.get(queen.square.x);
 			queenY = queen.square.y;
 			xDiff = toXnum - queenX;
 			yDiff = toY - queenY;
@@ -289,7 +274,7 @@ public class ChessRules {
 					modY = -1;
 				}
 				for(int j=1 ; j<Math.abs(xDiff) ; j++) {
-					if(board.squares.get(letters[toXnum - modX * j])[toY - modX * modY * j].piece != null) {
+					if(board.squares.get(ChessBoard.letters[toXnum - modX * j])[toY - modX * modY * j].piece != null) {
 						blocked = true;
 					}
 				}
@@ -313,9 +298,9 @@ public class ChessRules {
 					modA = -1;
 				}
 				for(int j=1 ; j<Math.abs(diff) ; j++) {
-					if(modR && board.squares.get(letters[queenX])[toY - modA * j].piece != null) {
+					if(modR && board.squares.get(ChessBoard.letters[queenX])[toY - modA * j].piece != null) {
 						blocked = true;
-					} else if(!modR && board.squares.get(letters[toXnum - modA * j])[toY].piece != null) {
+					} else if(!modR && board.squares.get(ChessBoard.letters[toXnum - modA * j])[toY].piece != null) {
 						blocked = true;
 					}
 				}

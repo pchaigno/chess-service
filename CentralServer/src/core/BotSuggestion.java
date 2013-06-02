@@ -1,7 +1,8 @@
 package core;
 
 /**
- * Represent the suggestion of move made by the bots.
+ * Represent the suggestion of move made by a bot.
+ * Bots send a score and a computation depth with the move.
  * @author Paul Chaignon
  */
 public class BotSuggestion extends MoveSuggestion {
@@ -39,6 +40,8 @@ public class BotSuggestion extends MoveSuggestion {
 	
 	/**
 	 * Compute the score associated to the depth.
+	 * Use saved properties from the StatsManager.
+	 * @see StatsManager
 	 * Formula:score=depth-E[depth]
 	 * @return The score.
 	 */
@@ -48,6 +51,8 @@ public class BotSuggestion extends MoveSuggestion {
 	
 	/**
 	 * Compute the score associated to the engine score.
+	 * Use saved properties from the StatsManager.
+	 * @see StatsManager
 	 * Formula:score=engineScore-E[engineScore]
 	 * @return The score.
 	 */

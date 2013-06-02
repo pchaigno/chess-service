@@ -7,7 +7,7 @@ import parser.IncorrectFENException;
 import junit.framework.TestCase;
 
 /**
- * Unit test for ChessParser.
+ * Unit tests for ChessParser.
  * @author Clement Gautrais
  * @author Paul Chaignon
  */

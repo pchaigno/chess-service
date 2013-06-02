@@ -13,6 +13,7 @@ public class TestResource extends TestCase {
 
 	/**
 	 * Test the equals method.
+	 * Two resources are equal if they have the same id.
 	 */
 	public static void testEquals() {
 		Resource bot1 = new Bot("test12.com", "TestBot", 50, true, 15487);

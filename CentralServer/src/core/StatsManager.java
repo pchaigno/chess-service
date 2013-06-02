@@ -11,16 +11,19 @@ import java.util.Set;
 
 /**
  * Handle the statistics about every parameters used for score computation (for openings mainly).
+ * Make statistics on nb_play, probabilities from openings databases, computation depth and score from chess engines.
+ * For each properties, it record the mean, the variance and the weight.
  * @author Clement Gautrais
  */
 public class StatsManager {
 	private static Properties conf = null;
 	private static final String CONFIG_FILE = "stats.properties";
-	// List of properties' name
+	// List of properties' name:
 	public static final String STATS_NB_PLAY = "nb_play";
 	public static final String STATS_PROBAW = "proba_win";
 	public static final String STATS_BOT_DEPTH = "bot_depth";
 	public static final String STATS_BOT_SCORE = "bot_score";
+	
 	/**
 	 * @return The object containing the configuration.
 	 */
@@ -109,7 +112,7 @@ public class StatsManager {
 		Set<Double> values = new HashSet<Double>();
 		Set<Double> scoreValues = new HashSet<Double>();
 		
-		//We loop through the moves and add the right value in sets, depending on the property chosen
+		// We loop through the moves and add the right value in sets, depending on the property chosen
 		for(MoveSuggestion move : moves) {
 			if(move instanceof BotSuggestion) {
 				if(STATS_BOT_DEPTH.equals(propertyName)) {
@@ -130,17 +133,17 @@ public class StatsManager {
 			}
 		}
 		
-		//We compute the stats (mean, variance, normalization_mean, normalization_variance) on the sets
+		// We compute the stats (mean, variance, normalization_mean, normalization_variance) on the sets
 		Statistic stats = computeStats(values, scoreValues);
 		
-		//We compute the new stats, using the one compute above and the one store in the stats properties file
+		// We compute the new stats, using the one compute above and the one store in the stats properties file
 		double newMean = computeMean(propertyName, stats.mean, values.size(), false);
 		double newVariance = computeVariance(propertyName, stats.mean, stats.variance, values.size(), false);
 		double newNormalizationMean = computeMean(propertyName, stats.normalizationMean, scoreValues.size(), true);
 		double newNormalizationVariance = computeVariance(propertyName, stats.normalizationMean, stats.normalizationVariance, scoreValues.size(), true);
 		int newWeight = computeWeight(propertyName, values.size());
 		
-		//We save the new properties in the stats properties file
+		// We save the new properties in the stats properties file
 		setProperty(propertyName, Statistic.Stat.MEAN, newMean+"");
 		setProperty(propertyName, Statistic.Stat.VARIANCE, newVariance+"");
 		setProperty(propertyName, Statistic.Stat.WEIGHT, newWeight+"");
@@ -160,7 +163,7 @@ public class StatsManager {
 		double mean = 0, variance = 0, normalization_mean = 0, normalization_variance = 0;
 
 		if(values.size()>0 && scoreValues.size() >0){
-			//We compute mean and variance(V(X)=E[X²]-(E[X])²) for the values
+			// We compute mean and variance(V(X)=E[X²]-(E[X])²) for the values
 			for(double value: values) {
 				mean += value;
 				variance += Math.pow(value, 2);
@@ -169,7 +172,7 @@ public class StatsManager {
 			variance /= values.size();
 			variance -= Math.pow(mean, 2);
 
-			//We compute mean and variance for the values' score (used for normalization)
+			// We compute mean and variance for the values' score (used for normalization)
 			for(double score: scoreValues) {
 				normalization_mean += score;
 				normalization_variance += Math.pow(score, 2);

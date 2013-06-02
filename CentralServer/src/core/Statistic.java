@@ -6,10 +6,9 @@ package core;
  * @author Clement Gautrais
  */
 public class Statistic {
+	
 	/**
 	 * Represents all the statistics accessible via StatsManager
-	 * @author clemgaut
-	 *
 	 */
 	enum Stat {
 		/**
@@ -41,6 +40,7 @@ public class Statistic {
 	
 	/**
 	 * Constructor.
+	 * Initialize all values to zero.
 	 */
 	public Statistic() {
 		this.mean = 0;

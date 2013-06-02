@@ -26,6 +26,7 @@ public class PropertiesManager {
 	
 	/**
 	 * Load the configuration properties.
+	 * If the config file doesn't exist we create it.
 	 * @return The object containing the configuration.
 	 */
 	private static Properties getConfiguration() {
@@ -78,7 +79,6 @@ public class PropertiesManager {
 			getConfiguration().store(new FileOutputStream(CONFIG_FILE), "Properties for central server");
 			return true;
 		} catch(FileNotFoundException e) {
-			// TODO Generate the file.
 			System.err.println("Config file ("+CONFIG_FILE+") not found.");
 		} catch(IOException e) {
 			System.err.println("Unable to load the config file.");

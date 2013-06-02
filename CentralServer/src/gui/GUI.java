@@ -43,6 +43,7 @@ import core.ResourcesManager;
 
 /**
  * The graphical user interface to manage resources and control the server.
+ * It's also possible to change the settings.
  * @author Clement Gautrais
  * @author Paul Chaignon
  */

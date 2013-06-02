@@ -9,7 +9,6 @@ import com.sun.jersey.api.container.grizzly.GrizzlyWebContainerFactory;
 
 /**
  * This class deploies the CentralServerResource on a Grizzly Server.
- * TODO Maybe change the version to the latest : jersey 1.17 (now it is 1.6)
  * @author Clement Gautrais
  */
 public class CentralServerResourceDeployer {

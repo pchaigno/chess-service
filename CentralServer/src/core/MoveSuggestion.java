@@ -1,13 +1,13 @@
 package core;
 
 /**
- * The model for all suggestion of move (from databases or bots).
- * This class was abstract but I(clement) changed it.
+ * The model for all suggestions of move (from databases or chess engines).
  * @author Paul Chaignon
  */
 public abstract class MoveSuggestion {
 	protected String move;
 	protected double score;
+	private static final double DEFAULT_SCORE = 1;
 	
 	/**
 	 * Constructor
@@ -15,7 +15,7 @@ public abstract class MoveSuggestion {
 	 */
 	public MoveSuggestion(String move) {
 		this.move = move;
-		this.score = 1;
+		this.score = DEFAULT_SCORE;
 	}
 	
 	/**
@@ -64,6 +64,8 @@ public abstract class MoveSuggestion {
 	
 	/**
 	 * Compute the score.
+	 * Use saved properties from the StatsManager.
+	 * @see StatsManager
 	 */
 	protected abstract void computeScore();
 }

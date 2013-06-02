@@ -9,12 +9,30 @@ import parser.BoardPiece.*;
 
 /**
  * Represent the chess board.
+ * A FEN can be converted in this object and vice versa.
+ * It contains the pieces and other information such as castling, next player to move, number of moves, etc.
+ * The move are made on this object with the makeMove method.
+ * It also contains the letters-digit correspondance for the board.
  * @author Paul Chaignon
  */
 public class ChessBoard {
 	// Board square notation:
 	private static final int[] numbers = {0, 8, 7, 6, 5, 4, 3, 2, 1};
-	private static final char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+	/**
+	 * Letters-digit correspondance.
+	 */
+	public static final char[] letters = {'0', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
+	@SuppressWarnings("serial")
+	public static final Map<Character, Integer> letter = new HashMap<Character, Integer>() {{
+		this.put('a', 1);
+		this.put('b', 2);
+		this.put('c', 3);
+		this.put('d', 4);
+		this.put('e', 5);
+		this.put('f', 6);
+		this.put('g', 7);
+		this.put('h', 8);
+	}};
 	
 	// Variables used to load/save FEN:
 	// The piece to move now.
@@ -38,6 +56,7 @@ public class ChessBoard {
 	
 	/**
 	 * Constructor
+	 * Initialize the pieces array and the squares map as empty.
 	 */
 	ChessBoard() {
 		this.pieces = new LinkedList<BoardPiece>();
@@ -59,6 +78,8 @@ public class ChessBoard {
 	}
 	
 	/**
+	 * Add a piece to the board.
+	 * Only used localy when loading a FEN.
 	 * Create piece objects and place a reference to them for square they're in.
 	 * @param name The type of the piece.
 	 * @param color The color of the piece.
@@ -94,7 +115,8 @@ public class ChessBoard {
 	}
 
 	/**
-	 * Switches the current move
+	 * Switches the current move.
+	 * The next player to move is inverted.
 	 */
 	void switchMove() {
 		if(this.currentMove==PieceColor.WHITE) {

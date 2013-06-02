@@ -12,7 +12,7 @@ import parser.ChessParser;
 import parser.IncorrectFENException;
 
 /**
- * Handle all the accesses to the game SQLite table.
+ * Handle all the accesses to the Games and Moves tables in the SQLite database.
  * @author Clement Gautrais
  */
 public class GamesManager extends DatabaseManager {
@@ -45,7 +45,6 @@ public class GamesManager extends DatabaseManager {
 			System.err.println("removeGame: "+e.getMessage());
 			return false;
 		}
-		// TODO See for a cascade deletion.
 		String queryGames = "DELETE FROM "+GAMES+" WHERE "+GAME_ID+" = ?";
 		try {
 			PreparedStatement statement = dbConnect.prepareStatement(queryGames);
@@ -214,7 +213,7 @@ public class GamesManager extends DatabaseManager {
 		} catch(SQLException e) {
 			System.err.println("exist: "+e.getMessage());
 			fireQueryError(e);
-			return true; // TODO That's kind of dangerous...
+			return true;
 		}
 	}
 	
@@ -265,7 +264,6 @@ public class GamesManager extends DatabaseManager {
 	@SuppressWarnings("resource")
 	public static Map<Integer, Double> getResourceInvolvements(int gameId) {
 		Map<Integer, Double> resourceInvolvements = new HashMap<Integer, Double>();
-		// TODO Isn't it possible to get that info after?
 		int nbTotalMoves = getNumberOfMoves(gameId);
 		if(nbTotalMoves<=0) {
 			return resourceInvolvements;

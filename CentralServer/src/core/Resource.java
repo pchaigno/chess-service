@@ -15,7 +15,8 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
 /**
- * The model for all resources (databases and bots).
+ * The model for all resources (databases and chess engines).
+ * Fire the events to the resource listeners.
  * @author Paul Chaignon
  * @author Clement Gautrais
  * @author Benoit Travers

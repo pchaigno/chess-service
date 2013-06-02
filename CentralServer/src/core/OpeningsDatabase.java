@@ -23,6 +23,7 @@ public class OpeningsDatabase extends Resource {
 	
 	/**
 	 * Constructor
+	 * Initialize the resource with the default trust.
 	 * @param uri The URI.
 	 * @param name The name.
 	 * @param active True if the resource is active.
@@ -58,6 +59,7 @@ public class OpeningsDatabase extends Resource {
 			JSONObject json = jsonArray.getJSONObject(i);
 			String move = json.getString(JSON_MOVE);
 			if(!this.san) {
+			// The resource sends us LAN so it need to be converted.
 				ChessParser parser;
 				try {
 					parser = new ChessParser(fen);
