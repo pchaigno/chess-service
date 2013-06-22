@@ -321,7 +321,7 @@ public class ResourcesManager extends DatabaseManager {
 	 */
 	private static Set<Resource> computeResourceResults(List<Resource> resources, int[] results) {
 		Set<Resource> notSubmitted = new HashSet<Resource>();
-		for(int i=0 ; i<results.length ; i++) {
+		for(int i=0; i<results.length; i++) {
 			if(results[i]==0) {
 				notSubmitted.add(resources.get(i));
 			}
@@ -337,7 +337,7 @@ public class ResourcesManager extends DatabaseManager {
 	 */
 	private static Set<Integer> computeIdResults(List<Integer> resources, int[] results) {
 		Set<Integer> notSubmitted = new HashSet<Integer>();
-		for(int i=0 ; i<results.length ; i++) {
+		for(int i=0; i<results.length; i++) {
 			if(results[i]==0) {
 				notSubmitted.add(resources.get(i));
 			}

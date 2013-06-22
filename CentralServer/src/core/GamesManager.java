@@ -239,7 +239,7 @@ public class GamesManager extends DatabaseManager {
 			}
 			int[] results = statement.executeBatch();
 			statement.close();
-			for(int i=0 ; i<results.length ; i++) {
+			for(int i=0; i<results.length; i++) {
 				if(results[i]!=1) {
 					dbConnect.close();
 					return false;

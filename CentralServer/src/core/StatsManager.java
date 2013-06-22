@@ -113,7 +113,7 @@ public class StatsManager {
 		Set<Double> scoreValues = new HashSet<Double>();
 		
 		// We loop through the moves and add the right value in sets, depending on the property chosen
-		for(MoveSuggestion move : moves) {
+		for(MoveSuggestion move: moves) {
 			if(move instanceof BotSuggestion) {
 				if(STATS_BOT_DEPTH.equals(propertyName)) {
 					values.add((double)((BotSuggestion)move).getDepth());
@@ -122,7 +122,7 @@ public class StatsManager {
 					values.add(((BotSuggestion)move).getEngineScore());
 					scoreValues.add(((BotSuggestion)move).computeScoreEngineScore());
 				}
-			} else if (move instanceof OpeningSuggestion) {
+			} else if(move instanceof OpeningSuggestion) {
 				if(STATS_NB_PLAY.equals(propertyName)) {
 					values.add((double)((OpeningSuggestion)move).getNbPlay());
 					scoreValues.add(((OpeningSuggestion)move).getScoreNbPlay());
@@ -162,8 +162,8 @@ public class StatsManager {
 	private static Statistic computeStats(Set<Double> values, Set<Double> scoreValues) {
 		double mean = 0, variance = 0, normalization_mean = 0, normalization_variance = 0;
 
-		if(values.size()>0 && scoreValues.size() >0){
-			// We compute mean and variance(V(X)=E[X²]-(E[X])²) for the values
+		if(values.size()>0 && scoreValues.size()>0) {
+			// We compute mean and variance(V(X)=E[Xï¿½]-(E[X])ï¿½) for the values
 			for(double value: values) {
 				mean += value;
 				variance += Math.pow(value, 2);
@@ -200,7 +200,7 @@ public class StatsManager {
 	/**
 	 * Compute the new variance for the property.
 	 * X1 represent the n1 old values (stats on X1 stored in the stats properties file) and X2 represent the n2 new values (stats in parameters)
-	 * Formula:V((X1,X2))=1/(n1+n2)²*(n1²*V(X1)+n2²*V(X2)+n1n2(V(X1)+V(X2)+E[X1]²+E[X2]²)-2n1n2*E[X1]E[X2])
+	 * Formula:V((X1,X2))=1/(n1+n2)ï¿½*(n1ï¿½*V(X1)+n2ï¿½*V(X2)+n1n2(V(X1)+V(X2)+E[X1]ï¿½+E[X2]ï¿½)-2n1n2*E[X1]E[X2])
 	 * @param propertyName The property.
 	 * @param mean The mean used to compute the new variance.
 	 * @param variance The variance used to compute the new one.
@@ -217,7 +217,7 @@ public class StatsManager {
 			currentVariance = Double.parseDouble(getProperty(propertyName, Statistic.Stat.NORMALIZATION_VARIANCE));
 		}
 		
-		if((weight+currentWeight)>0) {
+		if(weight+currentWeight>0) {
 			return (Math.pow(currentWeight,2)*currentVariance
 					+currentWeight*weight*(currentVariance+variance+Math.pow(currentMean, 2)+Math.pow(mean, 2))
 					+Math.pow(weight, 2)*variance
@@ -242,7 +242,7 @@ public class StatsManager {
 		if(normalization) {
 			currentMean = Double.parseDouble(getProperty(propertyName, Statistic.Stat.NORMALIZATION_MEAN));
 		}
-		if(weight+currentWeight > 0) {
+		if(weight+currentWeight>0) {
 			return (currentMean*currentWeight+mean*weight) / (currentWeight+weight);
 		}
 		return 0;

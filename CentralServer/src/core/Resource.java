@@ -309,21 +309,21 @@ public abstract class Resource {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) {
+		if(this==obj) {
 			return true;
 		}
-		if (obj == null) {
+		if(obj==null) {
 			return false;
 		}
-		if (!(obj instanceof Resource)) {
+		if(!(obj instanceof Resource)) {
 			return false;
 		}
-		Resource other = (Resource) obj;
-		if (id == null) {
-			if (other.id != null) {
+		Resource other = (Resource)obj;
+		if(id==null) {
+			if(other.id!=null) {
 				return false;
 			}
-		} else if (!id.equals(other.id)) {
+		} else if(!id.equals(other.id)) {
 			return false;
 		}
 		return true;

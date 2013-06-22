@@ -71,7 +71,7 @@ public class ChessBoard {
 		this.squares.put('g', new BoardSquare[9]);
 		this.squares.put('h', new BoardSquare[9]);
 		for(char keyVar: this.squares.keySet()) {
-			for(int j=1 ; j<=8 ; j++) {
+			for(int j=1; j<=8; j++) {
 				this.squares.get(keyVar)[j] = new BoardSquare(keyVar, j);
 			}
 		}
@@ -103,7 +103,7 @@ public class ChessBoard {
 	 */
 	List<Integer> getPiece(PieceType type, PieceColor color, char x, int y) {
 		List<Integer> result = new LinkedList<Integer>();
-		for(int i=0 ; i<this.pieces.size() ; i++) {
+		for(int i=0; i<this.pieces.size(); i++) {
 			if(this.pieces.get(i).type==type && this.pieces.get(i).color==color 
 					&& this.pieces.get(i).square!=null 
 					&& ((x!=0 && this.pieces.get(i).square.x==x) || x==0) 
@@ -154,12 +154,12 @@ public class ChessBoard {
 		String fen = "";
 		
 		// Build the board description:
-		for(int num=8 ; num>=1 ; num--) {
+		for(int num=8; num>=1; num--) {
 			int emptyCounter = 0;
 			char[] keys = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 			for(char keyVar: keys) {
-				if(this.squares.get(keyVar)[num].piece != null) {
-					if(emptyCounter != 0) {
+				if(this.squares.get(keyVar)[num].piece!=null) {
+					if(emptyCounter!=0) {
 						fen += emptyCounter;
 						emptyCounter = 0;
 					}
@@ -175,10 +175,10 @@ public class ChessBoard {
 					emptyCounter++;
 				}
 			}
-			if(emptyCounter != 0) {
+			if(emptyCounter!=0) {
 				fen += emptyCounter;
 			}
-			if(num != 1) {
+			if(num!=1) {
 				fen += "/";
 			}
 		}
@@ -208,7 +208,7 @@ public class ChessBoard {
 	 */
 	void loadFEN(String fen) throws IncorrectFENException {
 		for(char keyVar: this.squares.keySet()) {
-			for(int j=1 ; j<=8 ; j++) {
+			for(int j=1; j<=8; j++) {
 				this.squares.get(keyVar)[j].piece = null;
 			}
 		}
@@ -216,20 +216,20 @@ public class ChessBoard {
 
 		// Split the FEN with whitespaces:
 		String[] fenArray = fen.split(" ");
-		if(fenArray.length < 4) {
+		if(fenArray.length<4) {
 			throw new IncorrectFENException("Number of argument incorrect in the FEN.");
 		}
 		
 		// Parse the board description:
 		String[] boardArray = fenArray[0].split("/");
-		if(boardArray.length != 8) {
+		if(boardArray.length!=8) {
 			throw new IncorrectFENException("Board representation incorrect in the FEN.");
 		}
 		
-		for(int lines=1 ; lines<=8 ; lines++) {
+		for(int lines=1; lines<=8; lines++) {
 			String line = boardArray[lines-1];
 			int colsY = 1;
-			for(int cols=0 ; cols<line.length() ; cols++) {
+			for(int cols=0; cols<line.length(); cols++) {
 				char letter = line.charAt(cols);
 				PieceColor color;
 				if(String.valueOf(letter).matches("[rbqkpn]")) {

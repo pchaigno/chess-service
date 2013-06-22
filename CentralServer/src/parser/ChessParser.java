@@ -111,7 +111,7 @@ public class ChessParser {
 		
 		// Castling:
 		if(piece==PieceType.KING && Math.abs(ChessBoard.letter.get(fromX)-ChessBoard.letter.get(toX))==2) {
-			if(toX == 'g') {
+			if(toX=='g') {
 				return "O-O";
 			}
 			return "O-O-O";
@@ -166,7 +166,7 @@ public class ChessParser {
 		Matcher matcher = Pattern.compile("([RBQKPN])?([a-h])?([1-8])?([x])?([a-h])([1-8])([=]?)([QNRB]?)([+#]?)").matcher(token);
 		char[] moveArray = new char[6];
 		if(matcher.find()) {
-			for(int i=0 ; i<6 ; i++) {
+			for(int i=0; i<6; i++) {
 				String match = matcher.group(i+1);
 				if(match==null) {
 					moveArray[i] = 0;
@@ -291,7 +291,7 @@ public class ChessParser {
 	 */
 	public static PlayerColor getColor(String fen) throws IncorrectFENException {
 		String[] fenInfos = fen.split(" ");
-		if(fenInfos.length > 3) {
+		if(fenInfos.length>3) {
 			char charColor = fenInfos[1].charAt(0);
 			PlayerColor color;
 			if(charColor=='b') {
@@ -317,7 +317,7 @@ public class ChessParser {
 		int reward = 0;
 		String[] fenInfos = this.fen.split(" ");
 
-		if(fenInfos.length != 6) {
+		if(fenInfos.length!=6) {
 			throw new IncorrectFENException("Number of argument incorrect.");
 		}
 

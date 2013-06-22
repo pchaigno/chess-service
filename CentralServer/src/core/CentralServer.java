@@ -75,8 +75,8 @@ public class CentralServer {
 		// This map contains the ending moves with their scores.
 		Map<String, Double> ends = new HashMap<String, Double>();
 
-		for(Resource resource : this.resources) {
-			for(MoveSuggestion move : resource.getMoveSuggestions()) {
+		for(Resource resource: this.resources) {
+			for(MoveSuggestion move: resource.getMoveSuggestions()) {
 				if(move.getClass()==EndingSuggestion.class) {
 					ends.put(move.getMove(), move.getScore());	
 				} else {

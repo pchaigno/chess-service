@@ -44,8 +44,8 @@ public class TestGamesManager extends TestCase {
 		
 		assertTrue(GamesManager.updateGame(games.get(0), "fen3coups"));
 		
-		assertTrue(GamesManager.getResourceInvolvements(games.get(0)).get(1)==3);
-		assertTrue(GamesManager.getResourceInvolvements(games.get(0)).get(3)==1.1);
+		assertEquals(3, GamesManager.getResourceInvolvements(games.get(0)).get(1));
+		assertEquals(1.1, GamesManager.getResourceInvolvements(games.get(0)).get(3));
 		
 		assertTrue(GamesManager.removeGame(games.get(0)));
 	}

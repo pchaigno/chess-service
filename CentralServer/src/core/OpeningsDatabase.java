@@ -55,7 +55,7 @@ public class OpeningsDatabase extends Resource {
 	@Override
 	protected void parseJSONMove(String response, String fen) {
 		JSONArray jsonArray = new JSONArray(response);
-		for(int i=0 ; i<jsonArray.length() ; i++) {
+		for(int i=0; i<jsonArray.length(); i++) {
 			JSONObject json = jsonArray.getJSONObject(i);
 			String move = json.getString(JSON_MOVE);
 			if(!this.san) {
